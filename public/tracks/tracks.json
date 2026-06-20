@@ -1,0 +1,42 @@
+[
+  {
+    "filename": "Sutivan.gpx",
+    "name": "Sv.Roko",
+    "difficulty": "easy",
+    "description": "Family friendly track with a lot of shade",
+    "startLocation": "Supetar",
+    "roadType": ["paved", "path"]
+  },
+  {
+    "filename": "Lovrečina.gpx",
+    "name": "Seaside ride",
+    "difficulty": "easy",
+    "description": "Easy ride along the coast with a lot of shade",
+    "startLocation": "Supetar",
+    "roadType": ["paved", "street"]
+  },
+  {
+    "filename": "Škrip.gpx",
+    "name": "Škrip",
+    "difficulty": "medium",
+    "description": "Moderate ride with some steep climbs and descents",
+    "startLocation": "Supetar",
+    "roadType": ["unpaved", "gravel"]
+  },
+  {
+    "filename": "Vidova gora.gpx",
+    "name": "Vidova Gora",
+    "difficulty": "medium",
+    "description": "Ride to the highest peak of the island with stunning views",
+    "startLocation": "Supetar",
+    "roadType": ["state road", "gravel"]
+  },
+  {
+    "filename": "Wild west.gpx",
+    "name": "Wild West",
+    "difficulty": "hard",
+    "description": "Challenging ride with amazing views of the island",
+    "startLocation": "Supetar",
+    "roadType": ["state road", "gravel", "unpaved"]
+  }
+]

@@ -1,0 +1,446 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body, #root {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+}
+
+.app-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100vw;
+}
+
+.navbar {
+  height: 60px;
+  background-color: #16213e;
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  border-bottom: 1px solid #334155;
+  flex-shrink: 0;
+}
+
+.navbar-title {
+  color: #f1f5f9;
+  font-size: 20px;
+  font-weight: bold;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.mobile-menu-btn {
+  display: none;
+  background: transparent;
+  border: none;
+  color: #f1f5f9;
+  font-size: 20px;
+  margin-right: 12px;
+  cursor: pointer;
+}
+
+.main-content {
+  display: flex;
+  flex: 1;
+  min-height: calc(100vh - 60px);
+}
+
+.sidebar {
+  width: 320px;
+  background: #16213e;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  border-right: 1px solid #1e293b;
+  overflow: hidden;
+}
+
+.sidebar-title {
+  color: #f1f5f9;
+  font-size: 1.3rem;
+  font-weight: 700;
+}
+
+.filter-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.filter-button {
+  border: none;
+  border-radius: 999px;
+  background: #0f3460;
+  color: #94a3b8;
+  padding: 8px 12px;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.filter-button.active {
+  background: #4ade80;
+  color: #0f172a;
+}
+
+.trail-list {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding-right: 4px;
+}
+
+.trail-card {
+  background: #0f3460;
+  border-radius: 14px;
+  padding: 14px;
+  color: #f1f5f9;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.trail-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  font-size: 1rem;
+}
+
+.difficulty-badge {
+  border-radius: 999px;
+  color: #0f172a;
+  padding: 4px 10px;
+  font-size: 0.8rem;
+  text-transform: capitalize;
+}
+
+.trail-description,
+.trail-start,
+.empty-state {
+  color: #94a3b8;
+  font-size: 0.95rem;
+}
+
+.trail-start {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.start-icon {
+  display: inline-flex;
+}
+
+.show-all-btn {
+  border: none;
+  border-radius: 999px;
+  background: #1e293b;
+  color: #94a3b8;
+  padding: 10px 14px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.95rem;
+  transition: all 0.2s;
+  width: 100%;
+  margin-bottom: 8px;
+}
+
+.show-all-btn:hover {
+  background: #334155;
+  color: #f1f5f9;
+}
+
+.trail-card.selected {
+  border-left: 4px solid #4ade80;
+  background: #1a3f5a;
+}
+
+.show-button {
+  border: none;
+  border-radius: 999px;
+  background: #4ade80;
+  color: #0f172a;
+  padding: 10px 14px;
+  cursor: pointer;
+  font-weight: 700;
+  align-self: flex-start;
+}
+
+.map-wrapper {
+  flex: 1;
+  height: calc(100vh - 60px);
+  width: 100%;
+}
+
+.gps-recorder-panel {
+  position: absolute;
+  right: 20px;
+  bottom: 26px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 10px;
+  z-index: 1000;
+}
+
+.gps-record-button,
+.gps-save-button,
+.gps-discard-button {
+  border: none;
+  border-radius: 999px;
+  padding: 12px 16px;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+
+.gps-record-button {
+  background: #4ade80;
+  color: #0f172a;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+}
+
+.gps-save-panel {
+  width: 280px;
+  background: rgba(22, 33, 62, 0.96);
+  border: 1px solid #334155;
+  border-radius: 18px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.gps-save-input {
+  width: 100%;
+  border: 1px solid #334155;
+  border-radius: 12px;
+  padding: 10px 12px;
+  background: #0f3460;
+  color: #f1f5f9;
+}
+
+.gps-save-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.gps-save-button {
+  background: #4ade80;
+  color: #0f172a;
+  flex: 1;
+}
+
+.gps-discard-button {
+  background: #1e293b;
+  color: #f1f5f9;
+  flex: 1;
+}
+
+.gps-record-status {
+  width: 280px;
+  background: rgba(22, 33, 62, 0.96);
+  border: 1px solid #334155;
+  border-radius: 18px;
+  padding: 12px 14px;
+  color: #f1f5f9;
+  font-size: 0.95rem;
+  display: flex;
+  justify-content: space-between;
+}
+
+.gps-tracker-message {
+  position: absolute;
+  right: 20px;
+  bottom: 24px;
+  width: 260px;
+  background: rgba(22, 33, 62, 0.96);
+  border: 1px solid #334155;
+  border-radius: 18px;
+  padding: 12px 14px;
+  color: #f1f5f9;
+  font-size: 0.95rem;
+  z-index: 1000;
+}
+
+.mobile-close-btn {
+  display: none;
+  position: absolute;
+  right: 12px;
+  top: 12px;
+  background: transparent;
+  border: none;
+  color: #f1f5f9;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+/* Mobile responsive sidebar overlay */
+@media (max-width: 767px) {
+  .mobile-menu-btn {
+    display: inline-block;
+  }
+
+  .sidebar,
+  .trail-details {
+    display: none;
+  }
+
+  .app-container.sidebar-open .sidebar {
+    display: block;
+    position: absolute;
+    left: 0;
+    top: 60px;
+    bottom: 0;
+    width: 90%;
+    max-width: 420px;
+    background: #16213e;
+    z-index: 1050;
+    padding: 18px;
+    overflow-y: auto;
+    transform: translateX(0);
+    transition: transform 0.22s ease;
+    box-shadow: 6px 0 30px rgba(2,6,23,0.6);
+  }
+
+  .mobile-close-btn {
+    display: inline-block;
+  }
+
+  .gps-recorder-panel {
+    right: 12px;
+    bottom: 18px;
+    z-index: 1100;
+  }
+
+  .gps-record-button,
+  .gps-save-button,
+  .gps-discard-button {
+    min-height: 48px;
+    padding: 12px 16px;
+  }
+}
+
+.trail-details {
+  width: 320px;
+  background: #16213e;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  border-right: 1px solid #1e293b;
+  overflow-y: auto;
+}
+
+.trail-back-button {
+  border: none;
+  background: transparent;
+  color: #94a3b8;
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-align: left;
+  padding: 0;
+}
+
+.trail-back-button:hover {
+  color: #f1f5f9;
+}
+
+.details-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.details-header h3 {
+  color: #f1f5f9;
+  font-size: 1.2rem;
+  font-weight: 700;
+  flex: 1;
+}
+
+.details-difficulty-badge {
+  border-radius: 999px;
+  color: #0f172a;
+  padding: 6px 12px;
+  font-size: 0.8rem;
+  text-transform: capitalize;
+  font-weight: 600;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.stat-item {
+  background: #0f3460;
+  border-radius: 10px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.stat-label {
+  color: #94a3b8;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.stat-value {
+  color: #f1f5f9;
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.road-types {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.road-types label {
+  color: #94a3b8;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.badge-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.road-type-badge {
+  background: #0f3460;
+  color: #f1f5f9;
+  border-radius: 999px;
+  padding: 6px 12px;
+  font-size: 0.8rem;
+  border: 1px solid #334155;
+}
+
+.elevation-chart-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.elevation-chart-container h4 {
+  color: #f1f5f9;
+  font-size: 1rem;
+  font-weight: 600;
+}
