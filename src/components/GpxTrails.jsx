@@ -58,6 +58,11 @@ function GpxTrails({ onTracksLoaded, selectedTrail, onStatsUpdate }) {
       const gpxUrl = `/tracks/${track.filename}`
       const gpxLayer = new L.GPX(gpxUrl, {
         async: true,
+        marker_options: {
+          startIconUrl: null,
+          endIconUrl: null,
+          shadowUrl: null,
+        },
         polyline_options: {
           color,
           weight: 5,
