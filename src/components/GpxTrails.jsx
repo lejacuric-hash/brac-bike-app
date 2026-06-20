@@ -59,9 +59,9 @@ function GpxTrails({ onTracksLoaded, selectedTrail, onStatsUpdate }) {
       const gpxLayer = new L.GPX(gpxUrl, {
         async: true,
         marker_options: {
-          startIconUrl: null,
-          endIconUrl: null,
-          shadowUrl: null,
+          startIconUrl: '',
+          endIconUrl: '',
+          shadowUrl: '',
         },
         polyline_options: {
           color,
@@ -71,6 +71,16 @@ function GpxTrails({ onTracksLoaded, selectedTrail, onStatsUpdate }) {
       })
 
       gpxLayer.on('loaded', (event) => {
+        // Remove the default start/end marker pins, keep only the polyline
+        const sublayer = Object.values(event.target._layers)[0]
+        if (sublayer && sublayer._layers) {
+          Object.values(sublayer._layers).forEach((nested) => {
+            if (typeof nested.getLatLngs !== 'function' && map.hasLayer(nested)) {
+              map.removeLayer(nested)
+            }
+          })
+        }
+
         const bounds = event.target.getBounds()
         trackBoundsRef.current[track.filename] = bounds
 
@@ -86,11 +96,11 @@ function GpxTrails({ onTracksLoaded, selectedTrail, onStatsUpdate }) {
         // Get actual track coordinates from the rendered polyline
         let trackLatLngs = []
         try {
-          const sublayer = Object.values(event.target._layers)[0]
-          const nestedLayers = Object.values(sublayer._layers)
-          const polyline = nestedLayers.find((l) => typeof l.getLatLngs === 'function')
-          if (polyline) {
-            const raw = polyline.getLatLngs()
+          const polylineCandidate = Object.values(sublayer._layers).find(
+            (l) => typeof l.getLatLngs === 'function'
+          )
+          if (polylineCandidate) {
+            const raw = polylineCandidate.getLatLngs()
             trackLatLngs = Array.isArray(raw[0]) ? raw.flat(Infinity) : raw
           }
         } catch (err) {
