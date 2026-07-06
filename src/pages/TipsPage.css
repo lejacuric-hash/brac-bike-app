@@ -3,7 +3,7 @@
   width: 100%;
   background: #370063;
   color: #ffffff;
-  padding: 24px 16px 40px;
+  padding: 48px 24px 36px;
   overflow-y: auto;
   display: flex;
   justify-content: center;
@@ -45,8 +45,9 @@
   color: #ffffff;
   font-size: 1rem;
   font-weight: 700;
-  letter-spacing: 0.02em;
-  text-align: left;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+  text-align: center;
   box-shadow: 0 8px 18px rgba(0, 0, 0, 0.18);
 }
 
