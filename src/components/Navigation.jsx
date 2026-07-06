@@ -1,4 +1,5 @@
 import { NavLink } from 'react-router-dom'
+import { useLocation } from 'react-router-dom'
 import './Navigation.css'
 
 const links = [
@@ -29,6 +30,8 @@ export default function Navigation() {
             <div className="tab-icon">{l.icon}</div>
             <div className="tab-label">{l.label}</div>
           </NavLink>
+          const location = useLocation()
+if (location.pathname === '/') return null
         ))}
       </nav>
     </>
