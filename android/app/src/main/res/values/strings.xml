@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">brac-bike-app</string>
+    <string name="title_activity_main">brac-bike-app</string>
+    <string name="package_name">com.bracbybike.app</string>
+    <string name="custom_url_scheme">com.bracbybike.app</string>
+</resources>
