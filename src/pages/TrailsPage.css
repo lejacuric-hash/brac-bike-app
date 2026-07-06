@@ -1,2 +1,256 @@
-/* Minimal placeholder to avoid import errors. Customize as needed. */
-.map-wrapper { height: 100%; }
+.map-wrapper {
+  height: 100%;
+  position: relative;
+}
+
+.explorer-overlay {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  right: 12px;
+  z-index: 1000;
+  pointer-events: none;
+}
+
+.explorer-panel {
+  pointer-events: auto;
+  background: rgba(55, 0, 99, 0.93);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 16px;
+  padding: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.28);
+}
+
+.explorer-search {
+  width: 100%;
+  border: none;
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-size: 0.94rem;
+  color: #fff;
+  background: rgba(81, 27, 133, 0.95);
+  margin-bottom: 10px;
+}
+
+.explorer-search::placeholder {
+  color: #d8c3f4;
+}
+
+.category-scroll {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  scrollbar-width: thin;
+}
+
+.category-pill {
+  border: none;
+  border-radius: 999px;
+  padding: 8px 12px;
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 700;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.category-pill.active {
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.28);
+}
+
+.filter-caption {
+  margin-top: 8px;
+  color: #d9c5ef;
+  font-size: 0.74rem;
+}
+
+.poi-tooltip {
+  color: #140020;
+  font-weight: 700;
+  font-size: 0.8rem;
+}
+
+.story-panel {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1000;
+  margin: 12px;
+  border-radius: 18px 18px 0 0;
+  padding: 16px;
+  background: rgba(37, 0, 70, 0.97);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.35);
+  color: #fff;
+}
+
+.story-panel-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.story-badge {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: #fff;
+  margin-bottom: 8px;
+}
+
+.story-panel h3 {
+  margin: 0 0 4px;
+  font-size: 1.05rem;
+}
+
+.story-panel p {
+  margin: 0;
+  color: #d8c3f4;
+  font-size: 0.8rem;
+}
+
+.story-close {
+  border: none;
+  background: transparent;
+  color: #fff;
+  font-size: 1.15rem;
+  cursor: pointer;
+}
+
+.story-body {
+  margin: 12px 0;
+  padding: 12px;
+  border-radius: 12px;
+  background: rgba(81, 27, 133, 0.9);
+  color: #f7eaff;
+  font-size: 0.9rem;
+  line-height: 1.55;
+}
+
+.story-action {
+  width: 100%;
+  border: none;
+  border-radius: 10px;
+  padding: 11px 12px;
+  background: #00e676;
+  color: #07140f;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.explorer-guide-shell {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: linear-gradient(180deg, #1e0036 0%, #2f0b58 100%);
+  color: #fff;
+}
+
+.explorer-guide-toolbar {
+  padding: 14px;
+  background: rgba(55, 0, 99, 0.94);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.24);
+}
+
+.explorer-guide-body {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+}
+
+.explorer-map-panel {
+  flex: 1;
+  min-width: 0;
+}
+
+.explorer-map {
+  height: 100%;
+  width: 100%;
+}
+
+.explorer-list-panel {
+  width: 320px;
+  max-width: 36vw;
+  overflow-y: auto;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: rgba(20, 0, 40, 0.9);
+}
+
+.explorer-card {
+  border: none;
+  border-radius: 12px;
+  background: rgba(81, 27, 133, 0.95);
+  color: #fff;
+  padding: 12px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.explorer-card h4 {
+  margin: 6px 0 6px;
+  font-size: 0.95rem;
+}
+
+.explorer-card p {
+  margin: 0 0 8px;
+  color: #e8d7ff;
+  font-size: 0.8rem;
+  line-height: 1.4;
+}
+
+.explorer-card-meta {
+  display: flex;
+  gap: 10px;
+  color: #d8c3f4;
+  font-size: 0.76rem;
+}
+
+.explorer-card-tag {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #fff;
+  text-transform: uppercase;
+}
+
+.story-section {
+  margin-bottom: 10px;
+  padding: 10px;
+  background: rgba(81, 27, 133, 0.73);
+  border-radius: 10px;
+}
+
+.story-label {
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #ffcf66;
+  margin-bottom: 4px;
+}
+
+@media (max-width: 900px) {
+  .explorer-guide-body {
+    flex-direction: column;
+  }
+
+  .explorer-map-panel {
+    flex: 1 1 45vh;
+  }
+
+  .explorer-list-panel {
+    width: 100%;
+    max-width: none;
+    max-height: 38vh;
+  }
+}

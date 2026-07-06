@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { MapContainer, TileLayer, CircleMarker, Tooltip, Polyline } from 'react-leaflet'
 import './TrailsPage.css'
 import '../App.css'
@@ -8,6 +8,20 @@ import BottomSheet from '../components/BottomSheet'
 import { RoutePlannerMap, RoutePlannerUI } from '../components/RoutePlanner'
 import ReportMarkers from '../components/ReportMarkers'
 import ReportProblem from '../components/ReportProblem'
+import { BRAC_POIS } from '../data/poiData'
+
+const CATEGORY_MAP = {
+  viewpoint: { label: '🏔 Viewpoints', color: '#FF5722' },
+  beach_cove: { label: '🏖 Beaches & Coves', color: '#00BCD4' },
+  geological: { label: '🪨 Geology Museum', color: '#795548' },
+  archaeology: { label: '🏛 Archaeology', color: '#607D8B' },
+  monastery: { label: '⛪ Churches & Chapels', color: '#E91E63' },
+  military: { label: '🚢 Military History', color: '#3F51B5' },
+  water: { label: '🚰 Water & Wells', color: '#2196F3' },
+  gastro: { label: '🍷 Local Gastro Farms', color: '#4CAF50' },
+  bike_highlight: { label: '🚴 Bike Highlights', color: '#9C27B0' },
+  nature_monument: { label: '🌿 Nature Monuments', color: '#4CAF50' },
+}
 
 export default function TrailsPage() {
   const [trails, setTrails] = useState([])
@@ -25,11 +39,36 @@ export default function TrailsPage() {
   const [routeLoading, setRouteLoading] = useState(false)
   const [selectedCommunityRoute, setSelectedCommunityRoute] = useState(null)
   const [communityRoutePositions, setCommunityRoutePositions] = useState([])
+  const [activeCategories, setActiveCategories] = useState(Object.keys(CATEGORY_MAP))
+  const [selectedPoi, setSelectedPoi] = useState(null)
+  const [searchTerm, setSearchTerm] = useState('')
   const mapRef = useRef(null)
 
   const handleTrailClick = useCallback((trail) => {
     setSelectedTrail(trail.filename)
   }, [])
+
+  const handleToggleCategory = useCallback((catKey) => {
+    setActiveCategories((prev) =>
+      prev.includes(catKey) ? prev.filter((key) => key !== catKey) : [...prev, catKey]
+    )
+  }, [])
+
+  const filteredPois = useMemo(() => {
+    const normalizedTerm = searchTerm.toLowerCase()
+
+    return BRAC_POIS.filter((poi) => {
+      const matchesCategory =
+        activeCategories.includes(poi.category) ||
+        poi.subCategories?.some((sub) => activeCategories.includes(sub))
+      const matchesSearch =
+        poi.name.toLowerCase().includes(normalizedTerm) ||
+        poi.shortDesc.toLowerCase().includes(normalizedTerm) ||
+        poi.story.toLowerCase().includes(normalizedTerm)
+
+      return matchesCategory && matchesSearch
+    })
+  }, [activeCategories, searchTerm])
 
   const handlePlannerMapClick = useCallback(
     (coords) => {
@@ -130,6 +169,36 @@ export default function TrailsPage() {
     <div className="app-container">
       <div className="main-content">
         <div className="map-wrapper">
+          <div className="explorer-overlay">
+            <div className="explorer-panel">
+              <input
+                type="text"
+                className="explorer-search"
+                placeholder="🔎 Search Brač POIs, viewpoints, water, gastro..."
+                value={searchTerm}
+                onChange={(event) => setSearchTerm(event.target.value)}
+              />
+              <div className="category-scroll">
+                {Object.entries(CATEGORY_MAP).map(([key, config]) => {
+                  const isActive = activeCategories.includes(key)
+
+                  return (
+                    <button
+                      key={key}
+                      type="button"
+                      className={`category-pill${isActive ? ' active' : ''}`}
+                      style={{ backgroundColor: isActive ? config.color : '#250046' }}
+                      onClick={() => handleToggleCategory(key)}
+                    >
+                      {config.label} {isActive ? '✓' : ''}
+                    </button>
+                  )
+                })}
+              </div>
+              <div className="filter-caption">Showing {filteredPois.length} active markers on the guide</div>
+            </div>
+          </div>
+
           <MapContainer
             center={[43.307, 16.635]}
             zoom={11}
@@ -155,6 +224,24 @@ export default function TrailsPage() {
               routeGeometry={routeGeometry}
               onMapClick={handlePlannerMapClick}
             />
+            {filteredPois.map((poi) => (
+              <CircleMarker
+                key={poi.id}
+                center={[poi.coordinates.lat, poi.coordinates.lng]}
+                radius={8}
+                eventHandlers={{ click: () => setSelectedPoi(poi) }}
+                pathOptions={{
+                  color: '#ffffff',
+                  fillColor: CATEGORY_MAP[poi.category]?.color || '#8b5cf6',
+                  fillOpacity: 0.95,
+                  weight: 2,
+                }}
+              >
+                <Tooltip direction="top" offset={[0, -10]} opacity={1} sticky>
+                  <div className="poi-tooltip">{poi.name}</div>
+                </Tooltip>
+              </CircleMarker>
+            ))}
             {communityRoutePositions.length > 0 && (
               <Polyline
                 positions={communityRoutePositions}
@@ -182,6 +269,30 @@ export default function TrailsPage() {
             )}
           </MapContainer>
           <ReportProblem onReportSaved={() => setReportsRefreshKey((k) => k + 1)} />
+          {selectedPoi && (
+            <div className="story-panel open">
+              <div className="story-panel-header">
+                <div>
+                  <span className="story-badge" style={{ backgroundColor: CATEGORY_MAP[selectedPoi.category]?.color || '#8b5cf6' }}>
+                    {selectedPoi.category.toUpperCase()}
+                  </span>
+                  <h3>{selectedPoi.name}</h3>
+                  <p>
+                    📍 {selectedPoi.township.toUpperCase()} · Amenities: {selectedPoi.amenities.join(', ')}
+                  </p>
+                </div>
+                <button type="button" className="story-close" onClick={() => setSelectedPoi(null)}>
+                  ✕
+                </button>
+              </div>
+              <div className="story-body">
+                “{selectedPoi.story}”
+              </div>
+              <button type="button" className="story-action">
+                🗺️ Route me here
+              </button>
+            </div>
+          )}
         </div>
 
         <BottomSheet
