@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import './TipsPage.css'
 
 const menuItems = [
@@ -199,82 +199,99 @@ export function generateCyclingSafetyReport(location, weatherProfile, userProfil
   return { safetyAlerts, recommendationText, isSafeToRide }
 }
 
-function getCyclingAdvice(location, windDirection) {
-  if (windDirection === 'North') {
-    if (location.id === 'supetar') {
-      return '⚠️ Dangerous headwind! Postpone climbs out of Supetar. Head west toward Sutivan or load your bike and ride on the South coast instead.'
-    }
-
-    if (location.id === 'bol') {
-      return '✅ Perfect choice! The mountain massif blocks the Bura wind. Riding along the south coast toward Murvica is highly recommended today.'
-    }
-
-    return '⚠️ The North wind is pushing hard across the island. Choose a sheltered inland or southern route for the safest ride.'
-  }
-
-  if (windDirection === 'South') {
-    if (location.id === 'bol') {
-      return '⚠️ Massive waves and strong headwinds coming off the sea. Avoid coastal tracks near Zlatni Rat.'
-    }
-
-    if (location.id === 'supetar') {
-      return '✅ Great protection. The interior hills take the brunt of the storm. Ideal day for exploring the North-side olive grove paths.'
-    }
-
-    return '⚠️ The South wind is turning the coast rough. Keep to protected inland paths and stay flexible with your route.'
-  }
-
-  return '🌤️ The breeze is moderate and manageable, so the island roads remain comfortable for a relaxed ride.'
+function getWeatherDirectionLabel(degrees) {
+  if (degrees >= 315 || degrees < 45) return 'North'
+  if (degrees >= 45 && degrees < 135) return 'East'
+  if (degrees >= 135 && degrees < 225) return 'South'
+  if (degrees >= 225 && degrees < 315) return 'West'
+  return 'Variable'
 }
 
-function getWeatherSnapshot(location, windDirection) {
-  const profile = windProfiles[windDirection]
-  const baseTemp = location.id === 'vidova-gora' ? 20 : location.id === 'supetar' ? 24 : location.id === 'bol' ? 27 : location.id === 'milna' ? 25 : 23
-  const temp = baseTemp + profile.tempShift
-
-  return {
-    temp,
-    temperature: `${temp}°C`,
-    humidity: profile.humidity,
-    windDirection,
-    windLabel: profile.label,
-    windSpeed: profile.speedValue,
-    windSpeedLabel: profile.speed,
-    windIcon: profile.icon,
-    rainProbability: windDirection === 'South' ? 34 : windDirection === 'West' ? 18 : 12,
-    summary: location.id === 'vidova-gora' ? 'High ridge conditions' : 'Island breeze and bright skies',
-  }
+function formatForecastDay(dateString) {
+  return new Date(dateString).toLocaleDateString('en-US', {
+    weekday: 'short',
+    month: 'short',
+    day: 'numeric',
+  })
 }
 
 export default function TipsPage() {
   const [currentView, setCurrentView] = useState('menu')
   const [selectedLocation, setSelectedLocation] = useState(BRAC_LOCATIONS[0])
-  const [searchTerm, setSearchTerm] = useState(BRAC_LOCATIONS[0].name)
-  const [windDirection, setWindDirection] = useState('North')
+  const [weatherData, setWeatherData] = useState(null)
+  const [selectedTimeframe, setSelectedTimeframe] = useState('CURRENT')
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState(null)
+  const [isSensitiveGroup, setIsSensitiveGroup] = useState(false)
 
-  const filteredLocations = useMemo(() => {
-    const lowerQuery = searchTerm.toLowerCase()
-    if (!lowerQuery) return BRAC_LOCATIONS
+  useEffect(() => {
+    const fetchComprehensiveWeatherData = async () => {
+      setLoading(true)
+      setError(null)
 
-    return BRAC_LOCATIONS.filter((location) => location.name.toLowerCase().includes(lowerQuery))
-  }, [searchTerm])
+      try {
+        const url = `https://api.open-meteo.com/v1/forecast?latitude=${selectedLocation.lat}&longitude=${selectedLocation.lng}&current=temperature_2m,wind_speed_10m,wind_direction_10m,precipitation&hourly=temperature_2m,wind_speed_10m,wind_direction_10m,precipitation_probability&timezone=auto&forecast_days=3`
+        const response = await fetch(url)
 
-  const weather = useMemo(() => getWeatherSnapshot(selectedLocation, windDirection), [selectedLocation, windDirection])
-  const safetyReport = useMemo(
-    () =>
-      generateCyclingSafetyReport(
+        if (!response.ok) {
+          throw new Error('Could not reach Adriatic weather nodes.')
+        }
+
+        const data = await response.json()
+
+        const currentProfile = {
+          label: '⚡ LIVE NOW',
+          temp: data.current.temperature_2m,
+          windSpeed: data.current.wind_speed_10m,
+          windDirection: getWeatherDirectionLabel(data.current.wind_direction_10m),
+          rainProbability: data.current.precipitation > 0 ? 90 : 0,
+          displayTime: 'Current Conditions',
+        }
+
+        const hourlyProfiles = data.hourly.time.map((timeStr, index) => {
+          const dateObj = new Date(timeStr)
+          const dayLabel = dateObj.toLocaleDateString('en-US', { weekday: 'short' })
+          const hourLabel = `${dateObj.toLocaleTimeString('en-US', { hour: '2-digit', hour12: false })}:00`
+
+          return {
+            label: `${dayLabel} ${hourLabel}`,
+            temp: data.hourly.temperature_2m[index],
+            windSpeed: data.hourly.wind_speed_10m[index],
+            windDirection: getWeatherDirectionLabel(data.hourly.wind_direction_10m[index]),
+            rainProbability: data.hourly.precipitation_probability[index],
+            displayTime: `${dateObj.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })} at ${hourLabel}`,
+          }
+        })
+
+        setWeatherData({ current: currentProfile, hourly: hourlyProfiles })
+        setSelectedTimeframe('CURRENT')
+      } catch (err) {
+        setError(err.message)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchComprehensiveWeatherData()
+  }, [selectedLocation])
+
+  const activeWeather = weatherData
+    ? (selectedTimeframe === 'CURRENT' ? weatherData.current : weatherData.hourly[selectedTimeframe])
+    : null
+
+  const safetyReport = activeWeather
+    ? generateCyclingSafetyReport(
         selectedLocation,
         {
-          temp: weather.temp,
-          windSpeed: weather.windSpeed,
-          windDirection: weather.windDirection,
-          rainProbability: weather.rainProbability,
+          temp: activeWeather.temp,
+          windSpeed: activeWeather.windSpeed,
+          windDirection: activeWeather.windDirection,
+          rainProbability: activeWeather.rainProbability,
         },
-        { isSensitiveGroup: false }
-      ),
-    [selectedLocation, weather]
-  )
-  const recommendation = safetyReport.recommendationText
+        { isSensitiveGroup }
+      )
+    : null
+  const recommendation = safetyReport?.recommendationText ?? 'Loading live safety insights...'
 
   const sectionContent = {
     'Places to Visit': {
@@ -335,82 +352,102 @@ export default function TipsPage() {
             </div>
 
             <div className="weather-selector-panel">
-              <label className="weather-label" htmlFor="location-search">Choose a location</label>
-              <div className="weather-input-shell">
-                <input
-                  id="location-search"
-                  className="weather-input"
-                  type="text"
-                  value={searchTerm}
-                  onChange={(event) => setSearchTerm(event.target.value)}
-                  placeholder="Search Brač locations"
-                />
-
-                {filteredLocations.length > 0 && (
-                  <div className="weather-option-list">
-                    {filteredLocations.map((location) => (
-                      <button
-                        key={location.id}
-                        type="button"
-                        className="weather-option"
-                        onClick={() => {
-                          setSelectedLocation(location)
-                          setSearchTerm(location.name)
-                        }}
-                      >
-                        {location.name}
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </div>
-
-            <div className="weather-card">
-              <span className="weather-badge">Live forecast</span>
-              <div className="weather-main">
-                <div>
-                  <div className="weather-location">{selectedLocation.name}</div>
-                  <div className="weather-meta">{weather.summary}</div>
-                </div>
-                <div className="weather-temp">{weather.temperature}</div>
-              </div>
-
-              <div className="weather-stat-grid">
-                <div className="weather-stat">
-                  <span>Humidity</span>
-                  <strong>{weather.humidity}%</strong>
-                </div>
-                <div className="weather-stat">
-                  <span>Wind</span>
-                  <strong>{weather.windIcon} {weather.windDirection} ({weather.windLabel})</strong>
-                </div>
-              </div>
-
-              <div className="weather-meta">Wind speed: {weather.windSpeedLabel}</div>
-
-              <div className="wind-toggle-group">
-                {(['North', 'South', 'West']).map((direction) => (
-                  <button
-                    key={direction}
-                    type="button"
-                    className={`wind-pill${windDirection === direction ? ' active' : ''}`}
-                    onClick={() => setWindDirection(direction)}
-                  >
-                    {windProfiles[direction].icon} {direction}
-                  </button>
+              <select
+                className="weather-input"
+                value={selectedLocation.id}
+                onChange={(event) => {
+                  const nextLocation = BRAC_LOCATIONS.find((location) => location.id === event.target.value)
+                  if (nextLocation) {
+                    setSelectedLocation(nextLocation)
+                  }
+                }}
+              >
+                {BRAC_LOCATIONS.map((location) => (
+                  <option key={location.id} value={location.id}>
+                    {location.name}
+                  </option>
                 ))}
-              </div>
+              </select>
             </div>
+
+            <label className="toggle-row">
+              <input
+                type="checkbox"
+                checked={isSensitiveGroup}
+                onChange={(event) => setIsSensitiveGroup(event.target.checked)}
+              />
+              <span>Include Senior / Heart Patient Safety Warnings</span>
+            </label>
+
+            {loading && <div className="weather-meta">Syncing local weather profiles...</div>}
+            {error && <div className="weather-error">Error: {error}</div>}
+
+            {weatherData && !loading && (
+              <>
+                <div className="timeline-scroll-axis">
+                  <button
+                    type="button"
+                    className={`timeline-pill${selectedTimeframe === 'CURRENT' ? ' active' : ''}`}
+                    onClick={() => setSelectedTimeframe('CURRENT')}
+                  >
+                    📍 Live Now
+                  </button>
+
+                  {weatherData.hourly.map((hourBlock, index) => {
+                    if (index % 2 !== 0) {
+                      return null
+                    }
+
+                    const isSelected = selectedTimeframe === index
+
+                    return (
+                      <button
+                        key={`${hourBlock.label}-${index}`}
+                        type="button"
+                        className={`timeline-pill${isSelected ? ' active' : ''}`}
+                        onClick={() => setSelectedTimeframe(index)}
+                      >
+                        <span>{hourBlock.label}</span>
+                        <strong>{hourBlock.temp}°C</strong>
+                      </button>
+                    )
+                  })}
+                </div>
+
+                <div className="weather-card">
+                  <span className="weather-badge">Live forecast</span>
+                  <div className="weather-main">
+                    <div>
+                      <div className="weather-location">{selectedLocation.name}</div>
+                      <div className="weather-meta">{activeWeather.displayTime}</div>
+                    </div>
+                    <div className="weather-temp">{activeWeather.temp}°C</div>
+                  </div>
+
+                  <div className="weather-stat-grid">
+                    <div className="weather-stat">
+                      <span>Wind</span>
+                      <strong>{activeWeather.windDirection}</strong>
+                    </div>
+                    <div className="weather-stat">
+                      <span>Speed</span>
+                      <strong>{activeWeather.windSpeed} km/h</strong>
+                    </div>
+                  </div>
+
+                  <div className="weather-meta">Rain risk: {activeWeather.rainProbability}%</div>
+                </div>
+              </>
+            )}
 
             <div className="recommendation-box">
               <div className="recommendation-title">Route recommendation</div>
               <p>{recommendation}</p>
 
-              {safetyReport.safetyAlerts.length > 0 && (
+              {safetyReport?.safetyAlerts.length > 0 && (
                 <div className="alert-list">
                   {safetyReport.safetyAlerts.map((alert) => (
-                    <div key={alert.type} className={`alert-item ${alert.severity.toLowerCase()}`}>
+                    <div key={alert.type} className={`alert-badge ${alert.severity.toUpperCase()}`}>
                       <strong>{alert.severity}</strong>
                       <span>{alert.message}</span>
                     </div>
