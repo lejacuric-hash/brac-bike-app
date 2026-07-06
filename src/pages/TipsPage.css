@@ -1,0 +1,222 @@
+.tips-page {
+  min-height: 100vh;
+  width: 100%;
+  background: #370063;
+  color: #ffffff;
+  padding: 24px 16px 40px;
+  overflow-y: auto;
+  display: flex;
+  justify-content: center;
+}
+
+.tips-page-shell {
+  width: min(100%, 560px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+}
+
+.tips-logo {
+  width: min(72vw, 260px);
+  height: auto;
+  margin-bottom: 8px;
+}
+
+.tips-menu {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.tips-menu-button,
+.tips-back-button {
+  border: none;
+  cursor: pointer;
+  transition: transform 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.tips-menu-button {
+  width: 100%;
+  padding: 17px 20px;
+  border-radius: 24px;
+  background: #753cae;
+  color: #ffffff;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-align: left;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.18);
+}
+
+.tips-menu-button:hover,
+.tips-menu-button:focus-visible {
+  background: #8a4ec0;
+  transform: translateY(-2px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.22);
+}
+
+.tips-menu-button:active,
+.tips-back-button:active {
+  background: #976fbe;
+  transform: scale(0.98);
+}
+
+.tips-subview {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.tips-back-button {
+  align-self: flex-start;
+  padding: 10px 14px;
+  border-radius: 999px;
+  background: #753cae;
+  color: #ffffff;
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.tips-subview-header {
+  background: rgba(117, 60, 174, 0.36);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 24px;
+  padding: 18px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.tips-subview-header h2 {
+  font-size: 1.35rem;
+  margin-bottom: 6px;
+}
+
+.tips-subview-header p {
+  color: rgba(255, 255, 255, 0.86);
+  line-height: 1.5;
+}
+
+.weather-card,
+.recommendation-box,
+.tips-card {
+  background: rgba(117, 60, 174, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 24px;
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.18);
+}
+
+.weather-card {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.weather-badge {
+  align-self: flex-start;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.16);
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.weather-main {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.weather-location {
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+
+.weather-temp {
+  font-size: 2rem;
+  font-weight: 800;
+}
+
+.weather-meta {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 0.95rem;
+}
+
+.recommendation-box {
+  padding: 16px 18px;
+  line-height: 1.6;
+  font-size: 0.96rem;
+}
+
+.card-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.tips-card {
+  display: flex;
+  gap: 14px;
+  padding: 14px;
+  align-items: center;
+}
+
+.tips-card-media {
+  width: 74px;
+  height: 74px;
+  border-radius: 20px;
+  background: linear-gradient(135deg, #976fbe, #5e2f8d);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.7rem;
+  flex-shrink: 0;
+}
+
+.tips-card-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.tips-card-body h3 {
+  font-size: 1rem;
+  font-weight: 800;
+}
+
+.tips-card-body p {
+  color: rgba(255, 255, 255, 0.86);
+  font-size: 0.95rem;
+  line-height: 1.45;
+}
+
+@media (max-width: 480px) {
+  .tips-page {
+    padding: 18px 12px 28px;
+  }
+
+  .tips-logo {
+    width: min(78vw, 220px);
+  }
+
+  .tips-menu-button {
+    padding: 15px 16px;
+    border-radius: 20px;
+  }
+
+  .tips-card {
+    padding: 12px;
+  }
+
+  .tips-card-media {
+    width: 64px;
+    height: 64px;
+    border-radius: 16px;
+  }
+}
