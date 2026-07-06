@@ -5,7 +5,6 @@ const links = [
   { to: '/', label: 'Home', icon: '🏠' },
   { to: '/trails', label: 'Trails', icon: '🚵' },
   { to: '/plan', label: 'Plan', icon: '📍' },
-  { to: '/routes', label: 'Routes', icon: '🗂️' },
   { to: '/tips', label: 'Tips', icon: '💡' },
   { to: '/book', label: 'Book', icon: '🚲' },
 ]

@@ -1,0 +1,61 @@
+.user-routes-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.user-route-card {
+  background: #0f3460;
+  border: 1px solid #334155;
+  border-radius: 16px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.user-route-header {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.user-route-title {
+  color: #f1f5f9;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.user-route-badge {
+  color: #cbd5e1;
+  font-size: 0.85rem;
+}
+
+.user-route-meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  color: #94a3b8;
+  font-size: 0.95rem;
+}
+
+.user-route-show-button {
+  border: none;
+  border-radius: 999px;
+  background: #a78bfa;
+  color: #0f172a;
+  padding: 10px 14px;
+  cursor: pointer;
+  align-self: flex-start;
+  font-weight: 700;
+}
+
+.user-route-show-button:hover {
+  opacity: 0.95;
+}
+
+.user-routes-empty {
+  color: #94a3b8;
+  font-size: 0.95rem;
+  padding: 16px;
+}

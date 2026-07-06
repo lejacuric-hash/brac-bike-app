@@ -1,0 +1,133 @@
+/* Clean, compact styles for the Route Planner UI */
+.route-planner-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding-bottom: 6px;
+}
+
+.route-planner-row {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.route-planner-row > label {
+  color: #f1f5f9;
+  font-weight: 700;
+}
+
+.route-planner-row-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.route-planner-button {
+  border: none;
+  border-radius: 12px;
+  background: #4ade80;
+  color: #0f172a;
+  padding: 10px 12px;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.planner-hint {
+  color: #94a3b8;
+  font-size: 0.95rem;
+}
+
+.planner-ok {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.planner-ok-text {
+  color: #f1f5f9;
+  font-weight: 700;
+}
+
+.planner-change {
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  text-decoration: underline;
+  cursor: pointer;
+  font-size: 0.9rem;
+  padding: 4px 6px;
+}
+
+.planner-geo-error {
+  color: #94a3b8;
+  font-size: 0.9rem;
+}
+
+.planner-results {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 6px;
+}
+
+.planner-results-row {
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+}
+
+.planner-result-label {
+  color: #94a3b8;
+  font-size: 0.85rem;
+}
+
+.planner-result-value {
+  color: #f1f5f9;
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+
+.planner-save-input {
+  width: 100%;
+  padding: 10px 12px;
+  background: #0f3460;
+  color: #f1f5f9;
+  border: 1px solid #334155;
+  border-radius: 10px;
+}
+
+.planner-buttons {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.planner-button {
+  border: none;
+  border-radius: 12px;
+  background: #4ade80;
+  color: #0f172a;
+  padding: 10px 12px;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.planner-button.secondary {
+  background: #a78bfa;
+}
+
+.planner-button.clear {
+  background: #1e293b;
+  color: #f1f5f9;
+}
+
+.planner-message {
+  color: #4ade80;
+}
+
+.planner-change:focus,
+.route-planner-button:focus,
+.planner-button:focus {
+  outline: 2px solid rgba(74,222,128,0.25);
+}

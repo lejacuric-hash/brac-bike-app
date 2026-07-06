@@ -1,6 +1,7 @@
 import React, { useRef, useState, useCallback, useMemo } from 'react'
 import PropTypes from 'prop-types'
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
+import UserRoutesList from './UserRoutesList'
 import './BottomSheet.css'
 
 const difficultyColors = {
@@ -22,8 +23,24 @@ function BottomSheet({
   trailStats = {},
   onTrailClick,
   onChartHover,
-  displayMode = 'routes',
+  activeTab: activeTabProp,
+  onTabChange,
+  planNewContent,
+  onRouteSelect,
+  selectedRouteId,
+
 }) {
+  const [internalActiveTab, setInternalActiveTab] = useState('routes')
+  const activeTab = activeTabProp || internalActiveTab
+  const setActiveTab = (tab) => {
+    if (typeof onTabChange === 'function') {
+      onTabChange(tab)
+    }
+    if (activeTabProp === undefined) {
+      setInternalActiveTab(tab)
+    }
+  }
+
   const snapPositions = useMemo(() => ({
     COLLAPSED: 80,
     HALF: typeof window !== 'undefined' ? window.innerHeight * 0.5 : 300,
@@ -34,7 +51,6 @@ function BottomSheet({
   const [isDragging, setIsDragging] = useState(false)
   const [dragStart, setDragStart] = useState(0)
   const [dragStartHeight, setDragStartHeight] = useState(snapPositions.COLLAPSED)
-  const [activeTab, setActiveTab] = useState('routes')
   const [filter, setFilter] = useState('all')
   const sheetRef = useRef(null)
   const dragHandleRef = useRef(null)
@@ -321,21 +337,19 @@ function BottomSheet({
   }
 
   const renderTabContent = () => {
-    if (selectedTrail && currentTrail) {
-      return renderTrailDetails()
-    }
-
     switch (activeTab) {
       case 'routes':
-        return renderRoutesList()
-      case 'userRoutes':
-        return (
-          <div className="bottom-sheet-placeholder">
-            <p>Community routes coming soon</p>
-          </div>
-        )
+        return selectedTrail && currentTrail ? renderTrailDetails() : renderRoutesList()
+     case 'userRoutes':
+  return (
+    <UserRoutesList
+      activeTab={activeTab}
+      onRouteSelect={onRouteSelect}
+      selectedRouteId={selectedRouteId}
+    />
+  )
       case 'planNew':
-        return (
+        return planNewContent || (
           <div className="bottom-sheet-placeholder">
             <p>Route planner coming soon</p>
           </div>
@@ -411,7 +425,10 @@ BottomSheet.propTypes = {
   trailStats: PropTypes.object,
   onTrailClick: PropTypes.func,
   onChartHover: PropTypes.func,
-  displayMode: PropTypes.string,
+  onRouteSelect: PropTypes.func,
+  activeTab: PropTypes.oneOf(['routes', 'userRoutes', 'planNew']),
+  onTabChange: PropTypes.func,
+  planNewContent: PropTypes.node,
 }
 
 export default BottomSheet

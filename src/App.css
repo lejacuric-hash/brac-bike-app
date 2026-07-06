@@ -541,3 +541,34 @@ html, body, #root {
   background: #1e293b;
   color: #f1f5f9;
 }
+.user-routes-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 4px 0;
+}
+
+.user-routes-state {
+  padding: 24px 0;
+  text-align: center;
+}
+
+.user-routes-loading,
+.user-routes-empty {
+  color: #94a3b8;
+  font-size: 0.95rem;
+}
+
+.user-routes-error {
+  color: #f87171;
+  font-size: 0.95rem;
+}
+
+.user-route-badge {
+  background: #1e293b;
+  color: #94a3b8;
+  border-radius: 999px;
+  padding: 4px 10px;
+  font-size: 0.8rem;
+  white-space: nowrap;
+}

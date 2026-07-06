@@ -346,6 +346,140 @@
   margin: 0;
 }
 
+.route-planner-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.route-planner-row {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.route-planner-row label {
+  color: #f1f5f9;
+  font-weight: 700;
+}
+
+.route-planner-row-content {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.route-planner-button,
+.planner-toggle,
+.planner-button,
+.planner-save-input {
+  border: none;
+  border-radius: 999px;
+  font-size: 0.95rem;
+}
+
+.route-planner-button,
+.planner-button {
+  background: #4ade80;
+  color: #0f172a;
+  padding: 12px 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.route-planner-button:hover,
+.planner-button:hover,
+.planner-toggle:hover {
+  opacity: 0.95;
+}
+
+.planner-toggle {
+  background: #0f3460;
+  color: #94a3b8;
+  padding: 10px 14px;
+  flex: 1;
+}
+
+.planner-toggle.active {
+  background: #4ade80;
+  color: #0f172a;
+}
+
+.planner-status {
+  color: #cbd5e1;
+  font-size: 0.95rem;
+}
+
+.planner-error {
+  background: #86198f;
+  color: #f8fafc;
+  border-radius: 14px;
+  padding: 12px 14px;
+}
+
+.planner-results {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.planner-results-row {
+  display: flex;
+  gap: 14px;
+  justify-content: space-between;
+}
+
+.planner-result-label {
+  color: #94a3b8;
+  font-size: 0.85rem;
+  margin-bottom: 4px;
+}
+
+.planner-result-value {
+  color: #f1f5f9;
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.planner-save-input {
+  width: 100%;
+  padding: 12px 14px;
+  background: #0f3460;
+  color: #f1f5f9;
+  border: 1px solid #334155;
+}
+
+.planner-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.planner-button.secondary {
+  background: #a78bfa;
+  color: #0f172a;
+}
+
+.planner-button.clear {
+  background: #1e293b;
+  color: #f1f5f9;
+}
+
+.planner-message {
+  color: #4ade80;
+  font-size: 0.95rem;
+}
+
+.route-planner-mode-toggle {
+  display: flex;
+  gap: 10px;
+}
+
+.planner-point-label {
+  color: #cbd5e1;
+  font-size: 0.95rem;
+}
+
 /* Scrollbar Styling */
 .bottom-sheet-content::-webkit-scrollbar,
 .trail-list::-webkit-scrollbar {
