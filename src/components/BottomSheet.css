@@ -4,8 +4,8 @@
   bottom: 0;
   left: 0;
   right: 0;
-  background: #16213e;
-  border-top: 1px solid #1e293b;
+  background: #370063;
+  border-top: 1px solid #753cae;
   border-top-left-radius: 20px;
   border-top-right-radius: 20px;
   display: flex;
@@ -47,13 +47,13 @@
   gap: 0;
   padding: 8px 16px 0 16px;
   flex-shrink: 0;
-  border-bottom: 1px solid #334155;
+  border-bottom: 1px solid #976fbe;
 }
 
 .sheet-tab {
   background: transparent;
   border: none;
-  color: #94a3b8;
+  color: #e4e6e8;
   padding: 12px 16px;
   cursor: pointer;
   font-weight: 500;
@@ -70,8 +70,8 @@
 }
 
 .sheet-tab.active {
-  color: #4ade80;
-  border-bottom-color: #4ade80;
+  color: #976fbe;
+  border-bottom-color: #976fbe;
 }
 
 /* Content Area */
@@ -102,8 +102,8 @@
 .filter-button {
   border: none;
   border-radius: 999px;
-  background: #0f3460;
-  color: #94a3b8;
+  background: #753cae;
+  color: #eaeff7;
   padding: 8px 12px;
   cursor: pointer;
   font-size: 0.9rem;
@@ -116,7 +116,7 @@
 }
 
 .filter-button.active {
-  background: #4ade80;
+  background: #976fbe;
   color: #0f172a;
   font-weight: 600;
 }
@@ -132,7 +132,7 @@
 
 /* Trail Cards */
 .trail-card {
-  background: #0f3460;
+  background: #753cae;
   border-radius: 14px;
   padding: 14px;
   color: #f1f5f9;
@@ -143,12 +143,12 @@
 }
 
 .trail-card:hover {
-  background: #1a4a7a;
+  background: #753cae;
 }
 
 .trail-card.selected {
-  border-left: 4px solid #4ade80;
-  background: #1a3f5a;
+  border-left: 4px solid #976fbe;
+  background: #753cae;
 }
 
 .trail-card-header {
@@ -176,7 +176,7 @@
 .trail-description,
 .trail-start,
 .empty-state {
-  color: #94a3b8;
+  color: #ffffff;
   font-size: 0.95rem;
 }
 
@@ -193,7 +193,7 @@
 .show-button {
   border: none;
   border-radius: 999px;
-  background: #4ade80;
+  background: #976fbe;
   color: #0f172a;
   padding: 10px 14px;
   cursor: pointer;
@@ -204,12 +204,12 @@
 }
 
 .show-button:hover {
-  background: #5bc690;
-  box-shadow: 0 4px 12px rgba(74, 222, 128, 0.3);
+  background: #976fbe;
+  box-shadow: 0 4px 12px rgba(112, 37, 161, 0.3);
 }
 
 .show-button:active {
-  background: #42b574;
+  background: #976fbe;
 }
 
 /* Trail Details in Bottom Sheet */
@@ -222,7 +222,7 @@
 .trail-back-button {
   border: none;
   background: transparent;
-  color: #94a3b8;
+  color: #ffffff;
   cursor: pointer;
   font-size: 0.95rem;
   font-weight: 600;
@@ -233,7 +233,7 @@
 }
 
 .trail-back-button:hover {
-  color: #f1f5f9;
+  color: #ffffff;
 }
 
 .details-header {
@@ -268,7 +268,7 @@
 }
 
 .stat-item {
-  background: #0f3460;
+  background: #753cae;
   border-radius: 10px;
   padding: 12px;
   display: flex;
@@ -277,7 +277,7 @@
 }
 
 .stat-label {
-  color: #94a3b8;
+  color: #ffffff;
   font-size: 0.85rem;
   font-weight: 500;
 }
@@ -295,7 +295,7 @@
 }
 
 .road-types label {
-  color: #94a3b8;
+  color: #ffffff;
   font-size: 0.9rem;
   font-weight: 600;
   margin: 0;
@@ -308,7 +308,7 @@
 }
 
 .road-type-badge {
-  background: #0f3460;
+  background: #753cae;
   color: #f1f5f9;
   border-radius: 999px;
   padding: 6px 12px;
@@ -380,8 +380,8 @@
 
 .route-planner-button,
 .planner-button {
-  background: #4ade80;
-  color: #0f172a;
+  background: #753cae;
+  color: #f1f5f9;
   padding: 12px 14px;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -394,15 +394,15 @@
 }
 
 .planner-toggle {
-  background: #0f3460;
+  background: #753cae;
   color: #94a3b8;
   padding: 10px 14px;
   flex: 1;
 }
 
 .planner-toggle.active {
-  background: #4ade80;
-  color: #0f172a;
+  background: #753cae;
+  color: #ffffff;
 }
 
 .planner-status {
@@ -444,7 +444,7 @@
 .planner-save-input {
   width: 100%;
   padding: 12px 14px;
-  background: #0f3460;
+  background: #753cae;
   color: #f1f5f9;
   border: 1px solid #334155;
 }
