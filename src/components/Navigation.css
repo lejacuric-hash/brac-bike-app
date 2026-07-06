@@ -5,7 +5,6 @@
 }
 
 @media (max-width: 767px) {
-  .top-nav .nav-links { display: none }
   .bottom-tabbar {
     display: flex;
     position: fixed;
@@ -18,9 +17,33 @@
     z-index: 1200;
     justify-content: space-around;
     align-items: center;
+    padding: 0 8px;
   }
-  .tab-link { color: #94a3b8; text-decoration: none; font-size: 12px; text-align: center }
-  .tab-link.active { color: #f1f5f9 }
-  .tab-icon { font-size: 18px }
-  .tab-label { font-size: 10px }
+
+  .tab-link {
+    color: #94a3b8;
+    text-decoration: none;
+    font-size: 12px;
+    text-align: center;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    padding: 6px 4px;
+  }
+
+  .tab-link.active {
+    color: #f1f5f9;
+  }
+
+  .tab-icon {
+    font-size: 18px;
+  }
+
+  .tab-label {
+    font-size: 10px;
+    line-height: 1.2;
+  }
 }
