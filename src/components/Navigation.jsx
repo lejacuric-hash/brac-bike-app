@@ -30,9 +30,7 @@ export default function Navigation() {
             <div className="tab-icon">{l.icon}</div>
             <div className="tab-label">{l.label}</div>
           </NavLink>
-          const location = useLocation()
-if (location.pathname === '/') return null
-        ))}
+                ))}
       </nav>
     </>
   )
