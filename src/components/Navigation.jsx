@@ -13,18 +13,7 @@ const links = [
 export default function Navigation() {
   return (
     <>
-      <header className="top-nav">
-        <div className="nav-left">🚴 Brač Bike Trails</div>
-        <nav className="nav-links">
-          {links.map((l) => (
-            <NavLink key={l.to} to={l.to} className="nav-link">
-              {l.icon} {l.label}
-            </NavLink>
-          ))}
-        </nav>
-      </header>
-
-      <nav className="bottom-tabbar">
+       <nav className="bottom-tabbar">
         {links.map((l) => (
           <NavLink key={l.to} to={l.to} className="tab-link">
             <div className="tab-icon">{l.icon}</div>
