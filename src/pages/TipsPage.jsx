@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
+import { explorerPois } from '../data/poiData'
 import './TipsPage.css'
 
 const menuItems = [
@@ -93,31 +94,116 @@ const eventsData = [
   },
 ]
 
-function SectionView({ title, description, items, onBack }) {
+function SectionView({
+  title,
+  description,
+  items,
+  onBack,
+  variant = 'default',
+  searchValue = '',
+  onSearchChange = () => {},
+  activeCategory = 'all',
+  onCategoryChange = () => {},
+  expandedId = null,
+  onToggleExpanded = () => {},
+  categoryOptions = [],
+}) {
+  const isExplorerView = variant === 'explorer'
+
   return (
     <div className="tips-subview">
       <button type="button" className="tips-back-button" onClick={onBack}>
         ← Back to Tips
       </button>
 
+      {isExplorerView && (
+        <div className="explorer-controls">
+          <label className="explorer-search">
+            <span className="sr-only">Search island highlights</span>
+            <input
+              type="search"
+              value={searchValue}
+              onChange={(event) => onSearchChange(event.target.value)}
+              placeholder="Search by name, township, or theme"
+            />
+          </label>
+
+          <div className="explorer-pill-row" role="tablist" aria-label="Explore by category">
+            {categoryOptions.map((option) => (
+              <button
+                key={option.key}
+                type="button"
+                className={`explorer-pill${activeCategory === option.key ? ' active' : ''}`}
+                onClick={() => onCategoryChange(option.key)}
+              >
+                {option.icon} {option.label}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
       <div className="tips-subview-header">
         <h2>{title}</h2>
         <p>{description}</p>
       </div>
 
-      <div className="card-list">
-        {items.map((item) => (
-          <article key={item.title} className="tips-card">
-            <div className="tips-card-media" aria-hidden="true">
-              {item.emoji}
-            </div>
-            <div className="tips-card-body">
-              <h3>{item.title}</h3>
-              <p>{item.description}</p>
-            </div>
-          </article>
-        ))}
-      </div>
+      {isExplorerView ? (
+        <div className="card-list explorer-list">
+          {items.length === 0 ? (
+            <div className="explorer-empty-state">No stories match your current search yet.</div>
+          ) : (
+            items.map((item) => {
+              const isExpanded = expandedId === item.id
+
+              return (
+                <article key={item.id} className={`explorer-card${isExpanded ? ' expanded' : ''}`}>
+                  <button
+                    type="button"
+                    className="explorer-card-summary"
+                    onClick={() => onToggleExpanded(item.id)}
+                    aria-expanded={isExpanded}
+                  >
+                    <div
+                      className="explorer-card-media"
+                      aria-hidden="true"
+                      style={{ backgroundColor: item.imagePlaceholderColor }}
+                    >
+                      <span>{item.name.charAt(0)}</span>
+                    </div>
+
+                    <div className="explorer-card-body">
+                      <div className="explorer-card-title-row">
+                        <h3>{item.name}</h3>
+                        <span className="explorer-card-badge">{item.township}</span>
+                      </div>
+                      <p>{item.shortDesc}</p>
+                    </div>
+                  </button>
+
+                  <div className={`explorer-card-story${isExpanded ? ' open' : ''}`}>
+                    <p>{item.story}</p>
+                  </div>
+                </article>
+              )
+            })
+          )}
+        </div>
+      ) : (
+        <div className="card-list">
+          {items.map((item) => (
+            <article key={item.title} className="tips-card">
+              <div className="tips-card-media" aria-hidden="true">
+                {item.emoji}
+              </div>
+              <div className="tips-card-body">
+                <h3>{item.title}</h3>
+                <p>{item.description}</p>
+              </div>
+            </article>
+          ))}
+        </div>
+      )}
     </div>
   )
 }
@@ -223,6 +309,15 @@ export default function TipsPage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
   const [isSensitiveGroup, setIsSensitiveGroup] = useState(false)
+  const [poiSearch, setPoiSearch] = useState('')
+  const [poiCategory, setPoiCategory] = useState('all')
+  const [expandedPoiId, setExpandedPoiId] = useState(null)
+
+  useEffect(() => {
+    setPoiSearch('')
+    setPoiCategory('all')
+    setExpandedPoiId(null)
+  }, [currentView])
 
   useEffect(() => {
     const fetchComprehensiveWeatherData = async () => {
@@ -293,16 +388,52 @@ export default function TipsPage() {
     : null
   const recommendation = safetyReport?.recommendationText ?? 'Loading live safety insights...'
 
+  const explorerCategoryOptions = currentView === 'Gastro Corner'
+    ? [
+        { key: 'all', label: 'All', icon: '🍽️' },
+        { key: 'gastro', label: 'Gastro', icon: '🍷' },
+      ]
+    : [
+        { key: 'all', label: 'All', icon: '🧭' },
+        { key: 'viewpoint', label: 'Viewpoints', icon: '🏔' },
+        { key: 'beach_cove', label: 'Beaches', icon: '🏖' },
+        { key: 'monastery', label: 'Monasteries', icon: '⛪' },
+        { key: 'gastro', label: 'Gastro', icon: '🍷' },
+        { key: 'stone_heritage', label: 'Stone Heritage', icon: '🪨' },
+        { key: 'village', label: 'Villages', icon: '🏘' },
+      ]
+
+  const explorerSectionItems = useMemo(() => {
+    const baseItems = currentView === 'Gastro Corner'
+      ? explorerPois.filter((poi) => poi.category === 'gastro')
+      : explorerPois.filter((poi) => poi.category !== 'gastro')
+
+    const normalizedSearch = poiSearch.trim().toLowerCase()
+
+    return baseItems.filter((poi) => {
+      if (poiCategory !== 'all' && poi.category !== poiCategory) {
+        return false
+      }
+
+      if (!normalizedSearch) {
+        return true
+      }
+
+      const searchableText = `${poi.name} ${poi.township} ${poi.shortDesc} ${poi.story}`.toLowerCase()
+      return searchableText.includes(normalizedSearch)
+    })
+  }, [currentView, poiCategory, poiSearch])
+
   const sectionContent = {
     'Places to Visit': {
       title: 'Places to Visit',
       description: 'Discover scenic highlights that pair beautifully with a relaxed island ride.',
-      items: placesData,
+      items: [],
     },
     'Gastro Corner': {
       title: 'Gastro Corner',
       description: 'Find the best island bites for a memorable rest stop after your route.',
-      items: gastroData,
+      items: [],
     },
     'Connect with Local Family Farms': {
       title: 'Connect with Local Family Farms',
@@ -460,8 +591,16 @@ export default function TipsPage() {
           <SectionView
             title={sectionContent[currentView].title}
             description={sectionContent[currentView].description}
-            items={sectionContent[currentView].items}
+            items={['Places to Visit', 'Gastro Corner'].includes(currentView) ? explorerSectionItems : sectionContent[currentView].items}
             onBack={() => setCurrentView('menu')}
+            variant={['Places to Visit', 'Gastro Corner'].includes(currentView) ? 'explorer' : 'default'}
+            searchValue={poiSearch}
+            onSearchChange={setPoiSearch}
+            activeCategory={poiCategory}
+            onCategoryChange={setPoiCategory}
+            expandedId={expandedPoiId}
+            onToggleExpanded={(itemId) => setExpandedPoiId((currentId) => (currentId === itemId ? null : itemId))}
+            categoryOptions={explorerCategoryOptions}
           />
         )}
       </div>

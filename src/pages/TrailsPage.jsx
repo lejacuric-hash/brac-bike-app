@@ -1,14 +1,17 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { MapContainer, TileLayer, CircleMarker, Tooltip, Polyline } from 'react-leaflet'
+import { MapContainer, TileLayer, CircleMarker, Marker, Popup, Polyline } from 'react-leaflet'
 import './TrailsPage.css'
 import '../App.css'
 import GpxTrails from '../components/GpxTrails'
 import GpsTracker from '../components/GpsTracker'
 import BottomSheet from '../components/BottomSheet'
-import { RoutePlannerMap, RoutePlannerUI } from '../components/RoutePlanner'
+import { RoutePlannerMap } from '../components/RoutePlanner'
 import ReportMarkers from '../components/ReportMarkers'
 import ReportProblem from '../components/ReportProblem'
+import MapLayersOverlayMenu from '../components/MapLayersOverlayMenu'
+import PlanNewView from '../components/PlanNewView'
 import { BRAC_POIS } from '../data/poiData'
+import { supabase } from '../supabaseClient'
 
 const CATEGORY_MAP = {
   viewpoint: { label: '🏔 Viewpoints', color: '#FF5722' },
@@ -22,6 +25,13 @@ const CATEGORY_MAP = {
   bike_highlight: { label: '🚴 Bike Highlights', color: '#9C27B0' },
   nature_monument: { label: '🌿 Nature Monuments', color: '#4CAF50' },
 }
+
+const LAYER_CONFIG = [
+  { id: 'viewpoint', label: '🏔 Viewpoints', categories: ['viewpoint'] },
+  { id: 'beach', label: '🏖 Beaches & Coves', categories: ['beach_cove'] },
+  { id: 'water', label: '🚰 Water Nodes', categories: ['water'] },
+  { id: 'gastro', label: '🍷 Gastro / OPGs', categories: ['gastro'] },
+]
 
 export default function TrailsPage() {
   const [trails, setTrails] = useState([])
@@ -39,36 +49,30 @@ export default function TrailsPage() {
   const [routeLoading, setRouteLoading] = useState(false)
   const [selectedCommunityRoute, setSelectedCommunityRoute] = useState(null)
   const [communityRoutePositions, setCommunityRoutePositions] = useState([])
-  const [activeCategories, setActiveCategories] = useState(Object.keys(CATEGORY_MAP))
-  const [selectedPoi, setSelectedPoi] = useState(null)
-  const [searchTerm, setSearchTerm] = useState('')
+  const [activeLayers, setActiveLayers] = useState(LAYER_CONFIG.map((layer) => layer.id))
   const mapRef = useRef(null)
 
   const handleTrailClick = useCallback((trail) => {
     setSelectedTrail(trail.filename)
   }, [])
 
-  const handleToggleCategory = useCallback((catKey) => {
-    setActiveCategories((prev) =>
-      prev.includes(catKey) ? prev.filter((key) => key !== catKey) : [...prev, catKey]
-    )
+  const handleToggleLayer = useCallback((layerId) => {
+    setActiveLayers((prev) => (prev.includes(layerId) ? prev.filter((key) => key !== layerId) : [...prev, layerId]))
   }, [])
 
   const filteredPois = useMemo(() => {
-    const normalizedTerm = searchTerm.toLowerCase()
-
     return BRAC_POIS.filter((poi) => {
-      const matchesCategory =
-        activeCategories.includes(poi.category) ||
-        poi.subCategories?.some((sub) => activeCategories.includes(sub))
-      const matchesSearch =
-        poi.name.toLowerCase().includes(normalizedTerm) ||
-        poi.shortDesc.toLowerCase().includes(normalizedTerm) ||
-        poi.story.toLowerCase().includes(normalizedTerm)
+      const matchesLayer = LAYER_CONFIG.some((layer) => {
+        if (!activeLayers.includes(layer.id)) {
+          return false
+        }
 
-      return matchesCategory && matchesSearch
+        return layer.categories.includes(poi.category)
+      })
+
+      return matchesLayer
     })
-  }, [activeCategories, searchTerm])
+  }, [activeLayers])
 
   const handlePlannerMapClick = useCallback(
     (coords) => {
@@ -94,6 +98,24 @@ export default function TrailsPage() {
     setPlannerTab('planNew')
   }, [])
 
+  const handleAddPointToRoute = useCallback((coords) => {
+    if (!pointA) {
+      setPointA(coords)
+      setPlannerMode('settingB')
+    } else if (!pointB) {
+      setPointB(coords)
+      setPlannerMode('settingA')
+    } else {
+      setPointA(coords)
+      setPointB(null)
+      setPlannerMode('settingB')
+    }
+
+    setPlannerTab('planNew')
+    setRoutePlannerStats(null)
+    setRouteGeometry([])
+  }, [pointA, pointB])
+
   const handleClearPlanner = useCallback(() => {
     setPointA(null)
     setPointB(null)
@@ -106,6 +128,28 @@ export default function TrailsPage() {
   const handleStartRide = useCallback(() => {
     alert('Starting ride tracking...')
   }, [])
+
+  const handleSaveRoute = useCallback(async () => {
+    if (!routePlannerStats || !pointA || !pointB) {
+      alert('Please set both points and calculate a route before saving.')
+      return
+    }
+
+    const routeName = `Route ${new Date().toLocaleString()}`
+    const coordinates = routePlannerStats.geometry.map(([lat, lng]) => ({ lat, lng }))
+    const distanceKm = Number(routePlannerStats.distanceKm.toFixed(3))
+
+    const { error } = await supabase.from('user_routes').insert([
+      { name: routeName, coordinates, distance_km: distanceKm },
+    ])
+
+    if (error) {
+      alert('Unable to save route: ' + error.message)
+      return
+    }
+
+    alert('Route saved successfully!')
+  }, [pointA, pointB, routePlannerStats])
 
   const handleCommunityRouteSelect = useCallback((route) => {
     const positions = Array.isArray(route.coordinates)
@@ -169,35 +213,7 @@ export default function TrailsPage() {
     <div className="app-container">
       <div className="main-content">
         <div className="map-wrapper">
-          <div className="explorer-overlay">
-            <div className="explorer-panel">
-              <input
-                type="text"
-                className="explorer-search"
-                placeholder="🔎 Search Brač POIs, viewpoints, water, gastro..."
-                value={searchTerm}
-                onChange={(event) => setSearchTerm(event.target.value)}
-              />
-              <div className="category-scroll">
-                {Object.entries(CATEGORY_MAP).map(([key, config]) => {
-                  const isActive = activeCategories.includes(key)
-
-                  return (
-                    <button
-                      key={key}
-                      type="button"
-                      className={`category-pill${isActive ? ' active' : ''}`}
-                      style={{ backgroundColor: isActive ? config.color : '#250046' }}
-                      onClick={() => handleToggleCategory(key)}
-                    >
-                      {config.label} {isActive ? '✓' : ''}
-                    </button>
-                  )
-                })}
-              </div>
-              <div className="filter-caption">Showing {filteredPois.length} active markers on the guide</div>
-            </div>
-          </div>
+          <MapLayersOverlayMenu onToggleLayer={handleToggleLayer} activeLayers={activeLayers} />
 
           <MapContainer
             center={[43.307, 16.635]}
@@ -217,6 +233,7 @@ export default function TrailsPage() {
             />
             <ReportMarkers refreshKey={reportsRefreshKey} />
             <GpsTracker />
+            <ReportProblem onReportSaved={() => setReportsRefreshKey((k) => k + 1)} />
             <RoutePlannerMap
               active={plannerTab === 'planNew'}
               pointA={pointA}
@@ -225,22 +242,27 @@ export default function TrailsPage() {
               onMapClick={handlePlannerMapClick}
             />
             {filteredPois.map((poi) => (
-              <CircleMarker
+              <Marker
                 key={poi.id}
-                center={[poi.coordinates.lat, poi.coordinates.lng]}
-                radius={8}
-                eventHandlers={{ click: () => setSelectedPoi(poi) }}
-                pathOptions={{
-                  color: '#ffffff',
-                  fillColor: CATEGORY_MAP[poi.category]?.color || '#8b5cf6',
-                  fillOpacity: 0.95,
-                  weight: 2,
-                }}
+                position={[poi.coordinates.lat, poi.coordinates.lng]}
+                pathOptions={{ color: '#ffffff', fillColor: CATEGORY_MAP[poi.category]?.color || '#8b5cf6', fillOpacity: 0.95 }}
               >
-                <Tooltip direction="top" offset={[0, -10]} opacity={1} sticky>
-                  <div className="poi-tooltip">{poi.name}</div>
-                </Tooltip>
-              </CircleMarker>
+                <Popup>
+                  <div style={{ minWidth: '160px', color: '#333', fontFamily: 'sans-serif' }}>
+                    <h4 style={{ margin: '0 0 4px 0', fontSize: '14px' }}>{poi.name}</h4>
+                    <span style={{ fontSize: '11px', color: '#666', textTransform: 'uppercase', fontWeight: 'bold' }}>
+                      {poi.category.replace('_', ' ')}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => handleAddPointToRoute(poi.coordinates)}
+                      style={{ marginTop: '8px', width: '100%', padding: '6px', background: '#753cae', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '12px', fontWeight: 'bold' }}
+                    >
+                      📍 Add to Plan
+                    </button>
+                  </div>
+                </Popup>
+              </Marker>
             ))}
             {communityRoutePositions.length > 0 && (
               <Polyline
@@ -268,31 +290,6 @@ export default function TrailsPage() {
               </CircleMarker>
             )}
           </MapContainer>
-          <ReportProblem onReportSaved={() => setReportsRefreshKey((k) => k + 1)} />
-          {selectedPoi && (
-            <div className="story-panel open">
-              <div className="story-panel-header">
-                <div>
-                  <span className="story-badge" style={{ backgroundColor: CATEGORY_MAP[selectedPoi.category]?.color || '#8b5cf6' }}>
-                    {selectedPoi.category.toUpperCase()}
-                  </span>
-                  <h3>{selectedPoi.name}</h3>
-                  <p>
-                    📍 {selectedPoi.township.toUpperCase()} · Amenities: {selectedPoi.amenities.join(', ')}
-                  </p>
-                </div>
-                <button type="button" className="story-close" onClick={() => setSelectedPoi(null)}>
-                  ✕
-                </button>
-              </div>
-              <div className="story-body">
-                “{selectedPoi.story}”
-              </div>
-              <button type="button" className="story-action">
-                🗺️ Route me here
-              </button>
-            </div>
-          )}
         </div>
 
         <BottomSheet
@@ -306,15 +303,9 @@ export default function TrailsPage() {
           onRouteSelect={handleCommunityRouteSelect}
           selectedRouteId={selectedCommunityRoute?.id}
           planNewContent={
-            <RoutePlannerUI
-              pointA={pointA}
-              pointB={pointB}
-              routeStats={routePlannerStats}
-              plannerMode={plannerMode}
-              onSetPlannerMode={setPlannerMode}
-              onUseCurrentLocation={handleUseCurrentLocation}
-              onClearRoute={handleClearPlanner}
-              onStartRide={handleStartRide}
+            <PlanNewView
+              onStartRoute={handleStartRide}
+              onSaveRoute={handleSaveRoute}
             />
           }
         />
