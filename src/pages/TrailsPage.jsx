@@ -50,7 +50,47 @@ export default function TrailsPage() {
   const [selectedCommunityRoute, setSelectedCommunityRoute] = useState(null)
   const [communityRoutePositions, setCommunityRoutePositions] = useState([])
   const [activeLayers, setActiveLayers] = useState(LAYER_CONFIG.map((layer) => layer.id))
+  const [activeRecording, setActiveRecording] = useState(false)
   const mapRef = useRef(null)
+  const gpsTrackerRef = useRef(null)
+  const reportProblemRef = useRef(null)
+
+  const handleStartRecording = useCallback(() => {
+    setActiveRecording((prev) => !prev)
+    if (gpsTrackerRef.current?.toggleRecording) {
+      gpsTrackerRef.current.toggleRecording()
+    }
+  }, [])
+
+  const handleLocateMe = useCallback(() => {
+    if (!navigator.geolocation) {
+      alert('Geolocation is not supported by your browser.')
+      return
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const { latitude, longitude } = position.coords
+        if (mapRef.current) {
+          mapRef.current.flyTo([latitude, longitude], 15)
+        }
+      },
+      (error) => {
+        if (error.code === error.PERMISSION_DENIED) {
+          alert('Please enable location access to use this feature.')
+        } else {
+          alert('Unable to retrieve your location.')
+        }
+      },
+      { enableHighAccuracy: true, timeout: 10000 }
+    )
+  }, [])
+
+  const handleReportProblem = useCallback(() => {
+    if (reportProblemRef.current?.openModal) {
+      reportProblemRef.current.openModal()
+    }
+  }, [])
 
   const handleTrailClick = useCallback((trail) => {
     setSelectedTrail(trail.filename)
@@ -215,6 +255,90 @@ export default function TrailsPage() {
         <div className="map-wrapper">
           <MapLayersOverlayMenu onToggleLayer={handleToggleLayer} activeLayers={activeLayers} />
 
+          {/* FLOATING CONTROL DECK - RIGHT ALIGNED PANEL */}
+          <div className="map-floating-actions" style={{
+            position: 'absolute',
+            top: '75px',
+            right: '16px',
+            zIndex: 500,
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '12px',
+            alignItems: 'center'
+          }}>
+            {/* START/STOP RECORDING ROUTE BUTTON */}
+            <button
+              onClick={handleStartRecording}
+              title="Start Recording"
+              style={{
+                background: activeRecording ? '#ef6c00' : '#00e676',
+                color: '#fff',
+                border: 'none',
+                width: '45px',
+                height: '45px',
+                borderRadius: '50%',
+                cursor: 'pointer',
+                boxShadow: '0 4px 10px rgba(0,0,0,0.3)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: '20px',
+                transition: 'background-color 0.2s ease',
+                fontWeight: 'bold'
+              }}
+            >
+              {activeRecording ? '⏹️' : '⏺️'}
+            </button>
+
+            {/* LOCATE ME GPS GEOLOCATION BUTTON */}
+            <button
+              onClick={handleLocateMe}
+              title="Locate Me"
+              style={{
+                background: '#753cae',
+                color: '#fff',
+                border: 'none',
+                width: '45px',
+                height: '45px',
+                borderRadius: '50%',
+                cursor: 'pointer',
+                boxShadow: '0 4px 10px rgba(0,0,0,0.3)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: '20px',
+                transition: 'background-color 0.2s ease',
+                fontWeight: 'bold'
+              }}
+            >
+              🎯
+            </button>
+
+            {/* REPORT A PROBLEM HAZARD BUTTON */}
+            <button
+              onClick={handleReportProblem}
+              title="Report a Problem"
+              style={{
+                background: '#f97316',
+                color: '#fff',
+                border: 'none',
+                width: '45px',
+                height: '45px',
+                borderRadius: '50%',
+                cursor: 'pointer',
+                boxShadow: '0 4px 10px rgba(0,0,0,0.3)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: '20px',
+                transition: 'background-color 0.2s ease',
+                fontWeight: 'bold'
+              }}
+            >
+              ⚠️
+            </button>
+          </div>
+
           <MapContainer
             center={[43.307, 16.635]}
             zoom={11}
@@ -232,8 +356,8 @@ export default function TrailsPage() {
               onStatsUpdate={handleStatsUpdate}
             />
             <ReportMarkers refreshKey={reportsRefreshKey} />
-            <GpsTracker />
-            <ReportProblem onReportSaved={() => setReportsRefreshKey((k) => k + 1)} />
+            <GpsTracker ref={gpsTrackerRef} />
+            <ReportProblem ref={reportProblemRef} onReportSaved={() => setReportsRefreshKey((k) => k + 1)} />
             <RoutePlannerMap
               active={plannerTab === 'planNew'}
               pointA={pointA}

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { forwardRef, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react'
 import { CircleMarker, Circle, Polyline, useMap } from 'react-leaflet'
 import { supabase } from '../supabaseClient'
 
@@ -21,7 +21,7 @@ function formatTime(seconds) {
   return `${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`
 }
 
-function GpsTracker() {
+const GpsTracker = forwardRef(function GpsTracker(props, ref) {
   const map = useMap()
   const [position, setPosition] = useState(null)
   const [error, setError] = useState(null)
@@ -126,6 +126,10 @@ function GpsTracker() {
     }
   }
 
+  useImperativeHandle(ref, () => ({
+    toggleRecording: handleRecordToggle,
+  }))
+
   const handleSave = async () => {
     const routeName = saveName || `Route ${new Date().toLocaleString()}`
     const distanceKm = Number(totalDistanceKm.toFixed(3))
@@ -224,6 +228,6 @@ function GpsTracker() {
       </div>
     </>
   )
-}
+})
 
 export default GpsTracker

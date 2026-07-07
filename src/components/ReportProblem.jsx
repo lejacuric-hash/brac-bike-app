@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { forwardRef, useImperativeHandle, useState } from 'react'
 import { supabase } from '../supabaseClient'
 
 const PROBLEM_TYPES = [
@@ -10,8 +10,12 @@ const PROBLEM_TYPES = [
   { value: 'other', label: '🔧 Other' },
 ]
 
-function ReportProblem({ onReportSaved }) {
+const ReportProblem = forwardRef(function ReportProblem({ onReportSaved }, ref) {
   const [open, setOpen] = useState(false)
+
+  useImperativeHandle(ref, () => ({
+    openModal: () => setOpen(true),
+  }))
   const [submitting, setSubmitting] = useState(false)
   const [success, setSuccess] = useState(false)
   const [type, setType] = useState(PROBLEM_TYPES[0].value)
@@ -147,6 +151,6 @@ function ReportProblem({ onReportSaved }) {
       )}
     </>
   )
-}
+})
 
 export default ReportProblem
