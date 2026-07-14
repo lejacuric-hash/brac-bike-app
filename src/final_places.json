@@ -97,7 +97,7 @@
         "Township": "Nerežišća",
         "id": "trolokve-vidova-gora",
         "name-en": "Trolokve",
-        "story": "Not far from Vidova Gora, if we follow the path leading along Duboki Dolac, we arrive at an interesting location featuring three watering holes known as "Trolokve." These pools held great significance in Brač's history; they were public resources situated at the meeting points of village boundaries—specifically where the territories of Nerežišća, Bol, Dol, and Pražnica converge. Continuing along the path toward the northern side of the island brings us to the shepherd settlement of Gažul. Sheep graze on the green plateau surrounding the pools, and small herds of horses are frequently encountered as well. In summer, one should watch out for horned vipers and stick to well-trodden paths. The atmosphere on the plateau is exceptional in every season.",
+        "story": "Not far from Vidova Gora, if we follow the path leading along Duboki Dolac, we arrive at an interesting location featuring three watering holes known as \"Trolokve\" These pools held great significance in Brač's history; they were public resources situated at the meeting points of village boundaries—specifically where the territories of Nerežišća, Bol, Dol, and Pražnica converge. Continuing along the path toward the northern side of the island brings us to the shepherd settlement of Gažul. Sheep graze on the green plateau surrounding the pools, and small herds of horses are frequently encountered as well. In summer, one should watch out for horned vipers and stick to well-trodden paths. The atmosphere on the plateau is exceptional in every season.",
         "image": "trolokve-vidova-gora.jpg"
       },
       "geometry": {
@@ -397,7 +397,7 @@
         "Township": "Milna",
         "id": "lady-of-sorrows-milna",
         "name-en": "Church of Our Lady of Sorrows",
-        "story": "In the early 19th century, under Napoleonic rule, the burial of the dead within churches and settlements was prohibited in Dalmatia; consequently, in 1880, the Milna cemetery was relocated outside the town, where a small, octagonal, mausoleum-style chapel dedicated to Our Lady of the Seven Sorrows was built. Burials at the new site began in 1895. Initially, the site was enclosed by a simple dry-stone wall, but a high wall was subsequently constructed in 1898. The cemetery was situated on an elevation across the bay so that its entrance faces the town’s main frontage and aligns with the entrance to the parish church; this elevated positioning—creating a "cross facing a cross" alignment—evokes a sense of sanctity and (spiritual) sublimity regarding the final resting place. With its panoptic view of the town from the main northern façade and its frontal orientation toward the parish church, the cemetery’s location establishes a spatial connection—both visual and communicative—in keeping with Neoclassical concepts.",
+        "story": "In the early 19th century, under Napoleonic rule, the burial of the dead within churches and settlements was prohibited in Dalmatia; consequently, in 1880, the Milna cemetery was relocated outside the town, where a small, octagonal, mausoleum-style chapel dedicated to Our Lady of the Seven Sorrows was built. Burials at the new site began in 1895. Initially, the site was enclosed by a simple dry-stone wall, but a high wall was subsequently constructed in 1898. The cemetery was situated on an elevation across the bay so that its entrance faces the town’s main frontage and aligns with the entrance to the parish church; this elevated positioning—creating a cross facing a cross alignment—evokes a sense of sanctity and (spiritual) sublimity regarding the final resting place. With its panoptic view of the town from the main northern façade and its frontal orientation toward the parish church, the cemetery’s location establishes a spatial connection—both visual and communicative—in keeping with Neoclassical concepts.",
         "image": "lady-of-sorrows-milna.JPG"
       },
       "geometry": {
@@ -697,12 +697,7 @@
         "Township": "Ložišća",
         "id": "lozisca-belltower",
         "name-en": "The Bell Tower of the Church of St. John and Paul",
-        "story": "A tale of stubbornness, a playful prank, and a masterpiece
-One of the most beautiful bell towers in Dalmatia stands in a village that could barely afford it — and that's exactly the story.
-Sculptor Ivan Rendić was asked to design a bell tower for tiny Ložišća. He sent three options: two modest, one lavish enough for Venice — added half as a joke, since he knew the village couldn't pay for it. The priest pinned all three to the church door and let people vote. They chose the expensive one.
-Rendić laughed and told them it couldn't be done. That was all the motivation Ložišća needed. 
-A wealthy villager, Dr. Mihovil Nazor, fronted the cost, to be repaid in wine over the years — never really expecting to collect. The first builder quit, calling the job too hard. A young stonemason who'd married into the village finally took it on, studying every stone against Rendić's plans. Between 1884 and 1889, it rose
-",
+        "story": "A tale of stubbornness, a playful prank, and a masterpiece. One of the most beautiful bell towers in Dalmatia stands in a village that could barely afford it — and that's exactly the story. Sculptor Ivan Rendić was asked to design a bell tower for tiny Ložišća. He sent three options: two modest, one lavish enough for Venice — added half as a joke, since he knew the village couldn't pay for it. The priest pinned all three to the church door and let people vote. They chose the expensive one. Rendić laughed and told them it couldn't be done. That was all the motivation Ložišća needed. A wealthy villager, Dr. Mihovil Nazor, fronted the cost, to be repaid in wine over the years — never really expecting to collect. The first builder quit, calling the job too hard. A young stonemason who'd married into the village finally took it on, studying every stone against Rendić's plans. Between 1884 and 1889, it rose.",
         "image": "lozisca-belltower.jpg"
       },
       "geometry": {
@@ -2082,7 +2077,7 @@ A wealthy villager, Dr. Mihovil Nazor, fronted the cost, to be repaid in wine ov
         "Township": "Škrip",
         "id": "st-roko-skrip",
         "name-en": "st. Roko church",
-        "story": ""
+        "story": "",
         "image": ""
       },
       "geometry": {
