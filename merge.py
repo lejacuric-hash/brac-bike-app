@@ -102,6 +102,59 @@ def build_known_name_index(geojson_data: dict) -> dict[str, str]:
 	return known
 
 
+def paragraph_starts_with_known_poi(text: str, known_keys: list[str]) -> bool:
+	"""Return True when a paragraph appears to start with a POI title."""
+	normalized_paragraph = normalize_text(text)
+	if not normalized_paragraph:
+		return False
+
+	for key in known_keys:
+		if normalized_paragraph == key or normalized_paragraph.startswith(key + " "):
+			return True
+
+	words = normalized_paragraph.split()
+	max_prefix_words = min(len(words), 8)
+	for word_count in range(max_prefix_words, 2, -1):
+		candidate = " ".join(words[:word_count])
+		for key in known_keys:
+			ratio = SequenceMatcher(None, candidate, key).ratio()
+			if ratio >= 0.88:
+				return True
+
+	return False
+
+
+def is_fully_italic_paragraph(paragraph) -> bool:
+	"""Treat a paragraph as italic when all non-empty runs are italicized."""
+	runs = [run for run in paragraph.runs if run.text.strip()]
+	return bool(runs) and all(bool(run.italic) for run in runs)
+
+
+def build_township_index(geojson_data: dict) -> dict[str, str]:
+	"""Map normalized township names to a display label used in the app."""
+	index: dict[str, str] = {}
+
+	for feature in geojson_data.get("features", []):
+		properties = feature.get("properties", {})
+		value = properties.get("Township")
+		if not isinstance(value, str):
+			continue
+
+		cleaned = value.strip()
+		if not cleaned:
+			continue
+
+		normalized = normalize_text(cleaned)
+		if not normalized:
+			continue
+
+		existing = index.get(normalized, "")
+		if len(cleaned) > len(existing):
+			index[normalized] = cleaned
+
+	return index
+
+
 def parse_docx_table_entries(document: Document) -> list[StoryEntry]:
 	entries: list[StoryEntry] = []
 
@@ -159,6 +212,18 @@ def parse_docx_prefix_entries(document: Document, known_name_index: dict[str, st
 			if normalized_paragraph == name_key or normalized_paragraph.startswith(name_key + " "):
 				best_key = name_key
 				break
+
+		if not best_key:
+			words = normalized_paragraph.split()
+			max_prefix_words = min(len(words), 8)
+			for word_count in range(max_prefix_words, 2, -1):
+				candidate = " ".join(words[:word_count])
+				for name_key in known_keys:
+					if SequenceMatcher(None, candidate, name_key).ratio() >= 0.88:
+						best_key = name_key
+						break
+				if best_key:
+					break
 
 		if not best_key:
 			continue
@@ -254,6 +319,58 @@ def parse_docx_block_entries(document: Document) -> list[StoryEntry]:
 	flush_block(block)
 
 	return entries
+
+
+def extract_town_stories(
+	document: Document,
+	known_name_index: dict[str, str],
+	township_index: dict[str, str],
+) -> dict[str, str]:
+	"""Extract intro paragraphs that appear under each town heading before the first POI entry."""
+	known_keys = sorted(known_name_index.keys(), key=len, reverse=True)
+	town_stories: dict[str, str] = {}
+	current_town = ""
+	current_lines: list[str] = []
+
+	def flush() -> None:
+		nonlocal current_town, current_lines
+		if current_town and current_lines:
+			town_stories[current_town] = clean_story_text(" ".join(current_lines))
+		current_town = ""
+		current_lines = []
+
+	for paragraph in document.paragraphs:
+		text = paragraph.text.strip()
+		if not text:
+			if current_town and current_lines:
+				flush()
+			continue
+
+		if len(text) <= 40 and TOWN_HEADER_PATTERN.match(text):
+			flush()
+			normalized_header = normalize_text(text)
+			current_town = township_index.get(normalized_header, text.title())
+			continue
+
+		if not current_town:
+			continue
+
+		if current_lines and not is_fully_italic_paragraph(paragraph):
+			flush()
+			continue
+
+		if is_fully_italic_paragraph(paragraph):
+			current_lines.append(text)
+			continue
+
+		if paragraph_starts_with_known_poi(text, known_keys):
+			flush()
+			continue
+
+		current_lines.append(text)
+
+	flush()
+	return town_stories
 
 
 def load_story_entries(docx_path: Path, known_name_index: dict[str, str]) -> list[StoryEntry]:
@@ -402,10 +519,13 @@ def main() -> None:
 		geojson_data = json.load(geojson_file)
 
 	known_name_index = build_known_name_index(geojson_data)
+	township_index = build_township_index(geojson_data)
 	stories = load_story_entries(DOCX_PATH, known_name_index)
+	town_stories = extract_town_stories(Document(DOCX_PATH), known_name_index, township_index)
 	image_index = build_image_index(BASE_DIR / "public" / "images")
 
 	enriched = enrich_geojson_with_stories(geojson_data, stories, image_index)
+	enriched["townStories"] = town_stories
 
 	OUTPUT_PATH.parent.mkdir(parents=True, exist_ok=True)
 	with OUTPUT_PATH.open("w", encoding="utf-8") as output_file:

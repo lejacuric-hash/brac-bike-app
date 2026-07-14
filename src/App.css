@@ -10,6 +10,13 @@ html, body, #root {
   overflow: hidden;
 }
 
+.app-main {
+  height: calc(100vh - 72px);
+  width: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
 .app-container {
   display: flex;
   flex-direction: column;

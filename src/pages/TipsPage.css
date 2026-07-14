@@ -94,6 +94,16 @@
   font-weight: 700;
 }
 
+.tips-back-button-secondary {
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.places-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
 .tips-subview-header {
   background: rgba(117, 60, 174, 0.36);
   border: 1px solid rgba(255, 255, 255, 0.14);
@@ -271,6 +281,7 @@
   height: 90px;
   border-radius: 22px;
   flex-shrink: 0;
+  overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -278,6 +289,13 @@
   font-size: 2rem;
   font-weight: 800;
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18);
+}
+
+.explorer-card-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
 }
 
 .explorer-card-body {
@@ -359,6 +377,103 @@
   background: rgba(255, 255, 255, 0.1);
   color: rgba(255, 255, 255, 0.88);
   text-align: center;
+}
+
+.township-selector-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.township-selector-card {
+  width: 100%;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 24px;
+  background: rgba(117, 60, 174, 0.95);
+  color: #ffffff;
+  padding: 16px 18px;
+  text-align: left;
+  cursor: pointer;
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.18);
+  transition: transform 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.township-selector-card:hover,
+.township-selector-card:focus-visible {
+  transform: translateY(-2px);
+  background: #976fbe;
+  box-shadow: 0 16px 28px rgba(0, 0, 0, 0.22);
+}
+
+.township-selector-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.township-selector-meta strong {
+  font-size: 1rem;
+}
+
+.township-selector-meta span {
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.township-selector-card p {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.92);
+  line-height: 1.55;
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@media (max-width: 640px) {
+  .tips-page {
+    padding: 32px 16px 24px;
+  }
+
+  .tips-page-shell {
+    gap: 12px;
+  }
+
+  .township-selector-list {
+    gap: 10px;
+  }
+
+  .township-selector-card {
+    padding: 14px 14px;
+    border-radius: 20px;
+  }
+
+  .township-selector-meta {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 4px;
+    margin-bottom: 8px;
+  }
+
+  .township-selector-meta strong {
+    font-size: 0.98rem;
+  }
+
+  .township-selector-meta span {
+    font-size: 0.72rem;
+  }
+
+  .township-selector-card p {
+    -webkit-line-clamp: 3;
+    font-size: 0.92rem;
+    line-height: 1.45;
+  }
 }
 
 .timeline-scroll-axis {

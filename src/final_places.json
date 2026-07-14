@@ -18,7 +18,7 @@
         "id": "dominican-monastery-museum",
         "name-en": "Dominican Monastery Museum",
         "story": "Dominican Monastery and Museum Founded in 1475 on the Glavica peninsula east of Bol, this monastery seems to hover over turquoise water. Its quiet cloister garden is a peaceful stop, and the museum inside holds prehistoric, ancient, and early medieval finds, a coin collection spanning Greek colonization through Roman times to today, Glagolitic manuscripts , documents including the monastery's 15th-century founding charter, plus manuscripts spanning the 16th to 18th centuries, old maps, and an altarpiece painted in the workshop of Tintoretto. The two-nave church was renovated at the end of the 16th century, with a bell tower by the Bokanić family of master builders. Inside the Dominican Church there is a  wooden choir loft decorated with paintings by the baroque master Tripo Kokolja, completed in 1713, the year of his death — his signature basket-of-flowers motif appears throughout.",
-        "image": ""
+        "image": "dominican-monastery-bol.jpg"
       },
       "geometry": {
         "type": "Point",
@@ -37,8 +37,8 @@
         "Township": "Murvica",
         "id": "dragon-cave",
         "name-en": "Dragons Cave",
-        "story": "",
-        "image": ""
+        "story": "Dragon's Cave (Zmajeva Špilja) High above Murvica, this cave sheltered Glagolitic monks fleeing conflict in the 15th century. They carved its walls with reliefs of a dragon, angels, and the Madonna, blending Christian faith with older Slavic symbolism. It's only open with a guide, and the hour-long hike up is steep — but few sites on Brač mix folklore and history so vividly.",
+        "image": "dragon-cave-murvica.jpg"
       },
       "geometry": {
         "type": "Point",
@@ -77,7 +77,7 @@
         "Township": "Dol",
         "id": "gazul-dol",
         "name-en": "Gažul",
-        "story": "",
+        "story": "Gažul is a former shepherd's settlement—now converted into a rural estate—located just a few minutes' drive from Vidova Gora. If you have to choose one place on Brač to enjoy excellent homemade food and a completely natural setting, Gažul is the perfect choice. This incredible place will nourish both body and soul.",
         "image": "gazul-dol.jpg"
       },
       "geometry": {
@@ -97,7 +97,7 @@
         "Township": "Nerežišća",
         "id": "trolokve-vidova-gora",
         "name-en": "Trolokve",
-        "story": "",
+        "story": "Not far from Vidova Gora, if we follow the path leading along Duboki Dolac, we arrive at an interesting location featuring three watering holes known as "Trolokve." These pools held great significance in Brač's history; they were public resources situated at the meeting points of village boundaries—specifically where the territories of Nerežišća, Bol, Dol, and Pražnica converge. Continuing along the path toward the northern side of the island brings us to the shepherd settlement of Gažul. Sheep graze on the green plateau surrounding the pools, and small herds of horses are frequently encountered as well. In summer, one should watch out for horned vipers and stick to well-trodden paths. The atmosphere on the plateau is exceptional in every season.",
         "image": "trolokve-vidova-gora.jpg"
       },
       "geometry": {
@@ -117,8 +117,8 @@
         "Township": "Murvica",
         "id": "slatina-beach-cave",
         "name-en": "Slatina Beach Cave",
-        "story": "",
-        "image": ""
+        "story": "Slatina Beach is tucked away in the secluded village of Murvica, not far from Bol. This rocky and pebbly beach is perfect for adventurers, couples, nature lovers, and eco-conscious travelers seeking a peaceful spot far from the crowds. Nestled in a small cove surrounded by vineyards, Slatina Beach offers a serene atmosphere alongside a crystal-clear turquoise sea. It is an ideal place for diving, swimming, and relaxation, especially for those who appreciate the beauty of unspoiled nature. The beach is completely natural, with no amenities or food and drink services available, so it is important to bring everything you need for your visit. One of Slatina Beach's unique features is a cave in the hillside, which enhances its wild and pristine appearance.",
+        "image": "slatina-beach.jpg"
       },
       "geometry": {
         "type": "Point",
@@ -137,8 +137,8 @@
         "Township": "Farska",
         "id": "vela-farska",
         "name-en": "Vela Farska",
-        "story": "",
-        "image": ""
+        "story": "Farska Bay, featuring a lovely pebble beach, is located on the southern coast of the island of Brač. Well-tended vineyards stretching right down to the water's edge contribute to the pleasant atmosphere of this quiet bay. If you are looking for a place to relax away from the city bustle, visit Farska Bay and enjoy the tranquility and the scents of Brač's flora.",
+        "image": "vela-farska.png"
       },
       "geometry": {
         "type": "Point",
@@ -157,8 +157,8 @@
         "Township": "Nerežišća",
         "id": "blaca-bay",
         "name-en": "Blaca bay",
-        "story": "",
-        "image": ""
+        "story": "Blaca Cove is certainly one of the most popular bays on the southern coast of the island of Brač. Surrounded by a dense pine forest, the cove features a lovely beach with a small chapel situated just above it. If you find yourself in this picturesque Brač cove, be sure to visit the nearby, renowned Blaca Hermitage. A forest path approximately 2 km long leads from the cove to the monastery.",
+        "image": "blaca-bay.jpg"
       },
       "geometry": {
         "type": "Point",
@@ -197,8 +197,8 @@
         "Township": "Nerežišća",
         "id": "blaca-apiary",
         "name-en": "Blaca stone apiary",
-        "story": "",
-        "image": ""
+        "story": "Old apiaries were located in caves not far from the Blaca Hermitage, where honey was traditionally processed from heather, sage, and rosemary. In 1905, a large apiary featuring 330 stone hives was built—a veritable 'bee city' on a steep slope with 16 rows of hives—and a detailed log was kept of the yield from each hive. Beekeeping was a major source of wealth, generating up to 3,000 kg of honey annually. Today, the apiary stands preserved as part of the wider Blaca museum complex. While it no longer functions as an active commercial apiary, visitors can explore the original stone enclosures and the rich architectural history of the estate.",
+        "image": "blaca-apiary.jpg"
       },
       "geometry": {
         "type": "Point",
@@ -217,7 +217,7 @@
         "Township": "Nerežišća",
         "id": "dragovode-ruin",
         "name-en": "Dragovode ruin",
-        "story": "",
+        "story": "One of the ancient settlements on the island of Brač that gravitated towards the hermitage at Blaca Monastery—but which was abandoned following the decline of the monastery and the traditional way of life—is now deserted, save for occasional visits by a handful of homeowners and shepherds. It is located not far from the parking area, which marks the furthest point accessible by car on the way to Blaca Monastery.",
         "image": "dragovode-ruin.jpg"
       },
       "geometry": {
@@ -237,7 +237,7 @@
         "Township": "Milna",
         "id": "naval-tune-krusica",
         "name-en": "Naval tunnel Krušica",
-        "story": "",
+        "story": "On the island of Brač, there are three well-known naval military tunnels built for the former military: Smrka, Krušica, and Maslinova. They served as hidden berths and shelters protecting warships and submarines from enemy attacks.",
         "image": ""
       },
       "geometry": {
@@ -257,7 +257,7 @@
         "Township": "Milna",
         "id": "smrka-naval-tunnel",
         "name-en": "Naval tunnel Smrka",
-        "story": "",
+        "story": "On the island of Brač, there are three well-known naval military tunnels built for the former military: Smrka, Krušica, and Maslinova. They served as hidden berths and shelters protecting warships and submarines from enemy attacks.",
         "image": "naval-tunnel-smrka.jpg"
       },
       "geometry": {
@@ -277,7 +277,7 @@
         "Township": "Milna",
         "id": "maslinova-naval-tunnel",
         "name-en": "Naval tunnel Maslinova",
-        "story": "",
+        "story": "On the island of Brač, there are three well-known naval military tunnels built for the former military: Smrka, Krušica, and Maslinova. They served as hidden berths and shelters protecting warships and submarines from enemy attacks.",
         "image": "naval-tunnel-maslinova.jpeg"
       },
       "geometry": {
@@ -297,8 +297,8 @@
         "Township": "Milna",
         "id": "john-baptist-milna",
         "name-en": "St.John the Baptist Church",
-        "story": "",
-        "image": ""
+        "story": "The restored Church of St. John the Baptist—featuring Gothic elements and of exceptional historical and architectural value—was simply known as *Stora crikva* (the Old Church). It was built in the 14th century, during the transitional period between the Romanesque and Gothic styles. It was restored in 1994 through the efforts of Juraj Buzolić, a native of Milna. The church houses valuable Baroque reliefs by the renowned sculptor Matko Mijić.",
+        "image": "john-the-baptist-milna.jpg"
       },
       "geometry": {
         "type": "Point",
@@ -317,7 +317,7 @@
         "Township": "Milna",
         "id": "st-joseph-milna",
         "name-en": "St. Joseph Church",
-        "story": "",
+        "story": "Standing right on the water in Osibova bay south of Milna, this wide 19th-century single-nave church has classicist stone detailing and a triangular gable with a central round window. Its main altarpiece, showing St. Joseph, dates to the 17th century and was a gift from the Archbishop of Zadar, Vicko Zmajević. Inside are kept silver and wooden ritual objects from the 18th and 19th centuries, along with votive paintings and photographs of ships saved from storms at sea.",
         "image": "st-joseph-milna.JPG"
       },
       "geometry": {
@@ -357,7 +357,7 @@
         "Township": "Milna",
         "id": "baterija-fortress-milna",
         "name-en": "Baterija Fortress",
-        "story": "",
+        "story": "Built by the French in 1806 at Cape Zaglav, this was the largest fortress on Brač, raised to hold off Russian and English ships during the Napoleonic Wars — and the site of a real battle, when locals tipped off the Russians to the French fleet's position. Reaching it means a rugged, pine-fringed gravel ride, but the mix of military history and open sea view makes it worth the climb.",
         "image": "baterija-fortress-milna.jfif"
       },
       "geometry": {
@@ -397,7 +397,7 @@
         "Township": "Milna",
         "id": "lady-of-sorrows-milna",
         "name-en": "Church of Our Lady of Sorrows",
-        "story": "",
+        "story": "In the early 19th century, under Napoleonic rule, the burial of the dead within churches and settlements was prohibited in Dalmatia; consequently, in 1880, the Milna cemetery was relocated outside the town, where a small, octagonal, mausoleum-style chapel dedicated to Our Lady of the Seven Sorrows was built. Burials at the new site began in 1895. Initially, the site was enclosed by a simple dry-stone wall, but a high wall was subsequently constructed in 1898. The cemetery was situated on an elevation across the bay so that its entrance faces the town’s main frontage and aligns with the entrance to the parish church; this elevated positioning—creating a "cross facing a cross" alignment—evokes a sense of sanctity and (spiritual) sublimity regarding the final resting place. With its panoptic view of the town from the main northern façade and its frontal orientation toward the parish church, the cemetery’s location establishes a spatial connection—both visual and communicative—in keeping with Neoclassical concepts.",
         "image": "lady-of-sorrows-milna.JPG"
       },
       "geometry": {
@@ -417,7 +417,7 @@
         "Township": "Milna",
         "id": "sv-jere-milna",
         "name-en": "St. Jeronim Church",
-        "story": "",
+        "story": "Pantera Bay was once the site of a boat slipway and shipyard owned by Mate Bonačić-Proti. Around 1860, with the archbishop's permission and an accompanying endowment, Mate's son Jere commissioned the construction of this small church in honor of his patron saint, St. Jerome. The small church has a simple rectangular shape and features a small rose window above the doorway. It is roofed with stone slabs.",
         "image": "sv-jere-milna.jpg"
       },
       "geometry": {
@@ -458,7 +458,7 @@
         "id": "stiniva-bay",
         "name-en": "Stiniva bay",
         "story": "",
-        "image": ""
+        "image": "stiniva-bay-sutivan.jpg"
       },
       "geometry": {
         "type": "Point",
@@ -517,7 +517,7 @@
         "Township": "Sutivan",
         "id": "parish-church-assumption-of-virgin-mary-sutivan",
         "name-en": "Parish church of Assumption of Virgin Mary",
-        "story": "",
+        "story": "Built after Sutivan's parish separated from Donji Humac around 1590 and rebuilt several times since, this church was given its baroque form around 1800, along with a bell tower by the Venetian craftsman Petar Pavao Bertapelle — a tall structure topped with an octagonal lantern and onion dome. Its movable collection numbers around 40 objects spanning the 15th to 20th centuries, with especially valuable Gothic-period pieces from the 1400s, including a polychrome, carved wooden crucifix in Gothic style attributed to a local sculptural workshop and dated to the 15th century. Its historic organ, built in 1799 by Gaetano Moscatelli and considered an excellent example of his work, was altered around 1900 by Gaetano Zanfretta of Verona, rebuilt in 1937 by a Split craftsman, and repaired again in 2002 — enough original material survives for a full restoration. Its elaborate bell tower shapes Sutivan's seafront skyline, and its steps are a natural meeting point for riders exploring the northwest coast.",
         "image": "parish-church-assumption-of-virgin-mary-sutivan.jpg"
       },
       "geometry": {
@@ -537,7 +537,7 @@
         "Township": "Sutivan",
         "id": "st-john-sutivan",
         "name-en": "Church of St. John",
-        "story": "Church of St. John East of Sutivan, in the Bunta area, this small church stands on the site of a 6th-century triconch (three-apsed) early Christian church, reusing its surviving south wall. The current single-nave building dates to the 16th century, replacing an 11th-century predecessor, and carries a 1655 inscription bearing the coat of arms of Split canon Jerolim Natalis. Inside is a three-part carved wooden altar inscribed with the initials GNCS and the date 1649 (Gieronimus Natalis Canonicus Spalatensis — \"Jerolim Natalis, canon of Split\").",
+        "story": "East of Sutivan, in the Bunta area, this small church stands on the site of a 6th-century triconch (three-apsed) early Christian church, reusing its surviving south wall. The current single-nave building dates to the 16th century, replacing an 11th-century predecessor, and carries a 1655 inscription bearing the coat of arms of Split canon Jerolim Natalis. Inside is a three-part carved wooden altar inscribed with the initials GNCS and the date 1649 (Gieronimus Natalis Canonicus Spalatensis — \"Jerolim Natalis, canon of Split\").",
         "image": "st-john-sutivan.jpg"
       },
       "geometry": {
@@ -557,7 +557,7 @@
         "Township": "Sutivan",
         "id": "st-roko-sutivan",
         "name-en": "St. Roko church",
-        "story": "St. Roko Church Built in the 17th century on a hill above Sutivan as a votive church against the plague, and renovated in the 19th century with an added bell tower. Its facade carries a finely worked rose window, and inside hang votive paintings of ships saved from storms — offerings from sailors grateful to have survived. The climb is short but punchy; the payoff is a wide-open view across the channel toward Split and the mainland mountains.",
+        "story": "Built in the 17th century on a hill above Sutivan as a votive church against the plague, and renovated in the 19th century with an added bell tower. Its facade carries a finely worked rose window, and inside hang votive paintings of ships saved from storms — offerings from sailors grateful to have survived. The climb is short but punchy; the payoff is a wide-open view across the channel toward Split and the mainland mountains.",
         "image": "st-roko-sutivan.jpg"
       },
       "geometry": {
@@ -577,7 +577,7 @@
         "Township": "Bobovišća",
         "id": "st-martin-bobovisca",
         "name-en": "St.Martin Church",
-        "story": "St. Martin Church Set on a hill between Bobovišća and Milna — a strategic point overlooking the sea route from Split Gate to Hvar and Vis — this mature pre-Romanesque chapel has a 14th-century bell-gable topped with a triangular pediment. Its altar holds a Renaissance stone relief from the workshop of Nikola Firentinac, showing St. Martin on horseback beside a beggar. The effort of the climb is real, but the payoff is a wide, isolated view over the sea.",
+        "story": "Set on a hill between Bobovišća and Milna — a strategic point overlooking the sea route from Split Gate to Hvar and Vis — this mature pre-Romanesque chapel has a 14th-century bell-gable topped with a triangular pediment. Its altar holds a Renaissance stone relief from the workshop of Nikola Firentinac, showing St. Martin on horseback beside a beggar. The effort of the climb is real, but the payoff is a wide, isolated view over the sea.",
         "image": "st-martin-bobovisca.jpg"
       },
       "geometry": {
@@ -597,7 +597,7 @@
         "Township": "Bobovišća",
         "id": "sv-juraj-bobovisca",
         "name-en": "St. George church",
-        "story": "",
+        "story": "Bobovišća's parish church, built in 1914 on the site of a 17th-century baroque predecessor, in a neoclassical, neo-Palladian style. Its late-baroque stone bell tower, topped with a pyramid, was preserved from the earlier church and incorporated into the new building's sanctuary and transept.",
         "image": "st-juraj-bobovisca.jfif"
       },
       "geometry": {
@@ -617,7 +617,7 @@
         "Township": "Bobovišća",
         "id": "lady-of-health-bobovisca",
         "name-en": "Church of Our Lady of Health",
-        "story": "",
+        "story": "One of several important religious buildings in Bobovišća, alongside the 17th-century Parish Church of St. George and the medieval Church of St. Martin. The most important annual event associated with this church is the traditional \"Feast of Our Lady of Health,\" held in Bobovišća on August 14th, the eve of the Feast of the Assumption.",
         "image": "lady-of-health-bobovisca.JPG"
       },
       "geometry": {
@@ -657,7 +657,7 @@
         "Township": "Ložišća",
         "id": "sv-ivan-pavle-lozisca",
         "name-en": "Parish Church of St. John and Paul ",
-        "story": "Parish Church of St. John and Paul Built in 1820, this church stands at the center of the village on the lower edge of Vela Banda. Its trefoil-topped facade is carved in fine stonework, with a doorway decorated in shallow relief with lozenges, rosettes, and the Sacred Heart of Jesus, and the construction date carved above the cornice. Inside, massive stone columns divide the church into three naves, the central one covered by a mirrored ceiling with a tall lantern. Its famous neo-historicist bell tower, designed by sculptor Ivan Rendić, was completed in 1888. Its historic organ, from 1896, was made by the Venetian workshop of Pietro Bazzani and nephew and restored in 2009 by the Heferer workshop of Zagreb, and its collection consists mostly of 18th- and 19th-century liturgical objects and artworks, largely mass-produced pieces made in the neo-historical styles fashionable at the time.",
+        "story": "Built in 1820, this church stands at the center of the village on the lower edge of Vela Banda. Its trefoil-topped facade is carved in fine stonework, with a doorway decorated in shallow relief with lozenges, rosettes, and the Sacred Heart of Jesus, and the construction date carved above the cornice. Inside, massive stone columns divide the church into three naves, the central one covered by a mirrored ceiling with a tall lantern. Its famous neo-historicist bell tower, designed by sculptor Ivan Rendić, was completed in 1888. Its historic organ, from 1896, was made by the Venetian workshop of Pietro Bazzani and nephew and restored in 2009 by the Heferer workshop of Zagreb, and its collection consists mostly of 18th- and 19th-century liturgical objects and artworks, largely mass-produced pieces made in the neo-historical styles fashionable at the time.",
         "image": "sv-ivan-pavle-lozisca.JPG"
       },
       "geometry": {
@@ -697,7 +697,12 @@
         "Township": "Ložišća",
         "id": "lozisca-belltower",
         "name-en": "The Bell Tower of the Church of St. John and Paul",
-        "story": "The Bell Tower of the Church of St. John and Paul",
+        "story": "A tale of stubbornness, a playful prank, and a masterpiece
+One of the most beautiful bell towers in Dalmatia stands in a village that could barely afford it — and that's exactly the story.
+Sculptor Ivan Rendić was asked to design a bell tower for tiny Ložišća. He sent three options: two modest, one lavish enough for Venice — added half as a joke, since he knew the village couldn't pay for it. The priest pinned all three to the church door and let people vote. They chose the expensive one.
+Rendić laughed and told them it couldn't be done. That was all the motivation Ložišća needed. 
+A wealthy villager, Dr. Mihovil Nazor, fronted the cost, to be repaid in wine over the years — never really expecting to collect. The first builder quit, calling the job too hard. A young stonemason who'd married into the village finally took it on, studying every stone against Rendić's plans. Between 1884 and 1889, it rose
+",
         "image": "lozisca-belltower.jpg"
       },
       "geometry": {
@@ -717,7 +722,7 @@
         "Township": "Ložišća",
         "id": "franz-joseph-bridge",
         "name-en": "Franz Joseph bridge",
-        "story": "Franz Joseph Bridge A single-arch 19th-century stone bridge tucked into the Veliki Dolac canyon, the deep ravine that channels flash floods from Ložišća's fields down toward Vičja Luka. It is belived the river Elafuza or Bretanida once flowed in the canyon. Both names trace back to a single ancient testimony. The Byzantine-era geographer Stephanus of Byzantium is quoted describing Brač as \"the Adriatic island with a river, which the Greeks call Elaphusa and others call Bretanide.\" The bridge was destroyed by a storm in 1897 and rebuilt immediately afterward — a fact recorded on a memorial plaque above the arch — it's considered a rare and notable piece of 19th-century engineering.",
+        "story": "A single-arch 19th-century stone bridge tucked into the Veliki Dolac canyon, the deep ravine that channels flash floods from Ložišća's fields down toward Vičja Luka. It is belived the river Elafuza or Bretanida once flowed in the canyon. Both names trace back to a single ancient testimony. The Byzantine-era geographer Stephanus of Byzantium is quoted describing Brač as \"the Adriatic island with a river, which the Greeks call Elaphusa and others call Bretanide.\" The bridge was destroyed by a storm in 1897 and rebuilt immediately afterward — a fact recorded on a memorial plaque above the arch — it's considered a rare and notable piece of 19th-century engineering.",
         "image": "franz-joseph-bridge.jpg"
       },
       "geometry": {
@@ -737,8 +742,8 @@
         "Township": "Sutivan",
         "id": "church-lady-of-stomorica",
         "name-en": "Lady of Stomorica church",
-        "story": "",
-        "image": ""
+        "story": "A small church in the fields north of Ložišća, on the old road to Supetar, with a barrel-vaulted interior and a cross-shaped window cut into the apse. Its wooden altar holds a painting of the Assumption of the Blessed Virgin Mary by the Venetian painter Bartol Bossi, from the end of the 17th century.",
+        "image": "lady-of-stomorica.jpg"
       },
       "geometry": {
         "type": "Point",
@@ -777,7 +782,7 @@
         "Township": "Mirca",
         "id": "church-lady-of-visitation-mirca",
         "name-en": "Church of Lady of Visitation",
-        "story": "",
+        "story": "built in the Baroque style in 1858, with a bell tower added later, as recorded above the church entrance. The church houses two marble and three wooden altars; the altarpiece *Pietà* (1783) by Feliks Tironi is particularly noteworthy.",
         "image": "church-lady-of-visitation-mirca.jpg"
       },
       "geometry": {
@@ -797,7 +802,7 @@
         "Township": "Mirca",
         "id": "st-therese-mirca",
         "name-en": "st. Therese church",
-        "story": "",
+        "story": "The local cemetery is home to the small Church of St. Theresa, built in 1931 through the efforts of Virgilije Bakulić; it contains a painting by the naive artist Pavo Gospodnetić from Postira.",
         "image": "st-therese-mirca.JPG"
       },
       "geometry": {
@@ -817,7 +822,7 @@
         "Township": "Supetar",
         "id": "st-nicholas-supetar",
         "name-en": "St. Nicolas Church",
-        "story": "",
+        "story": "a late Baroque structure featuring an elongated rectangular apse that originally served as a small medieval church. Situated to the north and south of the apse are two Early Christian sarcophagi, each bearing crosses within a medallion and long crosses on the lid.",
         "image": "st-nicolas-supetar.JPG"
       },
       "geometry": {
@@ -837,8 +842,8 @@
         "Township": "Supetar",
         "id": "family-petrinovic-mausoleum",
         "name-en": "Family Petrinović Mausoleum",
-        "story": "",
-        "image": ""
+        "story": "This white Brač-stone mausoleum, built between 1924 and 1927 by sculptor Toma Rosandić for the Petrinović family — Brač emigrants who'd made their fortune in Chile — rises above the Supetar cemetery like a small Byzantine palace. Its five-domed, cross-shaped plan follows Byzantine architectural tradition, while its reliefs carry the decorative stamp of Vienna Secession style, a mark of Rosandić's training alongside Ivan Meštrović. Its dome and statues appear through the coastal pines as you ride up the peninsula path — one of the island's most striking pieces of 20th-century stonework.",
+        "image": "petrinovic-mausoleum.jpg"
       },
       "geometry": {
         "type": "Point",
@@ -857,7 +862,7 @@
         "Township": "Supetar",
         "id": "roman-villa-ruin",
         "name-en": "Roman Villa ",
-        "story": "Roman Villa Rustica at Bunje Below a prehistoric hillfort settlement on Gračišće hill, at the edge of the fertile Bunje field, lie the remains of a Roman country estate. Surviving walls and small rooms with rounded ends once had floors of white mosaic, and archaeologists found barrel-vaulted cisterns and traces of a substantial working farm, along with graves and two sarcophagi carved with the christogram (the monogram of Christ) on their corner pediments.",
+        "story": "Right along the coastal cycling path, under the modern streets of Supetar, lie the stone foundations of a 1st-century Roman rustic villa. The same blue channel you're riding past once framed the view for Roman citizens. A quiet, easy stop — step off the saddle and touch stone that's been here for two thousand years.",
         "image": ""
       },
       "geometry": {
@@ -877,7 +882,7 @@
         "Township": "Supetar",
         "id": "sv-martin-supetar",
         "name-en": "St. Martin church",
-        "story": "St. Martin Church Set on a hill between Bobovišća and Milna — a strategic point overlooking the sea route from Split Gate to Hvar and Vis — this mature pre-Romanesque chapel has a 14th-century bell-gable topped with a triangular pediment. Its altar holds a Renaissance stone relief from the workshop of Nikola Firentinac, showing St. Martin on horseback beside a beggar. The effort of the climb is real, but the payoff is a wide, isolated view over the sea.",
+        "story": "A simple single-nave church with a triple bell-gable, built in 1707 by the priest Jakov Dujmović. Its plain Dalmatian baroque style makes it a modest, easy-to-miss stop on a ride through Supetar's older streets.",
         "image": "st-martin-supetar.jpg"
       },
       "geometry": {
@@ -897,7 +902,7 @@
         "Township": "Supetar",
         "id": "parish-church-of-annunciation-supetar",
         "name-en": "Parish Church of Annunciation",
-        "story": "Parish Church of Annunciation of Virgin Mary Built in the 18th century over the ruins of an early Christian basilica, this church anchors the Supetar harbor with its grand staircase and facade — the current three-nave front dates to the late 19th century, with sculptural work by builder Ivan Vitaljić, and a four-story stone bell tower added in 1861. Inside, fragments of a 6th-century Roman mosaic survive underfoot, a quiet reminder of how long people have gathered on this spot, and the church holds a collection of over 150 objects and artworks spanning the 15th to 20th centuries, including a 17th-century \"Lamentation\" by an Italo-Cretan master and a 15th-century \"Holy Family\" from the Venetian school. Its historic organ was built in 1756 by the Venice-based organ maker Petar Nakić, a Šibenik native, enlarged in the late 19th century, and restored in 2003 — one of the finer surviving 18th-century instruments on the island.",
+        "story": "Built in the 18th century over the ruins of an early Christian basilica, this church anchors the Supetar harbor with its grand staircase and facade — the current three-nave front dates to the late 19th century, with sculptural work by builder Ivan Vitaljić, and a four-story stone bell tower added in 1861. Inside, fragments of a 6th-century Roman mosaic survive underfoot, a quiet reminder of how long people have gathered on this spot, and the church holds a collection of over 150 objects and artworks spanning the 15th to 20th centuries, including a 17th-century \"Lamentation\" by an Italo-Cretan master and a 15th-century \"Holy Family\" from the Venetian school. Its historic organ was built in 1756 by the Venice-based organ maker Petar Nakić, a Šibenik native, enlarged in the late 19th century, and restored in 2003 — one of the finer surviving 18th-century instruments on the island.",
         "image": "parish-church-of-annunciation-supetar.jpg"
       },
       "geometry": {
@@ -957,7 +962,7 @@
         "Township": "Supetar",
         "id": "st-roko-supetar",
         "name-en": "St. Roko church",
-        "story": "St. Roko Church Built in the 17th century on a hill above Sutivan as a votive church against the plague, and renovated in the 19th century with an added bell tower. Its facade carries a finely worked rose window, and inside hang votive paintings of ships saved from storms — offerings from sailors grateful to have survived. The climb is short but punchy; the payoff is a wide-open view across the channel toward Split and the mainland mountains.",
+        "story": "A small 17th-century chapel above Supetar on the road toward Nerežišća, built by the Tironi family above a monumental flight of stone steps. Quiet and easy to overlook, it's a good short pause on the climb out of town.",
         "image": "st-roko-supetar.jpg"
       },
       "geometry": {
@@ -977,7 +982,7 @@
         "Township": "Supetar",
         "id": "st-lucas-supetar",
         "name-en": "St.Lucas church",
-        "story": "",
+        "story": "An 11th-century pre-Romanesque chapel on a hill just outside Supetar, reached by a short dirt-trail climb. Inside, look for the oldest known ship carving in Dalmatia, cut into the wall alongside other medieval ship graffiti — nobody knows exactly who made them, but they've been there for centuries. Nearby stands a late-antique stone sarcophagus carved with a relief cross.",
         "image": "st-lucas-supetar.jpg"
       },
       "geometry": {
@@ -997,7 +1002,7 @@
         "Township": "Donji Humac",
         "id": "kopacina-cave",
         "name-en": "Kopačina Cave",
-        "story": "Kopačina Cave One of the oldest known human habitation sites in the Adriatic, with two chambers linked by a narrow passage. Excavations found the remains of Epipaleolithic and Mesolithic hunter-gatherers, thousands of animal bones and stone tools, and later Bronze Age pottery fragments along with a winged axehead from the early Bronze Age. The cave was inhabited from roughly the 8th to the 3rd millennium BC, and a natural spring once stood nearby — evidence suggests it's the oldest human dwelling in Dalmatia and among the oldest on any Adriatic island.",
+        "story": "One of the oldest known human habitation sites in the Adriatic, with two chambers linked by a narrow passage. Excavations found the remains of Epipaleolithic and Mesolithic hunter-gatherers, thousands of animal bones and stone tools, and later Bronze Age pottery fragments along with a winged axehead from the early Bronze Age. The cave was inhabited from roughly the 8th to the 3rd millennium BC, and a natural spring once stood nearby — evidence suggests it's the oldest human dwelling in Dalmatia and among the oldest on any Adriatic island.",
         "image": "kopacina-cave.jpg"
       },
       "geometry": {
@@ -1017,7 +1022,7 @@
         "Township": "Donji Humac",
         "id": "sv-ilija-d-humac",
         "name-en": "Church of St. Elijah ",
-        "story": "Church of St. Elijah West of Donji Humac, this pre-Romanesque single-nave church was built directly on top of a Roman-era site. Just north of it is a burial chamber with a large crypt, once topped by a mausoleum structure — a burial ground repurposed for worship centuries later.",
+        "story": "West of Donji Humac, this pre-Romanesque single-nave church was built directly on top of a Roman-era site. Just north of it is a burial chamber with a large crypt, once topped by a mausoleum structure — a burial ground repurposed for worship centuries later.",
         "image": "st-ilija-d-humac.jpg"
       },
       "geometry": {
@@ -1077,7 +1082,7 @@
         "Township": "Donji Humac",
         "id": "church-lady-of-carmel-d-humac",
         "name-en": "Church of Our Lady of Carmel ",
-        "story": "Church of Our Lady of Carmel Selca's original parish church, built in the 18th century on the southwest side of the village square on the site of an older chapel recorded as early as 1633 as \"Our Lady in Selca.\" Completed in 1871 with the addition of its triple-arched bell-gable, this three-nave church has a basilica-style facade with three portals, a rose window above the central door, and quatrefoil openings above the side doors — a solid example of later 19th-century sacred architecture with restrained neo-baroque detailing.",
+        "story": "Standing in Donji Humac's cemetery, this 17th-century single-nave church in local baroque style holds a wooden statue of St. Anne enthroned with the young Mary, once carried in procession on St. Anne's feast day, along with a large 17th-century canvas of Our Lady of the Rosary with Dominican saints, moved here from the parish church.",
         "image": ""
       },
       "geometry": {
@@ -1097,8 +1102,8 @@
         "Township": "Donji Humac",
         "id": "st-fabian-and-sebastian-church",
         "name-en": "st. Fabian and Sebastian church",
-        "story": "",
-        "image": ""
+        "story": "Donji Humac's parish church, built in the Romanesque period and expanded in the 14th century, with its side aisles widened again at the end of the 19th century to give it its current three-nave form. Above the triumphal arch is a rare 13th-century fresco of the Deësis (Christ flanked by the Virgin and John the Baptist) — one of the few surviving scenes of its kind in Dalmatian wall painting. Master builder Ignacije Macanović added the stone bell tower with its onion dome in 1744. Its historic organ, from 1775, was built by the Venetian workshop of Francesco Dazzi and restored in 1999 by an organ workshop from Maribor, Slovenia.",
+        "image": "st-fabian-sebastian-d-humac.jpg"
       },
       "geometry": {
         "type": "Point",
@@ -1117,8 +1122,8 @@
         "Township": "Donji Humac",
         "id": "church-of-holy-cross",
         "name-en": "Church of the Holy Cross & the Jakšić-Martinović House Complex ",
-        "story": "Church of the Holy Cross & the Jakšić-Martinović House Complex A small Gothic chapel southeast of the parish church, with a pierced Gothic lunette above its door and twin stone supports for a bell-gable at its peak. In the 18th century, the Jakšić-Martinović family built an enclosed residential complex right beside it — three stone houses with outdoor staircases and working courtyards, forming a cohesive piece of old village architecture around the small church.",
-        "image": ""
+        "story": "A small Gothic chapel southeast of the parish church, with a pierced Gothic lunette above its door and twin stone supports for a bell-gable at its peak. In the 18th century, the Jakšić-Martinović family built an enclosed residential complex right beside it — three stone houses with outdoor staircases and working courtyards, forming a cohesive piece of old village architecture around the small church.",
+        "image": "st-cross-d-humac.jpg"
       },
       "geometry": {
         "type": "Point",
@@ -1157,7 +1162,7 @@
         "Township": "Supetar",
         "id": "ivan-rendic-gallery",
         "name-en": "Ivan Rendić Gallery",
-        "story": "Ivan Rendić Gallery A small gallery in the center of Supetar dedicated to Rendić, the sculptor whose work you'll see throughout the island. A good midday break from the sun, and a chance to see the drawings and busts behind the stonework you've been riding past all day.",
+        "story": "A small gallery in the center of Supetar dedicated to Rendić, the sculptor whose work you'll see throughout the island. A good midday break from the sun, and a chance to see the drawings and busts behind the stonework you've been riding past all day.",
         "image": "ivan-rendic-gallery.JPG"
       },
       "geometry": {
@@ -1177,7 +1182,7 @@
         "Township": "Supetar",
         "id": "trolokve-supetar",
         "name-en": "Trolokve educational trail",
-        "story": "Trolokve Educational Trail A dirt trail through the interior, built around three ancient stone ponds (\"Trolokve\") that once supplied water to shepherds and wildlife on this famously dry island. A good detour for a real look at Brač's rugged inland side.",
+        "story": "A dirt trail through the interior, built around three ancient stone ponds (\"Trolokve\") that once supplied water to shepherds and wildlife on this famously dry island. A good detour for a real look at Brač's rugged inland side.",
         "image": "trolokve-supetar.jfif"
       },
       "geometry": {
@@ -1217,7 +1222,7 @@
         "Township": "Splitska",
         "id": "blessed-virgin-mary-splitska",
         "name-en": "Church of Assumption of Our Blessed Virgin Mary",
-        "story": "Church of Assumption of Our Blessed Virgin Mary Splitska's parish church, rebuilt in 1928 in a neoclassical style on the site of an older building whose foundations reach back to the 13th century, with a bell tower at the rear and a monogram of the Virgin Mary worked into its facade gable. The church houses a 16th-century \"Sacred Conversation\" altarpiece by the Venetian painter Leonardo Bassano. It depicts the Madonna and Child with the Pope and St. Nicholas — a notable piece of Venetian painting tucked into a small harbor church.",
+        "story": "Splitska's parish church, rebuilt in 1928 in a neoclassical style on the site of an older building whose foundations reach back to the 13th century, with a bell tower at the rear and a monogram of the Virgin Mary worked into its facade gable. The church houses a 16th-century \"Sacred Conversation\" altarpiece by the Venetian painter Leonardo Bassano. It depicts the Madonna and Child with the Pope and St. Nicholas — a notable piece of Venetian painting tucked into a small harbor church.",
         "image": "blessed-virgin-mary-splitska.JPG"
       },
       "geometry": {
@@ -1237,7 +1242,7 @@
         "Township": "Postira",
         "id": "holy-spirit-postira",
         "name-en": "Church of the Holy Spirit",
-        "story": "Church of the Holy Spirit Once Škrip's parish church, this small building stands on the walls of an older Roman-era complex and has been reworked repeatedly since the 7th century. A tall double bell-gable and remnants of a baroque colonnaded porch survive on its facade.",
+        "story": "It is a protected cultural asset located at Put sv. Duha 20. This stone church features Gothic elements, and in May 2024, it received a new altar, ambo, and mosaic by the academic painter Duje Botteri.",
         "image": "holy-spirit-postira.JPG"
       },
       "geometry": {
@@ -1257,7 +1262,7 @@
         "Township": "Postira",
         "id": "st-nicolas-postira",
         "name-en": "St. Nicolas church",
-        "story": "",
+        "story": "It was built in 1903 on the foundations of an older, small church dating back to the late 11th century. Above the wooden altar hangs a valuable triptych from 1929 by the local naive painter Pavo Gospodnetić Bukovac.",
         "image": "st-nicolas-postira.JPG"
       },
       "geometry": {
@@ -1277,7 +1282,7 @@
         "Township": "Postira",
         "id": "st-ante-postira",
         "name-en": "St. Ante Church",
-        "story": "",
+        "story": "A small 17th-century harborside chapel at the foot of Postira's bay, facing the sea, with a simple bell-gable and local baroque styling.",
         "image": "st-ante-postira.jpg"
       },
       "geometry": {
@@ -1297,7 +1302,7 @@
         "Township": "Postira",
         "id": "st-john-baptist-postira",
         "name-en": "Church of St. John the Baptist",
-        "story": "Church of St. John the Baptist & the Kaštil Built directly onto the monumental early Christian basilica, in the area known as Lokve above Povlja bay, this church reused the basilica's baptistery — preserved right up to roof height, complete with its baptismal font — as its own sanctuary. In the 12th century, a door lintel carved with a Cyrillic inscription by the master craftsman Radonja was set into the building — known as the Lintel of Povlja, now held in the Museum of Croatian Archaeological Monuments in Split. During the period of Benedictine ownership, a fortified kaštil with battlements was built directly over the church's sanctuary. The bell tower seen today dates to 1882, and the north and south naves were added in 1924. The parish church and rectory together hold a collection of movable objects and artworks spanning the 15th to 20th centuries, numbering over 200 pieces, most notably the Renaissance-era altars of Our Lady of the Rosary and the Sacred Heart of Jesus, both the work of the Bokanić family of master builders. Its historic organ, from 1838, was built by the Venetian workshop of Jakov Bazzani and Sons and restored in 1997 by the Heferer workshop of Zagreb.",
+        "story": "Postira's parish church, built in part over an early Christian basilica, with a fortified, semicircular apse featuring machicolations on its south side — a rare defensive touch for a church. The current building reflects a late-19th-century historicist rebuild, when it was lengthened and given its monumental facade. In 1988, archaeologists uncovered the remains of a three-nave, 6th-century basilica just east of the church, complete with clergy benches and a baptistery with a cross-shaped font. Its organ is a moderately well-preserved pipe instrument from the first half of the 19th century, housed in a neo-baroque case in the choir loft, with 11 registers, and its inventory includes 17th–19th century oil paintings on canvas and various metal liturgical items.",
         "image": "st-john-baptist-postira.jpg"
       },
       "geometry": {
@@ -1397,7 +1402,7 @@
         "Township": "Postira",
         "id": "roman-basilica-lovrecina",
         "name-en": "Roman basilica",
-        "story": "",
+        "story": "Right on the sand at Lovrečina Bay, west of a Roman-era farm estate, stand the tall surviving walls of a late-antique church with a transept and semicircular apse. A row of side rooms to the north includes a baptistery with a cross-shaped font and a stone ciborium, while beneath the altar a cross-shaped confessio survives along with a curved clergy bench following the line of the apse — traces of fresco and stucco also remain. Few places let you transition directly from a coastal track through Roman-era ruins and into the sea in the same few minutes.",
         "image": "roman-basilica-lovrecina.jpg"
       },
       "geometry": {
@@ -1457,7 +1462,7 @@
         "Township": "Pučišća",
         "id": "lady-of-batak-pucisca",
         "name-en": "Church of Lady of Batka",
-        "story": "",
+        "story": "Also known as St. Cyprian's, this church takes its name from the \"Batak\" district where it stands. An inscription on its door lintel names both its patron, the nobleman Ciprijan Žuvetić, and the Bishop of Šibenik, Ivan Lucić, who consecrated it in 1533. Its main altar holds a Renaissance stone polyptych of the Madonna and Child with saints, and its collection includes 18th- and 19th-century ritual objects, among them a wax figure of the infant Jesus.",
         "image": "lady-of-batak-pucisca.jpg"
       },
       "geometry": {
@@ -1477,7 +1482,7 @@
         "Township": "Pučišća",
         "id": "st-lucy-pucisca",
         "name-en": "Church of st. Lucy",
-        "story": "Church of St. Lucy A late-Renaissance chapel on the slope above Soline bay in Pučišća, modest in its architectural detailing but well integrated into the surrounding old town fabric. Its collection includes an 18th-century folk-baroque altarpiece, six late 19th-century brass candlesticks, and a crystal-hung chandelier reminiscent of 17th-century French designs.",
+        "story": "A late-Renaissance chapel on the slope above Soline bay in Pučišća, modest in its architectural detailing but well integrated into the surrounding old town fabric. Its collection includes an 18th-century folk-baroque altarpiece, six late 19th-century brass candlesticks, and a crystal-hung chandelier reminiscent of 17th-century French designs.",
         "image": "st-lucy-pucisca.JPG"
       },
       "geometry": {
@@ -1496,8 +1501,8 @@
         "Category": "Church",
         "Township": "Pučišća",
         "id": "st-jeronimus-pucisca",
-        "name-en": "Church of st. Jeronimus Stridonski",
-        "story": "",
+        "name-en": "Church of st. Jerome",
+        "story": "Pučišća's three-nave parish church, built on the site of an older 16th-century building, expanded in the mid-18th century, and extended again in 1856 when it received its current classicist stone facade. Its bell tower, with a stone loggia and onion dome, was built by Ignacije Macanović in the mid-1700s. Inside are carvings by the woodcarver Franjo Čučić from the 1500s, and the altar of St. Roko holds a gilded carved antependium from the 17th century alongside a painting by the Venetian artist Sante Peranda. The church's wider collection spans the 16th to 20th centuries — paintings, wood carvings, metalwork, vestments, and manuscripts from the 13th and 18th centuries — and includes, most significantly, the Povaljska Listina (Charter of Povlja), the oldest surviving document written in the Croatian language: a 1250 parchment copy in Cyrillic script of the earlier 1184 inscription on the Lintel of Povlja, kept here in the parish archive and ranking among the most important documents in Croatian legal and cultural history. Its historic organ, from 1793, was built by the Pučišća-based workshop of Gaetano Moscatelli, modified in 1856 by the Italian craftsman Josip Girardi, adjusted again in 1961, and restored in 1973–74 by the Brussels organ builder Patrick Collon.",
         "image": "st-jeronimus-pucisca.jpg"
       },
       "geometry": {
@@ -1517,7 +1522,7 @@
         "Township": "Pučišća",
         "id": "sv-roko-pucisca",
         "name-en": "St.Roko church",
-        "story": "St. Roko Church Built in the 17th century on a hill above Sutivan as a votive church against the plague, and renovated in the 19th century with an added bell tower. Its facade carries a finely worked rose window, and inside hang votive paintings of ships saved from storms — offerings from sailors grateful to have survived. The climb is short but punchy; the payoff is a wide-open view across the channel toward Split and the mainland mountains.",
+        "story": "",
         "image": ""
       },
       "geometry": {
@@ -1537,7 +1542,7 @@
         "Township": "Pučišća",
         "id": "st-nicolas-lighthouse",
         "name-en": "St.Nicolas Lighthouse",
-        "story": "",
+        "story": "Standing at the entrance to Pučišća's deep bay beside the church of the same name, this lighthouse was built at the end of the 19th century as one of the coastal lights guiding ships through Dalmatia's inner sea passages — a notable example of the region's industrial-era maritime architecture.",
         "image": "st-nicolas-lighthouse.jpg"
       },
       "geometry": {
@@ -1557,8 +1562,8 @@
         "Township": "Pučišća",
         "id": " st-stephen-pucisca",
         "name-en": "st. Stephan Church",
-        "story": "",
-        "image": ""
+        "story": "An Early Christian church dedicated to St. Stephen, complete with a baptistery, has been excavated at the picturesque cemetery in Stipanska Bay. The church underwent significant alterations in the late 11th century when the Benedictines built a monastery alongside it. The cemetery, situated next to the church, also holds the grave of the prominent Dalmatian sculptor Vale Michieli, a native of Pučišća.",
+        "image": "st-stephan-pucisca.jpg"
       },
       "geometry": {
         "type": "Point",
@@ -1598,7 +1603,7 @@
         "id": "povaljska-luka-viewpoint",
         "name-en": "Povaljska Luka viewpoint",
         "story": "",
-        "image": ""
+        "image": "povaljska-luka-viewpoint.jpg"
       },
       "geometry": {
         "type": "Point",
@@ -1737,7 +1742,7 @@
         "Township": "Sumartin",
         "id": "st-nicolas-sumartin",
         "name-en": "St. Nicolas church",
-        "story": "",
+        "story": "A pre-Romanesque church on the hill between Selca and Sumartin, with blind arcading along its walls and a small dome rising over its narrow central bay.",
         "image": "st-nicolas-sumartin.jpg"
       },
       "geometry": {
@@ -1756,9 +1761,9 @@
         "Category": "Church",
         "Township": "Sumartin",
         "id": "st-martin-church",
-        "name-en": "St. Martin church",
-        "story": "St. Martin Church Set on a hill between Bobovišća and Milna — a strategic point overlooking the sea route from Split Gate to Hvar and Vis — this mature pre-Romanesque chapel has a 14th-century bell-gable topped with a triangular pediment. Its altar holds a Renaissance stone relief from the workshop of Nikola Firentinac, showing St. Martin on horseback beside a beggar. The effort of the climb is real, but the payoff is a wide, isolated view over the sea.",
-        "image": ""
+        "name-en": "St. Martin church and Franciscan monastery",
+        "story": "The monastery's current elongated building was begun under the direction of the friar and poet Andrija Kačić Miošić, following his own design, in the mid-18th century — it has no cloister, but instead spreads across an upper and lower garden. The old baroque church of St. Martin was replaced in 1913 by a new neo-Romanesque building with a transept and bell tower, designed by the architect Ćiril Metod Iveković. Riding in from the long, flat eastern macadam roads, its cool stone walls and small museum make a good, reflective place to rest.",
+        "image": "st-martin-sumartin.jpg"
       },
       "geometry": {
         "type": "Point",
@@ -1792,12 +1797,12 @@
       "type": "Feature",
       "properties": {
         "fid": 102,
-        "name": "Kaštil",
+        "name": "Kaštil, kula Vusio",
         "Category": "history",
-        "Township": "Sumartin",
+        "Township": "Selca",
         "id": "kastil-sumartin",
-        "name-en": "Kastil-fortress",
-        "story": "",
+        "name-en": "Kastil-fortress Vusio",
+        "story": "South of Selca, in the fields, stands a solitary tower erected in the 17th century by the Vusio-Vužić family. It has a square footprint and is constructed from large, layered stone blocks. Openings are found only at the level of the first and second floors. On the western side, there is a doorway with doorposts on the first floor and a window on the second. There is a single opening on the second floor on the south side, and a narrow opening on the second floor on the east side. The structure originally had a gable roof. Adjacent to the tower is a cistern that collects water via stone channels.",
         "image": "kastil-sumartin.jpg"
       },
       "geometry": {
@@ -1817,7 +1822,7 @@
         "Township": "Selca",
         "id": "christ-the-king-selca",
         "name-en": "Church of Christ the King",
-        "story": "Church of Christ the King Nicknamed the \"Cathedral of Brač,\" this 45-meter neo-Romanesque church was designed by the Austrian engineer Adolf Schlauf and built in 1919 with the help of local builders and stonemasons, its capitals modeled on early Christian originals. It dominates the eastern skyline and can be seen for miles as you ride down from the interior. Inside stands a bronze statue of Christ the King by the sculptor Ivan Meštrović, dated 1956 — according to local tradition cast from spent shell casings gathered from the surrounding hills after the wars that had touched the island, a monument to peace built from the tools of war.",
+        "story": "Nicknamed the \"Cathedral of Brač,\" this 45-meter neo-Romanesque church was designed by the Austrian engineer Adolf Schlauf and built in 1919 with the help of local builders and stonemasons, its capitals modeled on early Christian originals. It dominates the eastern skyline and can be seen for miles as you ride down from the interior. Inside stands a bronze statue of Christ the King by the sculptor Ivan Meštrović, dated 1956 — according to local tradition cast from spent shell casings gathered from the surrounding hills after the wars that had touched the island, a monument to peace built from the tools of war.",
         "image": "christ-the-king-selca.jpg"
       },
       "geometry": {
@@ -1837,7 +1842,7 @@
         "Township": "Selca",
         "id": "lady-of-carmen-selca",
         "name-en": "Church of Lady of Carmen",
-        "story": "Church of Our Lady of Carmel Selca's original parish church, built in the 18th century on the southwest side of the village square on the site of an older chapel recorded as early as 1633 as \"Our Lady in Selca.\" Completed in 1871 with the addition of its triple-arched bell-gable, this three-nave church has a basilica-style facade with three portals, a rose window above the central door, and quatrefoil openings above the side doors — a solid example of later 19th-century sacred architecture with restrained neo-baroque detailing.",
+        "story": "Selca's original parish church, built in the 18th century on the southwest side of the village square on the site of an older chapel recorded as early as 1633 as 'Our Lady in Selca.' Completed in 1871 with the addition of its triple-arched bell-gable, this three-nave church has a basilica-style facade with three portals, a rose window above the central door, and quatrefoil openings above the side doors — a solid example of later 19th-century sacred architecture with restrained neo-baroque detailing.",
         "image": "Lady-of-carmen-selca.JPG"
       },
       "geometry": {
@@ -1857,7 +1862,7 @@
         "Township": "Nerežišća",
         "id": "holy-trinity-nerezisca",
         "name-en": "Church of Holy Trinity",
-        "story": "",
+        "story": "Set on a rise in Nerežišća's fields, this simple Romanesque chapel dates to the 12th century and once housed hermits, later Glagolitic priests from the Poljica region, in the 17th century.",
         "image": "holy-trinity-nerezisca.jpg"
       },
       "geometry": {
@@ -1877,7 +1882,7 @@
         "Township": "Nerežišća",
         "id": "st-nicolas-nerezisca",
         "name-en": "St. Nicolas Church",
-        "story": "",
+        "story": "Nerežišća's parish church until the 15th century, this Romanesque-Gothic building took its current form in the early 1300s, when a new nave was added onto the older Romanesque chapel. Inside lies the grave of a 14th-century Brač archpriest, marked with a Latin verse inscription naming two local figures, Purča and Stojša.",
         "image": "st-nicolas-nerezisca.JPG"
       },
       "geometry": {
@@ -1897,8 +1902,8 @@
         "Township": "Nerežišća",
         "id": "st-philip-and-jacob-nerezisca",
         "name-en": "The Church of Saint Jacob and Saint Philip",
-        "story": "",
-        "image": ""
+        "story": "West of the village on the old road to Blaca, this 15th-century single-nave church has a richly molded portal, a rose window, and a bell-gable. Its marble altar, showing the Madonna and Child with the church's patron saints, was commissioned in the early 18th century.",
+        "image": "st-filip-jakov-nerezisca.jpg"
       },
       "geometry": {
         "type": "Point",
@@ -1916,9 +1921,9 @@
         "Category": "Church",
         "Township": "Nerežišća",
         "id": "church-of-lady-carmelian-nerezisca",
-        "name-en": "Church of our Lady of Carmelian",
-        "story": "Church of Our Lady of Carmel Selca's original parish church, built in the 18th century on the southwest side of the village square on the site of an older chapel recorded as early as 1633 as \"Our Lady in Selca.\" Completed in 1871 with the addition of its triple-arched bell-gable, this three-nave church has a basilica-style facade with three portals, a rose window above the central door, and quatrefoil openings above the side doors — a solid example of later 19th-century sacred architecture with restrained neo-baroque detailing.",
-        "image": ""
+        "name-en": "Church of our Lady of Carmel",
+        "story": "Built around 1750, this is considered the most monumental baroque church on Brač: a three-nave stone building with a raised, arched central nave and a spacious rectangular chancel, designed together with its four-story bell tower by builder Ignacije Macanović. Inside, seven altars hold paintings by the Italian artists F. Zaniberti, C. Ridolfi, and A. Grapinelli. Its historic organ, built in 1753 by the Venice-based organ maker Petar Nakić, was altered and reduced by a Zagreb restorer in 1969 — original 16 registers cut down to around 11 — and has been out of use since 2006, though full restoration remains possible.",
+        "image": "lady-of-carmel-nerezisca.jpg"
       },
       "geometry": {
         "type": "Point",
@@ -1936,9 +1941,9 @@
         "Category": "Church",
         "Township": "Nerežišća",
         "id": "church-st-john-and-pavao-nerezisca",
-        "name-en": "St. John and Pavao",
-        "story": "",
-        "image": ""
+        "name-en": "St. John and Paul",
+        "story": "A small black pine has grown, soil-free, straight out of the stone roof tiles of the 14th-century Church of St. Peter and Paul for well over a century, feeding only on moisture trapped in old mortar. Locals call it the \"Bonsai of Brač\" — a strange, stubborn little survivor in the middle of the old island capital.",
+        "image": "st-peter-and-paul.jpg"
       },
       "geometry": {
         "type": "Point",
@@ -1957,7 +1962,7 @@
         "Township": "Nerežišća",
         "id": "st-margarite-nerezisca",
         "name-en": "St.Margarite church",
-        "story": "",
+        "story": "A 14th-century Gothic chapel with finely cut interior stonework, decorative trefoil brackets shaped like human heads, and painted consecration crosses from the same century still visible in the sanctuary.",
         "image": "st-margarete-nerezisca.jfif"
       },
       "geometry": {
@@ -1977,8 +1982,8 @@
         "Township": "Nerežišća",
         "id": "st-joseph-and-dephilippis-nerezisca",
         "name-en": "st. Joseph church and Dephilipis complex",
-        "story": "",
-        "image": ""
+        "story": "A baroque 18th-century chapel at the southeast corner of the Defilippis family compound, joined to two connected 19th-century houses and a cistern topped with a carved family crest — a well-preserved example of a wealthy Brač household of the period.",
+        "image": "st-joseph-nerezisca.jpg"
       },
       "geometry": {
         "type": "Point",
@@ -1997,7 +2002,7 @@
         "Township": "Nerežišća",
         "id": "koloc-rock",
         "name-en": "Koloč rock formation",
-        "story": "Koloč Rock A natural stone arch in the pine woods near Nerežišća, shaped by centuries of wind, water, and temperature. Locals call it Koloč — \"cake\" — for its shape, and it's said to grant a wish to anyone who touches it. A worthwhile detour for any rider exploring the interior.",
+        "story": "A natural stone arch in the pine woods near Nerežišća, shaped by centuries of wind, water, and temperature. Locals call it Koloč — \"cake\" — for its shape, and it's said to grant a wish to anyone who touches it. A worthwhile detour for any rider exploring the interior.",
         "image": "koloc-rock.jpg"
       },
       "geometry": {
@@ -2017,7 +2022,7 @@
         "Township": "Nerežišća",
         "id": "st-tudor-nerezisca",
         "name-en": "st. Tudor church ruins",
-        "story": "",
+        "story": "Ruined pre-Romanesque remains on the way to Blaca, where two early Christian fragments carved with crosses were discovered among the fallen walls.",
         "image": "st-tudor-nerezisca.jpg"
       },
       "geometry": {
@@ -2057,7 +2062,7 @@
         "Township": "Splitska",
         "id": "hercules",
         "name-en": "Hercules",
-        "story": "Hercules Relief & Roman Quarries (Rasohe) Hidden in pine forest above Splitska is the ancient Roman quarry of Rasohe, where a relief of Hercules — carved some 1,700 years ago — still marks the rock face. This is one of the actual quarries that supplied stone for Diocletian's Palace, making it rare, tangible common ground between a bike ride and the Roman Empire.",
+        "story": "Hidden in pine forest above Splitska is the ancient Roman quarry of Rasohe, where a relief of Hercules — carved some 1,700 years ago — still marks the rock face. This is one of the actual quarries that supplied stone for Diocletian's Palace, making it rare, tangible common ground between a bike ride and the Roman Empire.",
         "image": "hercules.jfif"
       },
       "geometry": {
@@ -2077,7 +2082,7 @@
         "Township": "Škrip",
         "id": "st-roko-skrip",
         "name-en": "st. Roko church",
-        "story": "St. Roko Church Built in the 17th century on a hill above Sutivan as a votive church against the plague, and renovated in the 19th century with an added bell tower. Its facade carries a finely worked rose window, and inside hang votive paintings of ships saved from storms — offerings from sailors grateful to have survived. The climb is short but punchy; the payoff is a wide-open view across the channel toward Split and the mainland mountains.",
+        "story": ""
         "image": ""
       },
       "geometry": {
@@ -2117,8 +2122,8 @@
         "Township": "Škrip",
         "id": "church-st-helen",
         "name-en": "st.Helen church",
-        "story": "",
-        "image": ""
+        "story": "Škrip's parish church, rebuilt in the second half of the 18th century in a provincial baroque style, with finely cut stonework inside and out and a niche above its main doorway holding a statue of the Madonna. Its organ is a 19th-century pipe instrument from 1869, built by Pietro Bazzani of Venice and housed in a painted neo-Renaissance case, still in its original choir-loft spot. It holds four of only seventeen surviving Dalmatian altarpieces by the Venetian High Renaissance painter Palma il Giovane — a notable concentration of fine 16th-century religious art in a small inland village.",
+        "image": "st-helen-skrip.jpg"
       },
       "geometry": {
         "type": "Point",
@@ -2137,8 +2142,8 @@
         "Township": "Škrip",
         "id": "st-john-chapel-skrip",
         "name-en": "Church of St. John the Baptist ",
-        "story": "Church of St. John the Baptist & the Kaštil Built directly onto the monumental early Christian basilica, in the area known as Lokve above Povlja bay, this church reused the basilica's baptistery — preserved right up to roof height, complete with its baptismal font — as its own sanctuary. In the 12th century, a door lintel carved with a Cyrillic inscription by the master craftsman Radonja was set into the building — known as the Lintel of Povlja, now held in the Museum of Croatian Archaeological Monuments in Split. During the period of Benedictine ownership, a fortified kaštil with battlements was built directly over the church's sanctuary. The bell tower seen today dates to 1882, and the north and south naves were added in 1924. The parish church and rectory together hold a collection of movable objects and artworks spanning the 15th to 20th centuries, numbering over 200 pieces, most notably the Renaissance-era altars of Our Lady of the Rosary and the Sacred Heart of Jesus, both the work of the Bokanić family of master builders. Its historic organ, from 1838, was built by the Venetian workshop of Jakov Bazzani and Sons and restored in 1997 by the Heferer workshop of Zagreb.",
-        "image": ""
+        "story": "A small Renaissance-era chapel built against the old hillfort's western wall, at the edge of today's cemetery — now used as a mortuary chapel.",
+        "image": "john-the-baptist-skrip.jpg"
       },
       "geometry": {
         "type": "Point",
@@ -2157,8 +2162,8 @@
         "Township": "Škrip",
         "id": "church-of-the-holy-spirit-skrip",
         "name-en": "Church of the Holy Spirit",
-        "story": "Church of the Holy Spirit Once Škrip's parish church, this small building stands on the walls of an older Roman-era complex and has been reworked repeatedly since the 7th century. A tall double bell-gable and remnants of a baroque colonnaded porch survive on its facade.",
-        "image": ""
+        "story": "Once Škrip's parish church, this small building stands on the walls of an older Roman-era complex and has been reworked repeatedly since the 7th century. A tall double bell-gable and remnants of a baroque colonnaded porch survive on its facade.",
+        "image": "holy-spirit-church-skrip.jpg"
       },
       "geometry": {
         "type": "Point",
@@ -2177,8 +2182,8 @@
         "Township": "Škrip",
         "id": "island-brac-museum",
         "name-en": "Kaštel Radojković & Museum of Island of Brač",
-        "story": "",
-        "image": ""
+        "story": "A fortified tower complex on the western edge of Škrip's old hillfort, incorporating a Roman-era structure at its base and a tower built up in stages from late antiquity through the 16th and 17th centuries, during a period of Venetian-Ottoman conflict. It now houses the Museum of the Island of Brač, founded in 1979, with collections spanning the island's full history: Stone Age finds from Kopačina Cave, Bronze Age Illyrian artifacts, Roman reliefs and inscriptions from nearby quarries, and an ethnographic collection of everyday tools and household objects used by Brač farmers into the 20th century.",
+        "image": "island-brac-museum-skrip.jpg"
       },
       "geometry": {
         "type": "Point",
@@ -2197,8 +2202,8 @@
         "Township": "Škrip",
         "id": "cerineo-castle",
         "name-en": "Cerineo Castle",
-        "story": "",
-        "image": ""
+        "story": "Built in 1570 on open ground beside Škrip's parish church, this is considered the most imposing late-Renaissance fortified manor on Brač, with a massive corner tower, defensive gun-slits, and inscriptions recording its 17th- and 18th-century renovations.",
+        "image": "kastil-cerineo-skrip.jpg"
       },
       "geometry": {
         "type": "Point",
@@ -2217,8 +2222,8 @@
         "Township": "Škrip",
         "id": "olive-oil-museum",
         "name-en": "Olive Oil Museum",
-        "story": "Olive Oil Museum The museum of oil presents the traditional process of olive oil production on the island Brac. It houses a private collection of some 60 household and farming objects, gathered by the Cukrov family and kept in their old stone house — originally an olive-processing building, where the old olive press and basins are still in place alongside the collection, and also shows paintings by academic painter Hana-Marta Jurčević Bulić and sculptures made by mag. sculptor Đani Martinić, presenting workers in the oilery in an interesting way.",
-        "image": ""
+        "story": "The museum of oil presents the traditional process of olive oil production on the island Brac. It houses a private collection of some 60 household and farming objects, gathered by the Cukrov family and kept in their old stone house — originally an olive-processing building, where the old olive press and basins are still in place alongside the collection, and also shows paintings by academic painter Hana-Marta Jurčević Bulić and sculptures made by mag. sculptor Đani Martinić, presenting workers in the oilery in an interesting way.",
+        "image": "olive-oil-museum-skrip.jpg"
       },
       "geometry": {
         "type": "Point",
@@ -2277,7 +2282,7 @@
         "Township": "Dol",
         "id": "st-vid-dol",
         "name-en": "St.Vid ruin",
-        "story": "",
+        "story": "Ruined remains atop a hill west of Dol, its single nave divided by a pair of pilasters. Built into the altar base is a reused early Christian column with an acanthus capital, salvaged from the window of an unidentified late-antique church — a small fragment of a much older, otherwise vanished building.",
         "image": "st-vid-dol.jpg"
       },
       "geometry": {
@@ -2317,7 +2322,7 @@
         "Township": "Dol",
         "id": "st-peter-dol",
         "name-en": "St. Peter church",
-        "story": "",
+        "story": "A small pre-Romanesque church set on a raised plateau above Dol, with blind arcades inside and a bell-gable that still holds its original 14th-century bronze bell — one of the oldest bells on Brač, cast by a founder who signed it, in Gothic lettering, \"Magistro Nicholaus me fecit\" (\"Master Nicholas made me\"). The church was plastered over on the outside in the late 19th century, covering its original stone facade.",
         "image": "st-peter-dol.jpg"
       },
       "geometry": {
@@ -2337,7 +2342,7 @@
         "Township": "Dol",
         "id": "church-of-our-lady-of-dol",
         "name-en": "Church of Our Lady of Dol",
-        "story": "Church of Our Lady of Carmel Selca's original parish church, built in the 18th century on the southwest side of the village square on the site of an older chapel recorded as early as 1633 as \"Our Lady in Selca.\" Completed in 1871 with the addition of its triple-arched bell-gable, this three-nave church has a basilica-style facade with three portals, a rose window above the central door, and quatrefoil openings above the side doors — a solid example of later 19th-century sacred architecture with restrained neo-baroque detailing.",
+        "story": "Parish church in Dol, rebuilt in 1866 with a curved baroque-style gable, a rose window, and a bell tower to the east — a good example of 19th-century classicist-baroque parish church design on the island. Its historic organ, built around the turn of the 19th–20th century by the K. Hopferwieser workshop of Graz, Austria, is small, with 8 registers total, and still in playable use since a restoration in 2004. The church's inventory includes a set of 17th–19th century liturgical objects bearing Venetian hallmarks and initials — chalices, a monstrance, reliquaries, a processional crucifix, and archival material.",
         "image": "church-of-our-lady-of-dol.jpg"
       },
       "geometry": {
@@ -2377,7 +2382,7 @@
         "Township": "Dol",
         "id": "st-rok-dol",
         "name-en": "St. Rok church",
-        "story": "St. Roko Church Built in the 17th century on a hill above Sutivan as a votive church against the plague, and renovated in the 19th century with an added bell tower. Its facade carries a finely worked rose window, and inside hang votive paintings of ships saved from storms — offerings from sailors grateful to have survived. The climb is short but punchy; the payoff is a wide-open view across the channel toward Split and the mainland mountains.",
+        "story": "",
         "image": ""
       },
       "geometry": {
@@ -2397,7 +2402,7 @@
         "Township": "Sutivan",
         "id": "kavanjin-summer-house",
         "name-en": "Summer House of Jerolim Kavanjin ",
-        "story": "Summer House of Jerolim Kavanjin: Built on the site of an old Gothic loggia on Sutivan's waterfront by the Split nobleman Jerolim Natalis, this stone house preserves its baroque layout of entrance hall, chapel, and side rooms, along with a side wing and garden added in the 18th century. Its pavement bears the coat of arms of the Capogrosso-Kavanjin family — the same noble line as the poet Jerolim Kavanjin, whose name has stuck to the house in local memory.",
+        "story": "Built on the site of an old Gothic loggia on Sutivan's waterfront by the Split nobleman Jerolim Natalis, this stone house preserves its baroque layout of entrance hall, chapel, and side rooms, along with a side wing and garden added in the 18th century. Its pavement bears the coat of arms of the Capogrosso-Kavanjin family — the same noble line as the poet Jerolim Kavanjin, whose name has stuck to the house in local memory.",
         "image": "kavanjin-summer-house.jpg"
       },
       "geometry": {
@@ -2417,7 +2422,7 @@
         "Township": "Sutivan",
         "id": "kastil-marijanovic-sutivan",
         "name-en": "Marijanović Tower (Kastil)",
-        "story": "Marijanović Tower (Kastil) A square Renaissance tower on Sutivan's eastern waterfront, said to have been built by the Marijanović family — members of the Poljica noble Dražojević line — at the end of the 16th century. Its ground floor has mandorla- and circle-shaped gunslits cut into thick stone walls; a balcony and larger windows were added in the 18th century, along with a sundial above a south-facing door. The old names for this stretch of shore, \"Pod Kaštil\" and \"Jankov Dvor\" (after Captain Janko Marijanović), still recall its fortified past.",
+        "story": "A square Renaissance tower on Sutivan's eastern waterfront, said to have been built by the Marijanović family — members of the Poljica noble Dražojević line — at the end of the 16th century. Its ground floor has mandorla- and circle-shaped gunslits cut into thick stone walls; a balcony and larger windows were added in the 18th century, along with a sundial above a south-facing door. The old names for this stretch of shore, \"Pod Kaštil\" and \"Jankov Dvor\" (after Captain Janko Marijanović), still recall its fortified past.",
         "image": "kastil-marijanovic-sutivan.jpg"
       },
       "geometry": {
@@ -2437,8 +2442,8 @@
         "Township": "Sutivan",
         "id": "municipal-building",
         "name-en": "Municipal Building",
-        "story": "Municipal Building A stone two-story building from 1898, built in horizontal courses of finely cut stone with molded floor cornices and prominent corner stonework. Its stylized gable, decorated with scrollwork and plant motifs, still carries the inscription \"Obćinski dom\" (\"Municipal House\") — a well-crafted piece of historicist civic architecture.",
-        "image": ""
+        "story": "A stone two-story building from 1898, built in horizontal courses of finely cut stone with molded floor cornices and prominent corner stonework. Its stylized gable, decorated with scrollwork and plant motifs, still carries the inscription \"Obćinski dom\" (\"Municipal House\") — a well-crafted piece of historicist civic architecture.",
+        "image": "muncipal-building-sutivan.jpg"
       },
       "geometry": {
         "type": "Point",
@@ -2496,9 +2501,9 @@
         "Category": "History",
         "Township": "Selca",
         "id": "podsmrcevik",
-        "name-en": "Podsmrčevik shepards village",
-        "story": "Podsmrčevik Abandoned Eco-Village A silent, well-preserved stone hamlet in the hills above Selca, left empty for decades. Riding the interior gravel tracks here means passing empty houses, old animal pens, and ivy-choked wells — a quiet, haunting look at the island's old shepherd life.",
-        "image": ""
+        "name-en": "Podsmrčevik shepherds village",
+        "story": "A silent, well-preserved stone hamlet in the hills above Selca, left empty for decades. Riding the interior gravel tracks here means passing empty houses, old animal pens, and ivy-choked wells — a quiet, haunting look at the island's old shepherd life.",
+        "image": "podsmrcevik.jpg"
       },
       "geometry": {
         "type": "Point",
@@ -2516,7 +2521,7 @@
         "Category": "History",
         "Township": "Selca",
         "id": "Osridke",
-        "name-en": "Osridke shepards village",
+        "name-en": "Osridke shepherds village",
         "story": "",
         "image": ""
       },
@@ -2536,7 +2541,7 @@
         "Category": "History",
         "Township": "Selca",
         "id": "nakal",
-        "name-en": "Nakal shepards village",
+        "name-en": "Nakal shepherds village",
         "story": "",
         "image": ""
       },
@@ -2556,7 +2561,7 @@
         "Category": "History",
         "Township": "Selca",
         "id": "nagorinac",
-        "name-en": "Nagorinac shepards village",
+        "name-en": "Nagorinac shepherds village",
         "story": "",
         "image": ""
       },
@@ -2577,7 +2582,7 @@
         "Township": "Gornji Humac",
         "id": "sv-roko-gornji-humac",
         "name-en": "st. Roko church",
-        "story": "St. Roko Church Built in the 17th century on a hill above Sutivan as a votive church against the plague, and renovated in the 19th century with an added bell tower. Its facade carries a finely worked rose window, and inside hang votive paintings of ships saved from storms — offerings from sailors grateful to have survived. The climb is short but punchy; the payoff is a wide-open view across the channel toward Split and the mainland mountains.",
+        "story": "",
         "image": "st-roko-gornji-humac.JPG"
       },
       "geometry": {
@@ -2597,7 +2602,7 @@
         "Township": "Gornji Humac",
         "id": "st-nicolas-gornji-humac",
         "name-en": "st.Nicolas church",
-        "story": "",
+        "story": "Built in 1749 on the site of an older chapel dedicated to Our Lady of the Visitation, this is Gornji Humac's parish church, with a richly decorated rose window above its main portal. Inside are two stone triptychs: one from the school of the great Renaissance sculptor Juraj Dalmatinac, the other from the workshop of Nikola Firentinac, moved here from the Church of Sts. Cosmas and Damian at Straževnik.",
         "image": "st-nicolas-gornji-humac.jpg"
       },
       "geometry": {
@@ -2617,7 +2622,7 @@
         "Township": "Pražnica",
         "id": "st-clement-praznica",
         "name-en": "St.Clement",
-        "story": "",
+        "story": "the small Church of St. Clement — once the burial church  — holds a Renaissance relief of St. Clement the Pope dated 1535. ",
         "image": "st-clement-praznica.jpg"
       },
       "geometry": {
@@ -2637,7 +2642,7 @@
         "Township": "Pražnica",
         "id": "all-saints-praznica",
         "name-en": "All Saints Church",
-        "story": "",
+        "story": "Built in 1638 by Antun Mihovilović, as recorded in the inscription above its door, this late-Gothic church stands in Pražnica's central 'Selo' district, with a simple stone portal flanked by two small square windows and a rose window above.",
         "image": "all-saints-pražnica.jpg"
       },
       "geometry": {
@@ -2657,7 +2662,7 @@
         "Township": "Pražnica",
         "id": "st-ciprian-praznica",
         "name-en": "st.Ciprian church",
-        "story": "",
+        "story": "Pražnica's cemetery church, built in the 14th–15th centuries, with a stone relief triptych dated 1467 from the circle of the sculptor Nikola Firentinac on its altar, and several simple late-medieval tombstones preserved alongside it.",
         "image": "st-ciprian-pražnica.jpg"
       },
       "geometry": {
@@ -2677,7 +2682,7 @@
         "Township": "Pražnica",
         "id": "st-anthony-praznica",
         "name-en": "St. Anthony church",
-        "story": "",
+        "story": "Pražnica's parish church, built in the second half of the 18th century on the site of an older Gothic chapel and enlarged again in 1885. Inside, the three-nave interior holds a baroque stone relief of the Madonna and Child with saints by local stonemasons, and a side altar with St. Jerome in his cave, made under the influence of the Alešiv workshop. Its bell tower, to the northeast, is topped with an octagonal lantern and an onion dome.",
         "image": "st-anthony-praznica.jpg"
       },
       "geometry": {
@@ -2757,8 +2762,8 @@
         "Township": "Bol",
         "id": "dominican-monastery-museum",
         "name-en": "Dominican Monastery and museum",
-        "story": "Dominican Monastery and Museum Founded in 1475 on the Glavica peninsula east of Bol, this monastery seems to hover over turquoise water. Its quiet cloister garden is a peaceful stop, and the museum inside holds prehistoric, ancient, and early medieval finds, a coin collection spanning Greek colonization through Roman times to today, Glagolitic manuscripts , documents including the monastery's 15th-century founding charter, plus manuscripts spanning the 16th to 18th centuries, old maps, and an altarpiece painted in the workshop of Tintoretto. The two-nave church was renovated at the end of the 16th century, with a bell tower by the Bokanić family of master builders. Inside the Dominican Church there is a  wooden choir loft decorated with paintings by the baroque master Tripo Kokolja, completed in 1713, the year of his death — his signature basket-of-flowers motif appears throughout.",
-        "image": ""
+        "story": "Founded in 1475 on the Glavica peninsula east of Bol, this monastery seems to hover over turquoise water. Its quiet cloister garden is a peaceful stop, and the museum inside holds prehistoric, ancient, and early medieval finds, a coin collection spanning Greek colonization through Roman times to today, Glagolitic manuscripts , documents including the monastery's 15th-century founding charter, plus manuscripts spanning the 16th to 18th centuries, old maps, and an altarpiece painted in the workshop of Tintoretto. The two-nave church was renovated at the end of the 16th century, with a bell tower by the Bokanić family of master builders. Inside the Dominican Church there is a  wooden choir loft decorated with paintings by the baroque master Tripo Kokolja, completed in 1713, the year of his death — his signature basket-of-flowers motif appears throughout.",
+        "image": "dominican-monastery-bol.jpg"
       },
       "geometry": {
         "type": "Point",
@@ -2837,7 +2842,7 @@
         "Township": "Bol",
         "id": "st-ante-bol",
         "name-en": "St. Anthony church",
-        "story": "",
+        "story": "Built atop the Lozje hill in the early 16th century, with a Renaissance stone facade, a quatrefoil window, and a tall stone bell-gable. Inside is an 18th-century painting of the Madonna and saints by the artist Marinković.",
         "image": "st-ante-bol.jpg"
       },
       "geometry": {
@@ -2877,7 +2882,7 @@
         "Township": "Bol",
         "id": "lady-of-carmel-bol",
         "name-en": "Church of Our Lady of Mount Carmel",
-        "story": "Church of Our Lady of Carmel Selca's original parish church, built in the 18th century on the southwest side of the village square on the site of an older chapel recorded as early as 1633 as \"Our Lady in Selca.\" Completed in 1871 with the addition of its triple-arched bell-gable, this three-nave church has a basilica-style facade with three portals, a rose window above the central door, and quatrefoil openings above the side doors — a solid example of later 19th-century sacred architecture with restrained neo-baroque detailing.",
+        "story": "Built in the second half of the 17th century in Bol's western harbor and later expanded, with a facade carved by the Brač stonemason family Štambuk and an angel statue by sculptor P. Macetti. The main altar holds a Holy Family painting by Feliks Tironi from the late 1700s. A 19th-century oil painting of the Madonna and Christ child, kept in the parish house next to Bol's Church of Our Lady of Carmel.",
         "image": "lady-of-carmel-bol.JPG"
       },
       "geometry": {
@@ -2897,7 +2902,7 @@
         "Township": "Bol",
         "id": "house-in-a-house-bol",
         "name-en": "Paloc - House inside a house",
-        "story": "",
+        "story": "One of Bol's odder landmarks: a small stone house, still standing, fully enclosed inside the unfinished walls of a much larger one. Legend has it a stubborn farmer named Marko refused to sell his home to the wealthy Vuković family — three sea-captain brothers building a grand palace for their new Spanish wives — so they built around him instead. The twist: the brothers drowned at sea before ever finishing their palace, and Marko outlived them all in his little house at its center.",
         "image": "house-in-a-house-bol.jpg"
       },
       "geometry": {
@@ -2957,7 +2962,7 @@
         "Township": "Bol",
         "id": "villa-rustica-bol",
         "name-en": "Villa Rustica",
-        "story": "Villa Rustica— West of Bol at Zlatni Rat, the remains of a Roman country estate survive as a rectangular water cistern (about 6 by 3 meters), its walls built from finely cut stone and lined with waterproof mortar, once covered by a barrel vault. Roman graves found nearby, during road construction toward Murvica, likely belonged to the villa's residents.",
+        "story": "West of Bol at Zlatni Rat, the remains of a Roman country estate survive as a rectangular water cistern (about 6 by 3 meters), its walls built from finely cut stone and lined with waterproof mortar, once covered by a barrel vault. Roman graves found nearby, during road construction toward Murvica, likely belonged to the villa's residents.",
         "image": "villa-rustica-bol.jpg"
       },
       "geometry": {
@@ -2977,7 +2982,7 @@
         "Township": "Murvica",
         "id": "stipancic-hermitage",
         "name-en": "Stipančić Hermitage",
-        "story": "Stipančić Hermitage — Founded in the second half of the 15th century between Bol and Murvica by a priest from Nerežišća, as housing for a community of pious laywomen. A row of stone houses is built directly against the cliff face, facing Dragon's Cave, with a chapel at one end and an inscribed lintel dated 1477.",
+        "story": "Founded in the second half of the 15th century between Bol and Murvica by a priest from Nerežišća, as housing for a community of pious laywomen. A row of stone houses is built directly against the cliff face, facing Dragon's Cave, with a chapel at one end and an inscribed lintel dated 1477.",
         "image": "stipancic-hermitage.jpg"
       },
       "geometry": {
@@ -3016,8 +3021,8 @@
         "Category": "Church",
         "Township": "Murvica",
         "id": "bezgresno-zacece-djevice-marije",
-        "name-en": "Church of Conception of Virgin Mary",
-        "story": "",
+        "name-en": "Church of the immaculate Conception of Virgin Mary",
+        "story": "It houses an altarpiece commissioned at the end of the 18th century. This six-meter architectural altar is divided by four fluted columns with Corinthian capitals, decorated with carved cherub heads, floral reliefs, and marbled color work, and topped with a star-and-cherub motif. It's a rare surviving example of late-baroque woodcarving on an island otherwise dominated by stone.",
         "image": ""
       },
       "geometry": {
@@ -3037,8 +3042,8 @@
         "Township": "Murvica",
         "id": "draceva-luka-hermitage",
         "name-en": "Dračeva Luka Hermitage",
-        "story": "Dračeva Luka Hermitage Built in 1519 as a hermitage for Poljica Glagolitic priests, this small church-and-house complex mixes Renaissance detailing with older Gothic touches. Nearby stood the Dutić convent, home to a community of lay religious women. Reaching it means dropping your bike for a steep, rocky hike — but the sight of a hermitage tucked into bare cliff is worth the climb.",
-        "image": ""
+        "story": "Built in 1519 as a hermitage for Poljica Glagolitic priests, this small church-and-house complex mixes Renaissance detailing with older Gothic touches. Nearby stood the Dutić convent, home to a community of lay religious women. Reaching it means dropping your bike for a steep, rocky hike — but the sight of a hermitage tucked into bare cliff is worth the climb.",
+        "image": "draceva-luka-murvica.jpg"
       },
       "geometry": {
         "type": "Point",
@@ -3053,11 +3058,11 @@
       "properties": {
         "fid": 185,
         "name": "Kaštel Cerineo",
-        "Category": "history",
+        "Category": "History",
         "Township": "Spltska",
         "id": "kastel-cerineo-splitska",
         "name-en": "Castel Cerineo",
-        "story": "Kaštel Cerineo A fortified complex on the eastern side of Splitska's harbor, dating to the second half of the 16th century, with a stone house and three-story tower in its courtyard. An inscription records the noble Cerinić family and a 1577 renovation — a separate structure from the larger Cerineo castle in Škrip, though built by the same family line.",
+        "story": "A fortified complex on the eastern side of Splitska's harbor, dating to the second half of the 16th century, with a stone house and three-story tower in its courtyard. An inscription records the noble Cerinić family and a 1577 renovation — a separate structure from the larger Cerineo castle in Škrip, though built by the same family line.",
         "image": "kastel-cerineo-splitska.jpg"
       },
       "geometry": {
@@ -3076,9 +3081,9 @@
         "Category": "History",
         "Township": "Dol",
         "id": "kastil-gospodnetic",
-        "name-en": "Kaštil Gospodnetić",
-        "story": "",
-        "image": ""
+        "name-en": "Kaštel Gospodnetić",
+        "story": "A fortified 17th-century stone house on a slope in northeastern Dol, with a defensive courtyard wall, an arched gateway carved with the baroque coat of arms of the noble Gospodnetić family, and an L-shaped, two-story main house with a corner tower. After a thorough 19th-century renovation, it retains its original interior and has stayed in continuous use by the Gospodnetić family since it was built.",
+        "image": "kastil-gospodnetic-dol.jpg"
       },
       "geometry": {
         "type": "Point",
@@ -3097,7 +3102,7 @@
         "Township": "Škrip",
         "id": "nikolic-krstulovic",
         "name-en": "Nikolic-Krstulović Complex",
-        "story": "Nikolić-Krstulović Complex An 18th-century rural residential-and-working compound on the approach to Škrip, walled and dated 1771, with a stone house, old kitchen, olive press, and a cistern cut directly into the bedrock — a well-preserved example of everyday farming life on the island. Two historic keyboard instruments once housed here — a Viennese-style pianoforte by the Trieste maker Henke, around 1840, and an earlier Venetian table piano by Michael Mariacher — are now preserved in the Museum of the Island of Brač.",
+        "story": "An 18th-century rural residential-and-working compound on the approach to Škrip, walled and dated 1771, with a stone house, old kitchen, olive press, and a cistern cut directly into the bedrock — a well-preserved example of everyday farming life on the island. Two historic keyboard instruments once housed here — a Viennese-style pianoforte by the Trieste maker Henke, around 1840, and an earlier Venetian table piano by Michael Mariacher — are now preserved in the Museum of the Island of Brač.",
         "image": ""
       },
       "geometry": {
@@ -3117,7 +3122,7 @@
         "Township": "Bol",
         "id": "bol-windmill",
         "name-en": "Bol windmill",
-        "story": "Bol Windmill — A circular stone windmill near the shore on Bol's eastern side, its mechanism traces still visible on the walls — a rare surviving piece of 19th-century industrial architecture on Brač.",
+        "story": "A circular stone windmill near the shore on Bol's eastern side, its mechanism traces still visible on the walls — a rare surviving piece of 19th-century industrial architecture on Brač.",
         "image": "bol-windmill.jpg"
       },
       "geometry": {
@@ -3137,7 +3142,7 @@
         "Township": "Bol",
         "id": "gallery-deskovic",
         "name-en": "Branislav Dešković gallery",
-        "story": "",
+        "story": "Set in a 17th-century Renaissance-Baroque palace right on the Bol waterfront, this gallery is named for Branislav Dešković, one of Croatia's finest sculptors of animal forms. The baroque stone palace marked with the Vusio family crest and an inscription dated 1694. burned during World War II, it was rebuilt in 1958, and the gallery has occupied it since 1978. Stepping in from the heat to see his bronze dogs and portraits — alongside works by Ivan Rendić and other island-born artists — makes for a perfect midday break.",
         "image": "gallery-deskovic.JPG"
       },
       "geometry": {
@@ -3157,7 +3162,7 @@
         "Township": "Bol",
         "id": "kastil-bol",
         "name-en": "Kaštil gothic house",
-        "story": "",
+        "story": "Built as a harborside summer residence at the end of the 15th century, with a Gothic double window still visible on its facade. Around 1600, fear of Ottoman raids led to the house being raised and fortified, earning it the name Kaštil. Now it serves as a Hotel.",
         "image": "Kastil-bol.jfif"
       },
       "geometry": {
@@ -3177,8 +3182,8 @@
         "Township": "Nerežišća",
         "id": "st-vitus-ruin",
         "name-en": "St.Vitus ruin",
-        "story": "",
-        "image": ""
+        "story": "The early Romanesque Church of St. Vitus is located about a hundred meters west of the highest peak of Vidova Gora (778 m) on the island of Brač. This small 13th/14th-century church, from which the mountain takes its name, is currently in a state of ruin. It was built on the site of an ancient Slavic sanctuary dedicated to the god Svevid.",
+        "image": "st-vitus-vidova-gora.JPG"
       },
       "geometry": {
         "type": "Point",
@@ -3197,7 +3202,7 @@
         "Township": "Bol",
         "id": "velo-kostilo-walls",
         "name-en": "Koštilo walls",
-        "story": "Koštilo Walls — Dry-stone fortification walls, up to 3.5 meters high in places, crowning a hill above Bol — the remains of a prehistoric hillfort later reused during Roman rule for its clear sightline toward Hvar.",
+        "story": "Dry-stone fortification walls, up to 3.5 meters high in places, crowning a hill above Bol — the remains of a prehistoric hillfort later reused during Roman rule for its clear sightline toward Hvar.",
         "image": "velo-kostilo-walls.JPG"
       },
       "geometry": {
@@ -3217,7 +3222,7 @@
         "Township": "Gornji Humac",
         "id": "holy-spirit-gornji-humac",
         "name-en": "Church of Holy Spirit",
-        "story": "Church of the Holy Spirit Once Škrip's parish church, this small building stands on the walls of an older Roman-era complex and has been reworked repeatedly since the 7th century. A tall double bell-gable and remnants of a baroque colonnaded porch survive on its facade.",
+        "story": "A simple 14th-century Gothic church in Gornji Humac, single-naved with a semicircular apse and a bell-gable above its facade.",
         "image": "holy-spirit-gornji-humac.jpg"
       },
       "geometry": {
@@ -3237,7 +3242,7 @@
         "Township": "Gornji Humac",
         "id": "sv-mihovil-gornji-humac",
         "name-en": "Church of st. Mihovil",
-        "story": "",
+        "story": "A late-Romanesque church from the 13th–14th centuries, single-naved with a bell-gable above its facade.",
         "image": "sv-mihovil-gornji-humac.jpg"
       },
       "geometry": {
@@ -3257,7 +3262,7 @@
         "Township": "Gornji Humac",
         "id": "st-mary-gornji-humac",
         "name-en": "Church of st. Mary",
-        "story": "Church of St. Mary (Cemetery) Originally a pre-Romanesque chapel, this church became the sanctuary of a larger 17th-century extension, its older section now enclosed behind an ornate baroque wrought-iron screen. The altar holds a stone relief triptych by Nikola Firentinac, depicting the Madonna and Child with Sts. John and Peter.",
+        "story": "Originally a pre-Romanesque chapel, this church became the sanctuary of a larger 17th-century extension, its older section now enclosed behind an ornate baroque wrought-iron screen. The altar holds a stone relief triptych by Nikola Firentinac, depicting the Madonna and Child with Sts. John and Peter.",
         "image": "st-mary-gornji-humac.jpg"
       },
       "geometry": {
@@ -3277,8 +3282,8 @@
         "Township": "Gornji Humac",
         "id": "st-kuzma-damjan",
         "name-en": "Church of St. Kuzma and Damian",
-        "story": "Church of St. Cosmas and Damian A single-nave baroque church in Dračevica, built in the 17th century with a simple facade, a rosette window flanked by decorative columns, and a bell-gable at its peak. Its interior was renovated in the 19th century.",
-        "image": ""
+        "story": "Set atop Smrečevik hill on Brač's southern side, this pre-Romanesque church has traces of baroque wall paintings surviving in the half-dome of its apse — a rare glimpse of later decoration added to a much older building.",
+        "image": "st-kuzma-damjan-gornji-humac.jpg"
       },
       "geometry": {
         "type": "Point",
@@ -3297,7 +3302,7 @@
         "Township": "Gornji Humac",
         "id": "all-saints-gornji-humac",
         "name-en": "Church of All Saints",
-        "story": "Church of All Saints A 13th-century church that once served the medieval settlements of Mošuje and Dubravice, both of which vanished after outbreaks of plague in the 15th and 16th centuries. It stands at the center of a cemetery with orderly rows of graves under monolithic tombstones, its doorway carved with the inscription \"Ecclesia Omnium Sanctorum\" around a central cross, beneath a wide Romanesque bell-gable.",
+        "story": "A 13th-century church that once served the medieval settlements of Mošuje and Dubravice, both of which vanished after outbreaks of plague in the 15th and 16th centuries. It stands at the center of a cemetery with orderly rows of graves under monolithic tombstones, its doorway carved with the inscription \"Ecclesia Omnium Sanctorum\" around a central cross, beneath a wide Romanesque bell-gable.",
         "image": "all-saints-gornji-Humac.jpg"
       },
       "geometry": {
@@ -3317,7 +3322,7 @@
         "Township": "Splitska",
         "id": "sv-jadro-splitska",
         "name-en": "Ruins of the Church of st. Andrew",
-        "story": "Ruins of the Church of St. Andrew (Sv. Jadre) Along the old road between Splitska and Škrip, near the ancient quarries, stand the ruins of a late-antique chapel, its construction style and mushroom-arched window openings placing it firmly in the early Christian period.",
+        "story": "Along the old road between Splitska and Škrip, near the ancient quarries, stand the ruins of a late-antique chapel, its construction style and mushroom-arched window openings placing it firmly in the early Christian period.",
         "image": "sv-jadro-splitska.jpg"
       },
       "geometry": {
@@ -3337,8 +3342,8 @@
         "Township": "Sutivan",
         "id": "ancient-shipwreck-sutivan",
         "name-en": "Ancient Shipwreck",
-        "story": "Ancient Shipwreck  Lying at a depth of 31–34 meters off Sutivan, this late-antique shipwreck carried a cargo of stone, likely quarried locally on Brač: seven sarcophagi, two sarcophagus lids, nine stone blocks, a round column section, and a large perforated stone basin, spread across a site roughly 6.6 by 4.1 meters. Sediment around the wreck may still hold traces of the ship's wooden hull and galley wares — a rare, largely undisturbed example of a stone-cargo wreck in the Adriatic.",
-        "image": ""
+        "story": "Lying at a depth of 31–34 meters off Sutivan, this late-antique shipwreck carried a cargo of stone, likely quarried locally on Brač: seven sarcophagi, two sarcophagus lids, nine stone blocks, a round column section, and a large perforated stone basin, spread across a site roughly 6.6 by 4.1 meters. Sediment around the wreck may still hold traces of the ship's wooden hull and galley wares — a rare, largely undisturbed example of a stone-cargo wreck in the Adriatic.",
+        "image": "shipwreck-sutivan.jpg"
       },
       "geometry": {
         "type": "Point",
@@ -3357,7 +3362,7 @@
         "Township": "Sutivan",
         "id": "mlin-sutivan",
         "name-en": "Windmill",
-        "story": "Windmill A circular 19th-century windmill in Sutivan; its working machinery is long gone, and the building now serves as a private home.",
+        "story": "A circular 19th-century windmill in Sutivan; its working machinery is long gone, and the building now serves as a private home.",
         "image": "mlin-sutivan.JPG"
       },
       "geometry": {
@@ -3377,7 +3382,7 @@
         "Township": "Sutivan",
         "id": "ilic-complex-sutivan",
         "name-en": "Ilić Complex",
-        "story": "",
+        "story": "Built up around the core of a 1505 summer house belonging to the Split noble Natalis-Božičević family — whose two-story tower with Renaissance arched windows still survives — this three-wing complex was reshaped in the 18th and 19th centuries and until recently preserved its 19th-century interior intact.",
         "image": "ilic-complex-sutivan.jpg"
       },
       "geometry": {
@@ -3397,7 +3402,7 @@
         "Township": "Ložišća",
         "id": "gradina-rat-lozisca",
         "name-en": "Gradina Rat protected Archaeological Site ",
-        "story": "Gradina Rat protected Archaeological Site Above Ložišća stands Gradina Rat, one of the best-preserved prehistoric hillfort settlements in the central Dalmatian islands. First investigated in 1957 by the Split Archaeological Museum, and studied systematically from 2007 by a University of Split research project, it has revealed Late Bronze Age dwellings (around 3000 BC) built from woven branches daubed with clay. Alongside locally made pottery, archaeologists found fine imported ceramics from the Greek and Italic world dating to the last millennium BC. The hillfort's inhabitants reached the sea through the Vičja Luka inlet, where Iron Age graves of high-status individuals — with rich metal and ceramic finds — were uncovered in 1908.",
+        "story": "Above Ložišća stands Gradina Rat, one of the best-preserved prehistoric hillfort settlements in the central Dalmatian islands. First investigated in 1957 by the Split Archaeological Museum, and studied systematically from 2007 by a University of Split research project, it has revealed Late Bronze Age dwellings (around 3000 BC) built from woven branches daubed with clay. Alongside locally made pottery, archaeologists found fine imported ceramics from the Greek and Italic world dating to the last millennium BC. The hillfort's inhabitants reached the sea through the Vičja Luka inlet, where Iron Age graves of high-status individuals — with rich metal and ceramic finds — were uncovered in 1908.",
         "image": "gradina-rat-lozisca.jpg"
       },
       "geometry": {
@@ -3416,8 +3421,8 @@
         "Category": "Water reservoirs",
         "Township": "Ložišća",
         "id": "donji-pisk-lozisca",
-        "name-en": null,
-        "story": "",
+        "name-en": "donji pisk - Stare vode",
+        "story": "East of Ložišća lies one of the largest water-collection installations on the island: a system of walled basins fed by natural runoff, with wide stone-edged ramps leading down to troughs used for watering livestock. Built in the first half of the 19th century, it stands as a notable piece of agricultural and industrial heritage, showing the technical skill islanders brought to managing a chronically dry landscape.",
         "image": "donji-pisk-lozisca.JPG"
       },
       "geometry": {
@@ -3437,7 +3442,7 @@
         "Township": "Bobovišća",
         "id": "kastel-gligo-bobovisca",
         "name-en": "Gligo Castle",
-        "story": "Kaštel Gligo A fortified compound on the shaded side of Bobovišća bay, its three wings arranged around a spacious seaward courtyard enclosed by a high defensive wall, part of which still carries a covered stone walkway on arches. Built by the Marinčević-Gligo family, first recorded at the end of the 17th century, it remains a valuable fortified baroque complex defending the harbor and the route into the island's interior.",
+        "story": "A fortified compound on the shaded side of Bobovišća bay, its three wings arranged around a spacious seaward courtyard enclosed by a high defensive wall, part of which still carries a covered stone walkway on arches. Built by the Marinčević-Gligo family, first recorded at the end of the 17th century, it remains a valuable fortified baroque complex defending the harbor and the route into the island's interior.",
         "image": "kastil-gligo-bobovisca.JPG"
       },
       "geometry": {
@@ -3457,7 +3462,7 @@
         "Township": "Bobovišća",
         "id": "v-nazor-house",
         "name-en": "House of Vladimir Nazor",
-        "story": "",
+        "story": "A row of three connected houses on the north side of Bobovišća harbor, the childhood home of poet Vladimir Nazor, one of Croatia's most celebrated writers. Though the central section was altered in a 1933–1937 renovation, part of the original interior survives, along with period furniture, books, and photographs. The still, enclosed harbor here clearly left its mark on his writing.",
         "image": "v-nazor-house.JPG"
       },
       "geometry": {
@@ -3476,9 +3481,9 @@
         "Category": "History",
         "Township": "Bobovišća",
         "id": "cerinic-gligo-house",
-        "name-en": "House Cerinić Gligo",
-        "story": "House Cerinić-Gligo A monumental two-story house set in a large garden on Bobovišća's western side, with a stone balcony on corbels across its facade. Inside are preserved wooden sculptures by the self-taught Brač sculptor Martin Cerinić (1860–1940) — a striking example of 19th-century landowner residential architecture.",
-        "image": ""
+        "name-en": "Cerinić Gligo House",
+        "story": "A monumental two-story house set in a large garden on Bobovišća's western side, with a stone balcony on corbels across its facade. Inside are preserved wooden sculptures by the self-taught Brač sculptor Martin Cerinić (1860–1940) — a striking example of 19th-century landowner residential architecture.",
+        "image": "cerinic-fortress-bobovisca.jpg"
       },
       "geometry": {
         "type": "Point",
@@ -3497,7 +3502,7 @@
         "Township": "Bobovišća",
         "id": "tower-v-nazor-bobovisca",
         "name-en": "the symbolic tower of V. Nazor",
-        "story": "",
+        "story": "The symbolic tower was built by Vladimir Nazor using gathered rocks.",
         "image": "tower-v-nazor-bobovisca.jpg"
       },
       "geometry": {
@@ -3517,8 +3522,8 @@
         "Township": "Bobovišća",
         "id": "kuca-nazor-bobovisca",
         "name-en": "Nazor House",
-        "story": "",
-        "image": ""
+        "story": "Built in 1817 on the slope of Glava hill beside the old road to Ložišća, this house was the first residence of the Nazor family on Brač after their arrival from the Poljica region. Its gateway carries the carved initials and date \"A.S.E.N 1817\" (Antonio Stefano eredi Nazor — \"Antonio Stefano, heirs of Nazor\").",
+        "image": "house-nazor-bobovisca.jpg"
       },
       "geometry": {
         "type": "Point",
@@ -3557,8 +3562,8 @@
         "Township": "Milna",
         "id": "angliscina-house-milna",
         "name-en": "Fortress of the Cerinić Family (Anglišćina)",
-        "story": "Fortress of the Cerinić Family (Anglišćina) Built in 16th century above Milna's harbor by the Cerinić family, this U-shaped Renaissance castle, arranged around an inner courtyard, once had a full defensive parapet and cannon openings, traces of which survive; it was later adapted for residential use with larger, stone-framed windows. Among the oldest buildings on the island, it's also known locally for its long-standing ties to English traders — hence its other name, Anglišćina. It was one of the first buildings in Milna and the village was built around it.",
-        "image": ""
+        "story": "Built in 16th century above Milna's harbor by the Cerinić family, this U-shaped Renaissance castle, arranged around an inner courtyard, once had a full defensive parapet and cannon openings, traces of which survive; it was later adapted for residential use with larger, stone-framed windows. Among the oldest buildings on the island, it's also known locally for its long-standing ties to English traders — hence its other name, Anglišćina. It was one of the first buildings in Milna and the village was built around it.",
+        "image": "kuca-angliscina-milna.jpg"
       },
       "geometry": {
         "type": "Point",
@@ -3597,7 +3602,7 @@
         "Township": "Dračevica",
         "id": "immaculate-conception-dracevica",
         "name-en": "Church of Immaculate Conception of Virgin Mary",
-        "story": "",
+        "story": "It houses an altarpiece commissioned at the end of the 18th century. This six-meter architectural altar is divided by four fluted columns with Corinthian capitals, decorated with carved cherub heads, floral reliefs, and marbled color work, and topped with a star-and-cherub motif. It's a rare surviving example of late-baroque woodcarving on an island otherwise dominated by stone.",
         "image": "immaculate-conception-dračevica.JPG"
       },
       "geometry": {
@@ -3617,7 +3622,7 @@
         "Township": "Dračevica",
         "id": "st-kuzma-damjan-dracevica",
         "name-en": "Church of St. Cosmas and Damian",
-        "story": "Church of St. Cosmas and Damian A single-nave baroque church in Dračevica, built in the 17th century with a simple facade, a rosette window flanked by decorative columns, and a bell-gable at its peak. Its interior was renovated in the 19th century.",
+        "story": " single-nave baroque church in Dračevica, built in the 17th century with a simple facade, a rosette window flanked by decorative columns, and a bell-gable at its peak. Its interior was renovated in the 19th century.",
         "image": "st-kuzma-damjan-dracevica.jpg"
       },
       "geometry": {
@@ -3637,8 +3642,8 @@
         "Township": "Dračevica",
         "id": "windmill-dracevica",
         "name-en": "Windmill Dračevica",
-        "story": "Windmill Dračevica A stone windmill tower near Dračevica, one of few on an island otherwise built around olive and water mills. Its sails are gone, but the sturdy circular tower still marks how islanders once put the mistral and bura winds to work. Brač used to have 128 windmills once upon a time.",
-        "image": ""
+        "story": "A stone windmill tower near Dračevica, one of few on an island otherwise built around olive and water mills. Its sails are gone, but the sturdy circular tower still marks how islanders once put the mistral and bura winds to work. Brač used to have 128 windmills once upon a time.",
+        "image": "dracevica-windmill.jpg"
       },
       "geometry": {
         "type": "Point",
@@ -3677,7 +3682,7 @@
         "Township": "Dračevica",
         "id": "dragonjik-quarry-dracevica",
         "name-en": "Dragonjik quarry",
-        "story": "Dragonjik Quarry A quiet, disused stone quarry near Dračevica, with clean vertical cuts in white limestone. A good stop to see, up close, how generations of stonecutters carved this island by hand.",
+        "story": "A quiet, disused stone quarry near Dračevica, with clean vertical cuts in white limestone. A good stop to see, up close, how generations of stonecutters carved this island by hand.",
         "image": "dragonjik-quarry-dracevica.JPG"
       },
       "geometry": {
@@ -3697,7 +3702,7 @@
         "Township": "Donji Humac",
         "id": "cerinic-house-donji-humac",
         "name-en": "Cerinic House",
-        "story": "",
+        "story": "An early 19th-century two-story stone house in Donji Humac, notable for a late-baroque stucco relief inside depicting the Virgin Mary with the dead Christ, framed by cherubs and an angel.",
         "image": "cerinic-house-donji-humac.jpg"
       },
       "geometry": {
@@ -3717,7 +3722,7 @@
         "Township": "Donji Humac",
         "id": "sv-jadre-donji-humac",
         "name-en": "Ruins of the Church of St. Jadre & Archaeological Site ",
-        "story": "Ruins of the Church of St. Jadre & Archaeological Site In the fields between Donji Humac and Nerežišća lie the ruins of a small Gothic chapel, its side walls reinforced with pilasters. At the end of the 19th century, the pioneering archaeologist Don Frane Bulić found Roman-era reliefs, inscriptions, and graves ranging from Roman times to the 14th century scattered around it — a layered site spanning well over a thousand years of use.",
+        "story": " In the fields between Donji Humac and Nerežišća lie the ruins of a small Gothic chapel, its side walls reinforced with pilasters. At the end of the 19th century, the pioneering archaeologist Don Frane Bulić found Roman-era reliefs, inscriptions, and graves ranging from Roman times to the 14th century scattered around it — a layered site spanning well over a thousand years of use.",
         "image": ""
       },
       "geometry": {
@@ -3737,7 +3742,7 @@
         "Township": "Nerežišća",
         "id": "harasic-house-nerezisca",
         "name-en": "Harašić House",
-        "story": "",
+        "story": "A baroque stone house built on a rise in northern Nerežišća for the Harašić family, first recorded in the early 17th century. Two L-shaped wings enclose a courtyard, and a monumental stone balcony on double corbels runs the length of the north wing — a standout example of late-baroque residential architecture on the island.",
         "image": "harasic-house-nerezisca.jpg"
       },
       "geometry": {
@@ -3757,8 +3762,8 @@
         "Township": "Nerežišća",
         "id": "house-garafulic-nerezisca",
         "name-en": "House Garafulić",
-        "story": "House Garafulić Built in the first half of the 15th century at the center of Nerežišća, this stone house was traditionally said to have quartered the Venetian garrison. Its simple Gothic windows and partial gun-slits make it a rare surviving example of Gothic residential architecture on Brač.",
-        "image": ""
+        "story": "Built in the first half of the 15th century at the center of Nerežišća, this stone house was traditionally said to have quartered the Venetian garrison. Its simple Gothic windows and partial gun-slits make it a rare surviving example of Gothic residential architecture on Brač.",
+        "image": "garafulic-house-nerezisca.jpg"
       },
       "geometry": {
         "type": "Point",
@@ -3777,8 +3782,8 @@
         "Township": "Nerežišća",
         "id": "blatacka-kuca-building-complex",
         "name-en": "Blatacka Kuca Building Complex",
-        "story": "Blatačka Kuća Building Complex Built in the 18th century on the northern edge of Nerežišća — then the island's administrative center — this walled complex housed visiting priests from Blaca Hermitage and the managers of its estates, and stored the oil, wine, and honey later shipped out from Supetar's port. A carved stone lintel bearing the IHS monogram marks its main entrance, leading into a courtyard flanked by residential and working buildings.",
-        "image": ""
+        "story": "Built in the 18th century on the northern edge of Nerežišća — then the island's administrative center — this walled complex housed visiting priests from Blaca Hermitage and the managers of its estates, and stored the oil, wine, and honey later shipped out from Supetar's port. A carved stone lintel bearing the IHS monogram marks its main entrance, leading into a courtyard flanked by residential and working buildings.",
+        "image": "blatacka-kuca-building-complex-nerezisca.jpg"
       },
       "geometry": {
         "type": "Point",
@@ -3797,7 +3802,7 @@
         "Township": "Nerežišća",
         "id": "stone-flag-stand-nerezisca",
         "name-en": "Stone Flag-Stand with Coat of Arms and Lion ",
-        "story": "Stone Flag-Stand with Coat of Arms and Lion Standing at the corner of Nerežišća's main square, in front of the old school, this carved stone flagpole base bears the winged lion of St. Mark and the date 1589 — a relic of the town's time as seat of the island's Venetian-appointed governor, whose palace once stood on this square. Nearby are two coats of arms of the Morosini family governors, dated 1530 and 1545, and a large relief of the lion of St. Mark with an inscription warning citizens against litigiousness — now preserved in the Croatian Home building after restoration.",
+        "story": "Standing at the corner of Nerežišća's main square, in front of the old school, this carved stone flagpole base bears the winged lion of St. Mark and the date 1589 — a relic of the town's time as seat of the island's Venetian-appointed governor, whose palace once stood on this square. Nearby are two coats of arms of the Morosini family governors, dated 1530 and 1545, and a large relief of the lion of St. Mark with an inscription warning citizens against litigiousness — now preserved in the Croatian Home building after restoration.",
         "image": "stone-flag-stand-nerezisca.jpg"
       },
       "geometry": {
@@ -3817,7 +3822,7 @@
         "Township": "Nerežišća",
         "id": "nereziske-vode",
         "name-en": "Nerežiške vode",
-        "story": "Nerežiške vode On the way to Vidova Gora, it is interesting to see the small artificial ponds—reservoirs built during Austrian rule to irrigate the Nerežišća fields—where goldfish can be seen today.",
+        "story": "On the way to Vidova Gora, it is interesting to see the small artificial ponds—reservoirs built during Austrian rule to irrigate the Nerežišća fields—where goldfish can be seen today.",
         "image": "nereziske-vode.jpg"
       },
       "geometry": {
@@ -3837,7 +3842,7 @@
         "Township": "Supetar",
         "id": "supetar-cemetery",
         "name-en": "Supetar Cemetery",
-        "story": "Supetar Cemetery Set on the small St. Nicholas peninsula, this cemetery doubles as an open-air sculpture collection, with grave monuments by Ivan Rendić, the Brač-born sculptor considered one of Croatia's finest of the 19th century, dating from the late 1800s into the 1920s. Two early Christian sarcophagi flank the old cemetery church, and traces of a larger late-antique complex, including white mosaic fragments, lie partly underwater just offshore. Pine, sea breeze, and white stone carvings make it one of the most peaceful rest stops on the north coast.",
+        "story": "Set on the small St. Nicholas peninsula, this cemetery doubles as an open-air sculpture collection, with grave monuments by Ivan Rendić, the Brač-born sculptor considered one of Croatia's finest of the 19th century, dating from the late 1800s into the 1920s. Two early Christian sarcophagi flank the old cemetery church, and traces of a larger late-antique complex, including white mosaic fragments, lie partly underwater just offshore. Pine, sea breeze, and white stone carvings make it one of the most peaceful rest stops on the north coast.",
         "image": "supetar-cemetery.jfif"
       },
       "geometry": {
@@ -3856,8 +3861,8 @@
         "Category": "History",
         "Township": "Supetar",
         "id": "ivan-rendic-family-home",
-        "name-en": "Ivan rendić family home",
-        "story": "",
+        "name-en": "Ivan Rendić family home",
+        "story": "House built in 1864 by Petar Rendić, this three-story stone house on a Supetar backstreet is the birthplace of his son, sculptor Ivan Rendić. Decorative reliefs — a carved head, a vase, a woman's face — still mark its facade, a quiet, personal counterpart to the Rendić Gallery in town.",
         "image": "ivan-rendic-family-home.jfif"
       },
       "geometry": {
@@ -3877,7 +3882,7 @@
         "Township": "Bobovišća",
         "id": "vicja-luka-bobovisca",
         "name-en": "Underwater and Land Archaeological Site of Vičja Luka",
-        "story": "Underwater and Land Archaeological Site of Vičja Luka Vičja Luka, a sheltered inlet next to Bobovišća, was a natural anchorage for ships passing through the Split Gate strait. In 1908, land-clearing work uncovered four prehistoric graves ( V and IV. Century BCE ) covered with stone slabs, containing three Greco-Italic bronze helmets, bronze belt fragments, three bracelets, early La Tène brooches, eighteen double-headed pins, pendants, tweezers, solid bronze rings, and a ring engraved with a bird, along with two glass-paste gems and abundant imported Greek black-glaze pottery. Because museum staff weren't present when the graves were opened, valuable information about the skeletons and grave arrangement was lost. Excavations in 1957 by the Split Archaeological Museum found little further, though a silver stater from Croton and half a glass gem. Later underwater surveys recovered more prehistoric ceramic fragments, and the historian Don Frane Bulić recorded further grave finds nearby, suggesting this was part of a larger necropolis likely linked to the Gradina Rat settlement above — with Vičja Luka serving as a trading anchorage between islanders and Greek seafarers. Numerous superstitions and legends are tied to the bay of Vičja Luka (Witches' Harbor). It's believed to be a place where witches gather and dance at night, and that this bay is connected by mysterious underground channels to the notorious Vičja Jama (Witches' Pit) on Vidova Gora.",
+        "story": " a sheltered inlet next to Bobovišća, was a natural anchorage for ships passing through the Split Gate strait. In 1908, land-clearing work uncovered four prehistoric graves ( V and IV. Century BCE ) covered with stone slabs, containing three Greco-Italic bronze helmets, bronze belt fragments, three bracelets, early La Tène brooches, eighteen double-headed pins, pendants, tweezers, solid bronze rings, and a ring engraved with a bird, along with two glass-paste gems and abundant imported Greek black-glaze pottery. Because museum staff weren't present when the graves were opened, valuable information about the skeletons and grave arrangement was lost. Excavations in 1957 by the Split Archaeological Museum found little further, though a silver stater from Croton and half a glass gem. Later underwater surveys recovered more prehistoric ceramic fragments, and the historian Don Frane Bulić recorded further grave finds nearby, suggesting this was part of a larger necropolis likely linked to the Gradina Rat settlement above — with Vičja Luka serving as a trading anchorage between islanders and Greek seafarers. Numerous superstitions and legends are tied to the bay of Vičja Luka (Witches' Harbor). It's believed to be a place where witches gather and dance at night, and that this bay is connected by mysterious underground channels to the notorious Vičja Jama (Witches' Pit) on Vidova Gora.",
         "image": "vicja-luka-bobovisca.jpg"
       },
       "geometry": {
@@ -3897,8 +3902,8 @@
         "Township": "Ložišća",
         "id": "rectory-and-first-school-lozisca",
         "name-en": "Rectory and first school building ",
-        "story": "Rectory and First School Building Built in 1857 north of the parish church, this stone two-story building — with three tall attic windows — served as both the parish rectory and Ložišća's first schoolhouse, a notable piece of mid-19th-century residential and civic architecture.",
-        "image": ""
+        "story": "Built in 1857 north of the parish church, this stone two-story building — with three tall attic windows — served as both the parish rectory and Ložišća's first schoolhouse, a notable piece of mid-19th-century residential and civic architecture.",
+        "image": "rectory-and-first-school-building-lozisca.jpg"
       },
       "geometry": {
         "type": "Point",
@@ -3908,5 +3913,29 @@
         ]
       }
     }
-  ]
+  ],
+  "townStories": {
+    "Supetar": "Supetar is the largest settlement on the island of Brač, serving as its administrative and transport hub and only place on the island holding the status of a town. Supetar’s history dates back to antiquity, originating at the site of present-day Punta Sv. Nikola, where a Roman villa rustica once stood—remains of which have survived to this day. Evidence of this era includes finds of Roman Republican coins, two sarcophagi near the small Church of St. Nicholas in the local cemetery, and another sarcophagus submerged in the sea off the town’s Banj Beach. It is believed that the settlement itself was originally located on the site of the current parish church, centered around the three-nave Early Christian basilica of St. Peter (6th century)—discovered during excavations in the 1970s—from which Supetar derives its name. This is also the only Early Christian basilica on the island of Brač to retain a portion of its original floor mosaic. Although phonetic evidence suggests the name \"Supetar\" was adopted as early as the 10th century, it first appears in documents from 1423, referred to as the Port of St. Peter (*portus Sancti Petri*). Like other coastal settlements on the island, Supetar is considered one of the newer settlements, having begun to develop during the 16th century. In the Middle Ages, it served merely as the port for the inland settlements of Donji Humac and Nerežišća—the seat of the Counts of Brač.",
+    "Škrip": "Škrip takes pride in its 3,000-year history and its status as the oldest settlement on the island of Brač. Therefore, if you wish to experience the island's history, this is a place you simply must visit. Often referred to as the \"Croatian Mycenae,\" the entire old part of the village is a protected cultural monument. Here, you can find traces of the ancient Greeks, Illyrians, and the Roman Empire, as well as a tower built for defense against the Turks. In addition to numerous historical remains, Škrip is also known for two significant museums. The Museum of the Island of Brač houses many valuable artifacts and is itself partly situated on the historic site of a Roman mausoleum where, according to legend, the wife and daughter of the Roman Emperor Diocletian were buried.",
+    "Splitska": "A small harbor village on Brač's north coast, built where Roman-era stonecutters once quarried the very rock that went into Diocletian's Palace. Its parish church, a fortified Cerinić family house, and quiet quarry paths make it a compact but layered stop between Škrip and Postira.",
+    "Sutivan": "Sutivan ranks among the finest coastal settlements on Brač's north shore, its historic layout dominated by late-baroque summer villas near the harbor and denser, more modest clusters of houses in the old Bunta, Spoizbande, and Upper and Lower Lučica districts. Its parish only broke away from Donji Humac around 1590, but the village's roots reach back to a 6th-century early Christian church — and even a Roman-era shipwreck resting just offshore.",
+    "Mirca": "A tiny village tucked among olive groves west of Sutivan, built around its 18th-century church and best known for the centuries-old olive-growing paths that spread into the hills above it.",
+    "Ložišća": "A steep canyon village in Brač's interior, home to the island's most famous piece of local legend and stubbornness: a bell tower far too grand for the small parish that built it. Around the church and its tower, the village keeps a working stonemason's history alive in old bridges, water cisterns, and a school built to serve its growing 19th-century community.",
+    "Bobovišća": "A pair of quiet coves on Brač's west coast, split between the harbor village and Bobovišća na Moru on the water — the childhood home of poet Vladimir Nazor. Fortified houses, a baroque parish church, and a nearby Bronze Age necropolis all point to a settlement that mattered far more than its size suggests.",
+    "Milna": "First mentioned by name in a document from 1333, and refounded around a church of St. Mary recorded here by 1519, Milna grew into Brač's largest and best-protected harbor, defended by the Renaissance-era Cerinić family castle known as Anglišćina. Its curved waterfront took shape in the early 19th century and was rebuilt and formalized in the 1860s, still framed today by the 1843 Babarović house on one side and the Skarneo family houses on the other. Its deep, sheltered bay has drawn sailors and warships for centuries.",
+    "Dračevica": "A scattered farming hamlet in Brač's dry interior, better known for its stone quarry and windmill than for any single grand building — though its parish church hides a genuinely rare wooden baroque altar on an island built almost entirely of stone.",
+    "Donji Humac": "Donji Humac is one of the oldest settlements on Brač. This small village in the island's interior is not a typical tourist resort, yet it attracts a large number of visitors. The village is home to the unique Jakšić family gallery—a blend of sculpture, painting, and fashion design—that is truly a must-see. The local population takes pride in its stonemasonry tradition, and the nearby quarry, where the famous Brač stone is extracted, is visible from the village. The Kopačina Cave is located nearby; traces of human habitation dating back to 8,000 BC have been discovered there. If you are in the area, be sure to take a stroll through this idyllic little village, adorned with traditional stone houses and narrow streets.",
+    "Nerežišća": "Nerežišća is a small village situated in the heart of the island of Brač, a place once ruled by the island's nobility and dukes. Today, Nerežišća is a quiet little village where residents make their living from agriculture and livestock farming—particularly the raising of the famous Brač lamb. Once the island's main settlement, it was attacked and burned by pirates from Omiš; over time, Nerežišća lost its prominence to Supetar, which emerged as the island's largest town and port. Although tourism is not the primary focus for the local population, a visit is highly recommended, as Nerežišća is home to some of the island's key landmarks. In the village center stands the small Church of St. Peter and St. Paul, featuring a roof adorned with a miniature black pine tree. Nearby, you will also find the Koloč protected geomorphological natural monument, Vidova Gora (the highest peak among the Adriatic islands), and the Blaca Hermitage.",
+    "Murvica": "A cliffside hamlet on Brač's south coast, known for a hermitage built directly into the rock and a cave where monks once carved dragons and angels into the stone.",
+    "Bol": "Bol is the only coastal settlement on Brač's south shore, with ancient sites scattered at its edges and a core shaped from the 15th century onward: the Dominican monastery (1475), the Gothic Kaštil by the harbor, the 17th-century Vusio family castle, and the merchant houses of the Nikolorić, Paloc, and Martinis-Marchi families. Best known today for Zlatni Rat beach, Bol's old town is dense with churches and fortified houses, and holds one of the richest small-town heritage registries on the island.",
+    "Novo selo": "A quiet inland village built almost entirely from local white limestone, where roadside stone sculptures and a nearby Roman villa trace the island's long relationship with its own rock.",
+    "Sumartin": "The youngest village on Brač, founded in 1646 by refugees fleeing Ottoman raids on the mainland, who built their new home around a Franciscan hospice at the island's easternmost tip.",
+    "Povlja": "A small harbor at Brač's eastern end, built and rebuilt on the same spot for more than 1,500 years — from a Roman villa and an early Christian basilica to a Benedictine-fortified church holding one of the oldest surviving documents in the Croatian language.",
+    "Selca": "Once a satellite of Povlja, Selca grew rich on the stone trade and now holds an unusual density of monuments — including the first Tolstoy memorial ever built anywhere in the world — alongside grand merchant houses scarred by the Italian burning of the village in 1943.",
+    "Pražnica": "A cluster of small hilltop churches in Brač's high interior, standing alongside the ruins of Straževnik — a vanished medieval settlement whose two surviving chapels rank among the oldest and loneliest sacred sites on the island.",
+    "Gornji Humac": "A high plateau village ringed by six small churches spanning the 13th to 18th centuries, several of them tied to the vanished settlements of Straževnik, Mošuje, and Dubravice, which plague and time erased from the map.",
+    "Pučišća": "Pučišća grew along the slopes around the deep Porat and Soline inlets, clustered around a set of Renaissance defensive towers — Aquilla, Prodić, Žuvetić, Grego, Marinović, and Dešković — several of which still stand today. Its stone houses, mostly modest and adapted to the terrain, are joined along the waterfront by grander 18th- and 19th-century townhouses and a few neoclassical buildings, with the late-baroque parish church and its Macanović bell tower, and the 16th-century Church of Our Lady of Batak, as its architectural anchors. This is also the historic heart of Brač's stonemasonry trade, home to its working quarry and its stonemson school.",
+    "Dol": "First recorded in the 14th century, Dol grew as a tightly packed village along a steep hillside, its main street stretching from the old Church of St. Peter in the south to the newer parish church at the edge of the fields. Its stone-roofed houses cluster around a deep ravine dominated by the fortified Gospodnetić house, with today's village largely shaped by monumental 18th- and 19th-century residential building — and known island-wide for a cake found nowhere else.",
+    "Postira": "A coastal village whose history runs far deeper than its modern harbor suggests, from a Roman villa and early Christian basilica right on the beach at Lovrečina to a hilltop monastery and the birthplace of poet Vladimir Nazor."
+  }
 }

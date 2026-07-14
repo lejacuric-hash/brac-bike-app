@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { explorerPois } from '../data/poiData'
+import finalPlaces from '../final_places.json'
 import './TipsPage.css'
 
 const menuItems = [
@@ -94,6 +95,197 @@ const eventsData = [
   },
 ]
 
+function buildImageCandidates(id, imageFileName) {
+  const candidates = []
+  const pushCandidate = (value) => {
+    if (value && !candidates.includes(value)) {
+      candidates.push(value)
+    }
+  }
+
+  if (imageFileName) {
+    pushCandidate(`/images/${imageFileName}`)
+  }
+
+  if (id) {
+    const extensions = ['jpg', 'jpeg', 'png', 'webp', 'gif', 'jfif', 'JPG', 'JPEG', 'PNG', 'WEBP', 'GIF', 'JFIF']
+    extensions.forEach((extension) => {
+      pushCandidate(`/images/${id}.${extension}`)
+    })
+  }
+
+  return candidates
+}
+
+function ExplorerCardMedia({ name, imageCandidates, backgroundColor }) {
+  const [candidateIndex, setCandidateIndex] = useState(0)
+  const activeSrc = imageCandidates[candidateIndex]
+
+  return (
+    <div
+      className="explorer-card-media"
+      aria-hidden="true"
+      style={{ backgroundColor }}
+    >
+      {activeSrc ? (
+        <img
+          className="explorer-card-image"
+          src={activeSrc}
+          alt=""
+          onError={() => setCandidateIndex((currentIndex) => currentIndex + 1)}
+        />
+      ) : (
+        <span>{name.charAt(0)}</span>
+      )}
+    </div>
+  )
+}
+
+function normalizeLookup(value = '') {
+  return value
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, ' ')
+    .trim()
+}
+
+function formatCategoryLabel(category = '') {
+  const cleaned = category.trim()
+  if (!cleaned) {
+    return 'Other'
+  }
+
+  return cleaned.toLowerCase().replace(/\b[a-z]/g, (letter) => letter.toUpperCase())
+}
+
+function PlacesToVisitView({
+  onBack,
+  townships,
+  selectedTownship,
+  onSelectTownship,
+  onClearTownship,
+  townStory,
+  items,
+  searchValue,
+  onSearchChange,
+  activeCategory,
+  onCategoryChange,
+  expandedId,
+  onToggleExpanded,
+  categoryOptions,
+}) {
+  return (
+    <div className="tips-subview">
+      <div className="places-toolbar">
+        <button type="button" className="tips-back-button" onClick={onBack}>
+          ← Back to Tips
+        </button>
+
+        {selectedTownship && (
+          <button type="button" className="tips-back-button tips-back-button-secondary" onClick={onClearTownship}>
+            ← All Towns
+          </button>
+        )}
+      </div>
+
+      <div className="tips-subview-header">
+        <h2>{selectedTownship || 'Places to Visit'}</h2>
+        <p>
+          {selectedTownship
+            ? townStory || 'Choose a category below to narrow down the highlights in this town.'
+            : 'Choose a town first, then browse all of its points of interest and filter them by the real JSON categories.'}
+        </p>
+      </div>
+
+      {selectedTownship ? (
+        <>
+          <div className="explorer-controls">
+            <label className="explorer-search">
+              <span className="sr-only">Search places in {selectedTownship}</span>
+              <input
+                type="search"
+                value={searchValue}
+                onChange={(event) => onSearchChange(event.target.value)}
+                placeholder={`Search inside ${selectedTownship}`}
+              />
+            </label>
+
+            <div className="explorer-pill-row" role="tablist" aria-label="Filter by place category">
+              {categoryOptions.map((option) => (
+                <button
+                  key={option.key}
+                  type="button"
+                  className={`explorer-pill${activeCategory === option.key ? ' active' : ''}`}
+                  onClick={() => onCategoryChange(option.key)}
+                >
+                  {option.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="card-list explorer-list">
+            {items.length === 0 ? (
+              <div className="explorer-empty-state">No places match this category or search yet.</div>
+            ) : (
+              items.map((item) => {
+                const isExpanded = expandedId === item.id
+
+                return (
+                  <article key={item.id} className={`explorer-card${isExpanded ? ' expanded' : ''}`}>
+                    <button
+                      type="button"
+                      className="explorer-card-summary"
+                      onClick={() => onToggleExpanded(item.id)}
+                      aria-expanded={isExpanded}
+                    >
+                      <ExplorerCardMedia
+                        name={item.name}
+                        imageCandidates={item.imageCandidates || []}
+                        backgroundColor={item.imagePlaceholderColor}
+                      />
+
+                      <div className="explorer-card-body">
+                        <div className="explorer-card-title-row">
+                          <h3>{item.name}</h3>
+                          <span className="explorer-card-badge">{item.category}</span>
+                        </div>
+                        <p>{item.shortDesc}</p>
+                      </div>
+                    </button>
+
+                    <div className={`explorer-card-story${isExpanded ? ' open' : ''}`}>
+                      <p>{item.story}</p>
+                    </div>
+                  </article>
+                )
+              })
+            )}
+          </div>
+        </>
+      ) : (
+        <div className="township-selector-list">
+          {townships.map((township) => (
+            <button
+              key={township.name}
+              type="button"
+              className="township-selector-card"
+              onClick={() => onSelectTownship(township.name)}
+            >
+              <div className="township-selector-meta">
+                <strong>{township.name}</strong>
+                <span>{township.count} places</span>
+              </div>
+              <p>{township.story}</p>
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
 function SectionView({
   title,
   description,
@@ -164,13 +356,11 @@ function SectionView({
                     onClick={() => onToggleExpanded(item.id)}
                     aria-expanded={isExpanded}
                   >
-                    <div
-                      className="explorer-card-media"
-                      aria-hidden="true"
-                      style={{ backgroundColor: item.imagePlaceholderColor }}
-                    >
-                      <span>{item.name.charAt(0)}</span>
-                    </div>
+                    <ExplorerCardMedia
+                      name={item.name}
+                      imageCandidates={item.imageCandidates || []}
+                      backgroundColor={item.imagePlaceholderColor}
+                    />
 
                     <div className="explorer-card-body">
                       <div className="explorer-card-title-row">
@@ -301,6 +491,84 @@ function formatForecastDay(dateString) {
   })
 }
 
+function hashToColor(value) {
+  let hash = 0
+  for (let index = 0; index < value.length; index += 1) {
+    hash = value.charCodeAt(index) + ((hash << 5) - hash)
+  }
+
+  const hue = Math.abs(hash) % 360
+  return `hsl(${hue} 65% 52%)`
+}
+
+function normalizeCategory(category = '') {
+  const source = category.toLowerCase()
+
+  if (source.includes('beach') || source.includes('bay') || source.includes('cove')) {
+    return 'beach_cove'
+  }
+
+  if (
+    source.includes('church') ||
+    source.includes('chapel') ||
+    source.includes('monastery') ||
+    source.includes('hermitage') ||
+    source.includes('basilica')
+  ) {
+    return 'monastery'
+  }
+
+  if (source.includes('viewpoint') || source.includes('peak')) {
+    return 'viewpoint'
+  }
+
+  if (
+    source.includes('museum') ||
+    source.includes('gallery') ||
+    source.includes('history') ||
+    source.includes('archaeological') ||
+    source.includes('ruin') ||
+    source.includes('lighthouse')
+  ) {
+    return 'stone_heritage'
+  }
+
+  if (source.includes('gastro')) {
+    return 'gastro'
+  }
+
+  return 'village'
+}
+
+const placesToVisitPois = (finalPlaces.features || []).map((feature) => {
+  const properties = feature.properties || {}
+  const name = properties['name-en'] || properties.name || properties.title || 'Unnamed place'
+  const rawTownship = properties.Township || properties.location || 'Brač'
+  const townshipAliases = {
+    spltska: 'Splitska',
+  }
+  const townStories = finalPlaces.townStories || {}
+  const townStoryLookup = Object.fromEntries(
+    Object.keys(townStories).map((townshipName) => [normalizeLookup(townshipName), townshipName])
+  )
+  const normalizedTownship = normalizeLookup(rawTownship)
+  const canonicalTownship = townStoryLookup[townshipAliases[normalizedTownship] || normalizedTownship] || rawTownship
+  const story = properties.story || properties.description || 'No story available yet.'
+  const shortDesc = story.length > 140 ? `${story.slice(0, 137)}...` : story
+  const category = formatCategoryLabel(properties.Category || properties.category || '')
+
+  return {
+    id: properties.id || properties.fid || name,
+    name,
+    township: canonicalTownship,
+    shortDesc,
+    story,
+    category,
+    imageCandidates: buildImageCandidates(properties.id, properties.image),
+    imagePlaceholderColor: hashToColor(name),
+  }
+})
+
 export default function TipsPage() {
   const [currentView, setCurrentView] = useState('menu')
   const [selectedLocation, setSelectedLocation] = useState(BRAC_LOCATIONS[0])
@@ -311,13 +579,21 @@ export default function TipsPage() {
   const [isSensitiveGroup, setIsSensitiveGroup] = useState(false)
   const [poiSearch, setPoiSearch] = useState('')
   const [poiCategory, setPoiCategory] = useState('all')
+  const [selectedTownship, setSelectedTownship] = useState(null)
   const [expandedPoiId, setExpandedPoiId] = useState(null)
 
   useEffect(() => {
     setPoiSearch('')
     setPoiCategory('all')
+    setSelectedTownship(null)
     setExpandedPoiId(null)
   }, [currentView])
+
+  useEffect(() => {
+    setPoiSearch('')
+    setPoiCategory('all')
+    setExpandedPoiId(null)
+  }, [selectedTownship])
 
   useEffect(() => {
     const fetchComprehensiveWeatherData = async () => {
@@ -388,6 +664,67 @@ export default function TipsPage() {
     : null
   const recommendation = safetyReport?.recommendationText ?? 'Loading live safety insights...'
 
+  const placesTownships = useMemo(() => {
+    const townStories = finalPlaces.townStories || {}
+    const grouped = new Map()
+
+    placesToVisitPois.forEach((poi) => {
+      if (!grouped.has(poi.township)) {
+        grouped.set(poi.township, [])
+      }
+      grouped.get(poi.township).push(poi)
+    })
+
+    return Array.from(grouped.entries())
+      .map(([township, pois]) => ({
+        name: township,
+        count: pois.length,
+        story: townStories[township] || `Explore ${township} through its local heritage and points of interest.`,
+      }))
+      .sort((left, right) => left.name.localeCompare(right.name))
+  }, [])
+
+  const selectedTownshipItems = useMemo(() => {
+    if (!selectedTownship) {
+      return []
+    }
+
+    const normalizedSearch = poiSearch.trim().toLowerCase()
+
+    return placesToVisitPois.filter((poi) => {
+      if (poi.township !== selectedTownship) {
+        return false
+      }
+
+      if (poiCategory !== 'all' && poi.category !== poiCategory) {
+        return false
+      }
+
+      if (!normalizedSearch) {
+        return true
+      }
+
+      const searchableText = `${poi.name} ${poi.category} ${poi.shortDesc} ${poi.story}`.toLowerCase()
+      return searchableText.includes(normalizedSearch)
+    })
+  }, [poiCategory, poiSearch, selectedTownship])
+
+  const placesCategoryOptions = useMemo(() => {
+    if (!selectedTownship) {
+      return [{ key: 'all', label: 'All categories' }]
+    }
+
+    const categories = Array.from(
+      new Set(
+        placesToVisitPois
+          .filter((poi) => poi.township === selectedTownship)
+          .map((poi) => poi.category)
+      )
+    ).sort((left, right) => left.localeCompare(right))
+
+    return [{ key: 'all', label: 'All categories' }, ...categories.map((category) => ({ key: category, label: category }))]
+  }, [selectedTownship])
+
   const explorerCategoryOptions = currentView === 'Gastro Corner'
     ? [
         { key: 'all', label: 'All', icon: '🍽️' },
@@ -404,9 +741,7 @@ export default function TipsPage() {
       ]
 
   const explorerSectionItems = useMemo(() => {
-    const baseItems = currentView === 'Gastro Corner'
-      ? explorerPois.filter((poi) => poi.category === 'gastro')
-      : explorerPois.filter((poi) => poi.category !== 'gastro')
+    const baseItems = explorerPois.filter((poi) => poi.category === 'gastro')
 
     const normalizedSearch = poiSearch.trim().toLowerCase()
 
@@ -422,7 +757,7 @@ export default function TipsPage() {
       const searchableText = `${poi.name} ${poi.township} ${poi.shortDesc} ${poi.story}`.toLowerCase()
       return searchableText.includes(normalizedSearch)
     })
-  }, [currentView, poiCategory, poiSearch])
+  }, [poiCategory, poiSearch])
 
   const sectionContent = {
     'Places to Visit': {
@@ -587,13 +922,30 @@ export default function TipsPage() {
               )}
             </div>
           </div>
+        ) : currentView === 'Places to Visit' ? (
+          <PlacesToVisitView
+            onBack={() => setCurrentView('menu')}
+            townships={placesTownships}
+            selectedTownship={selectedTownship}
+            onSelectTownship={setSelectedTownship}
+            onClearTownship={() => setSelectedTownship(null)}
+            townStory={(finalPlaces.townStories || {})[selectedTownship]}
+            items={selectedTownshipItems}
+            searchValue={poiSearch}
+            onSearchChange={setPoiSearch}
+            activeCategory={poiCategory}
+            onCategoryChange={setPoiCategory}
+            expandedId={expandedPoiId}
+            onToggleExpanded={(itemId) => setExpandedPoiId((currentId) => (currentId === itemId ? null : itemId))}
+            categoryOptions={placesCategoryOptions}
+          />
         ) : (
           <SectionView
             title={sectionContent[currentView].title}
             description={sectionContent[currentView].description}
-            items={['Places to Visit', 'Gastro Corner'].includes(currentView) ? explorerSectionItems : sectionContent[currentView].items}
+            items={currentView === 'Gastro Corner' ? explorerSectionItems : sectionContent[currentView].items}
             onBack={() => setCurrentView('menu')}
-            variant={['Places to Visit', 'Gastro Corner'].includes(currentView) ? 'explorer' : 'default'}
+            variant={currentView === 'Gastro Corner' ? 'explorer' : 'default'}
             searchValue={poiSearch}
             onSearchChange={setPoiSearch}
             activeCategory={poiCategory}
