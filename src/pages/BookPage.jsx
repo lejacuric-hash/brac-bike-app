@@ -189,7 +189,7 @@ export default function BookPage() {
                       <li key={i}>{spec}</li>
                     ))}
                   </ul>
-                  
+                  <a
                     href={bike.specUrl}
                     target="_blank"
                     rel="noopener noreferrer"
