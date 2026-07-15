@@ -62,13 +62,68 @@ const farmsData = [
     id: 'opg-romano-kusanovic',
     name: 'OPG Romano Kusanović',
     category: 'olive_oil',
-    place: ['Sutivan', 'Supetar'],
-    description: 'A multi-generational family estate producing organic extra-virgin olive oil',
-    offer: 'Premium hand-harvested organic certified olive oil.',
+    place: 'Sutivan',
+    description: 'A multi-generational family estate producing award-winning, extra-virgin olive oil from the native Oblica olive variety.',
+    offer: 'organic certified extra-virgin olive oil.',
     phone: '+385 91 570 9912',
     email: 'romano.kusanovic@gmail.com',
     imagePlaceholderColor: '#2f855a', // Deep olive green
   },
+  {
+    id: 'opg-gospodnetic-cheese',
+    name: 'Gospodnetić Cheese Farm',
+    category: 'cheese',
+    place: 'Dol',
+    description: 'Famous for traditional Brač sheep cheese ("Brački sir"), aged in stone cellars using ancient island methods.',
+    offer: 'Aged sheep cheese, fresh curd (skuta), and homemade fig jams.',
+    phone: '+385 98 443 119',
+    email: 'gospodnetic.dol@gmail.com',
+    imagePlaceholderColor: '#ecc94b', // Cheese yellow
+  },
+  {
+    id: 'opg-kastelan-lamb',
+    name: 'Eko-Gospodarstvo Kaštelan',
+    category: 'meat',
+    place: 'Pražnice',
+    description: 'Located on the high inland plains, raising free-roaming island sheep and producing traditional cured meats.',
+    offer: 'Brač lamb specialties, cured prosciutto (pršut), and dry-aged pancetta.',
+    phone: '+385 91 332 9901',
+    email: 'opg.kastelan@outlook.com',
+    imagePlaceholderColor: '#9b2c2c', // Meat red
+  },
+  {
+    id: 'opg-postira-gardens',
+    name: 'OPG Postira Organic Gardens',
+    category: 'vegetables',
+    place: 'Postira',
+    description: 'Lush organic garden plots utilizing natural spring water to grow pristine Mediterranean vegetables.',
+    offer: 'Seasonal vegetable baskets, wild asparagus, sun-dried tomatoes, and capers.',
+    phone: '+385 95 887 4423',
+    email: 'postira.gardens@gmail.com',
+    imagePlaceholderColor: '#38a169', // Veggie green
+  },
+  {
+    id: 'senjkovic-cellars',
+    name: 'Senjković Winery & Cellars',
+    category: 'drinks',
+    place: 'Dračevica',
+    description: 'Boutique family winery breathing new life into local grape varieties like Plavac Mali and Pošip.',
+    offer: 'Premium wine tastings paired with local delicacies, vineyard walks, and local liqueurs.',
+    phone: '+385 91 772 8812',
+    email: 'senjkovic.vino@gmail.com',
+    imagePlaceholderColor: '#805ad5', // Wine purple
+  },
+  {
+    id: 'jaksic-stone-gallery',
+    name: 'Jakšić Stone-Masonry Atelier',
+    category: 'crafts',
+    place: 'Donji Humac',
+    description: 'A family of celebrated academic artists transforming pure white Brač stone into delicate, beautiful utility art.',
+    offer: 'Hand-carved stone bowls, decorative mortar & pestles, and custom souvenirs.',
+    phone: '+385 21 630 112',
+    email: 'jaksic.stone@gmail.com',
+    imagePlaceholderColor: '#718096', // Slate stone gray
+  }
 ]
 
 const eventsData = [
@@ -527,16 +582,25 @@ export default function TipsPage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
   const [isSensitiveGroup, setIsSensitiveGroup] = useState(false)
+  
+  // States for general search/category filtering
   const [poiSearch, setPoiSearch] = useState('')
   const [poiCategory, setPoiCategory] = useState('all')
   const [selectedTownship, setSelectedTownship] = useState(null)
   const [expandedPoiId, setExpandedPoiId] = useState(null)
 
+  // Explicit states for Local Family Farms View
+  const [farmSearch, setFarmSearch] = useState('')
+  const [farmCategory, setFarmCategory] = useState('all')
+
+  // Reset helper when changing main views
   useEffect(() => {
     setPoiSearch('')
     setPoiCategory('all')
     setSelectedTownship(null)
     setExpandedPoiId(null)
+    setFarmSearch('')
+    setFarmCategory('all')
   }, [currentView])
 
   useEffect(() => {
@@ -675,23 +739,45 @@ export default function TipsPage() {
     return [{ key: 'all', label: 'All categories' }, ...categories.map((category) => ({ key: category, label: category }))]
   }, [selectedTownship])
 
-  const explorerCategoryOptions = currentView === 'Gastro Corner'
-    ? [
-        { key: 'all', label: 'All', icon: '🍽️' },
-        { key: 'gastro', label: 'Gastro', icon: '🍷' },
-      ]
-    : [
-        { key: 'all', label: 'All', icon: '🧭' },
-        { key: 'viewpoint', label: 'Viewpoints', icon: '🏔' },
-        { key: 'beach_cove', label: 'Beaches', icon: '🏖' },
-        { key: 'monastery', label: 'Monasteries', icon: '⛪' },
-        { key: 'gastro', label: 'Gastro', icon: '🍷' },
-        { key: 'stone_heritage', label: 'Stone Heritage', icon: '🪨' },
-        { key: 'village', label: 'Villages', icon: '🏘' },
-      ]
+  // Custom Memoized Farm Filter
+  const filteredFarms = useMemo(() => {
+    const normalizedSearch = farmSearch.trim().toLowerCase()
+
+    return farmsData.filter((farm) => {
+      if (farmCategory !== 'all' && farm.category !== farmCategory) {
+        return false
+      }
+
+      if (!normalizedSearch) {
+        return true
+      }
+
+      const searchableText = `${farm.name} ${farm.place} ${farm.description} ${farm.offer}`.toLowerCase()
+      return searchableText.includes(normalizedSearch)
+    })
+  }, [farmCategory, farmSearch])
+
+  const farmCategoryOptions = [
+    { key: 'all', label: 'All', icon: '🧑‍🌾' },
+    { key: 'olive_oil', label: 'Olive Oil', icon: '🫒' },
+    { key: 'cheese', label: 'Cheese', icon: '🧀' },
+    { key: 'meat', label: 'Meat', icon: '🥩' },
+    { key: 'vegetables', label: 'Vegetables', icon: '🥦' },
+    { key: 'drinks', label: 'Drinks', icon: '🍷' },
+    { key: 'crafts', label: 'Traditional Crafts', icon: '🪨' },
+  ]
+
+  const explorerCategoryOptions = [
+    { key: 'all', label: 'All', icon: '🧭' },
+    { key: 'viewpoint', label: 'Viewpoints', icon: '🏔' },
+    { key: 'beach_cove', label: 'Beaches', icon: '🏖' },
+    { key: 'monastery', label: 'Monasteries', icon: '⛪' },
+    { key: 'gastro', label: 'Gastro', icon: '🍷' },
+    { key: 'stone_heritage', label: 'Stone Heritage', icon: '🪨' },
+    { key: 'village', label: 'Villages', icon: '🏘' },
+  ]
 
   const explorerSectionItems = useMemo(() => {
-    // FIX: Instead of hardcoding to 'gastro', dynamically filter by view
     const categoryFilter = currentView === 'Gastro Corner' ? 'gastro' : 'all'
     
     const baseItems = categoryFilter === 'all' 
@@ -848,23 +934,29 @@ export default function TipsPage() {
                       <div>🌧️ Rain Prob: <strong>{activeWeather?.rainProbability}%</strong></div>
                     </div>
                   </div>
-                  <div className="weather-recommendation">
-                    <p>{recommendation}</p>
-                  </div>
-                  {safetyReport?.safetyAlerts.length > 0 && (
-                    <div className="safety-alerts-box">
-                      {safetyReport.safetyAlerts.map((alert, idx) => (
-                        <div key={idx} className={`safety-alert alert-${alert.severity.toLowerCase()}`}>
-                          {alert.message}
-                        </div>
-                      ))}
-                    </div>
-                  )}
                 </div>
+
+                <div className="weather-advisory-box">
+                  <h4>🗺️ Routing Recommendation:</h4>
+                  <p>{recommendation}</p>
+                </div>
+
+                {safetyReport?.safetyAlerts && safetyReport.safetyAlerts.length > 0 && (
+                  <div className="weather-alerts">
+                    {safetyReport.safetyAlerts.map((alert, index) => (
+                      <div
+                        key={`${alert.type}-${index}`}
+                        className={`safety-alert-row ${alert.severity.toLowerCase()}`}
+                      >
+                        {alert.message}
+                      </div>
+                    ))}
+                  </div>
+                )}
               </>
             )}
           </div>
- ) : currentView === 'Places to Visit' ? (
+        ) : currentView === 'Places to Visit' ? (
           <PlacesToVisitView
             onBack={() => setCurrentView('menu')}
             townships={placesTownships}
@@ -930,6 +1022,94 @@ export default function TipsPage() {
                   </div>
                 </article>
               ))}
+            </div>
+          </div>
+        ) : currentView === 'Connect with Local Family Farms' ? (
+          <div className="tips-subview">
+            <button type="button" className="tips-back-button" onClick={() => setCurrentView('menu')}>
+              ← Back to Tips
+            </button>
+
+            <div className="tips-subview-header">
+              <h2>🌿 Connect with Local Family Farms</h2>
+              <p>Cycle right to the source. Meet the island families keeping ancient agricultural traditions alive.</p>
+            </div>
+
+            {/* Filters and Search Bar */}
+            <div className="explorer-controls">
+              <label className="explorer-search">
+                <span className="sr-only">Search farms</span>
+                <input
+                  type="search"
+                  value={farmSearch}
+                  onChange={(event) => setFarmSearch(event.target.value)}
+                  placeholder="Search farms by name, village, or product..."
+                />
+              </label>
+
+              <div className="explorer-pill-row" role="tablist" aria-label="Filter farms by category">
+                {farmCategoryOptions.map((option) => (
+                  <button
+                    key={option.key}
+                    type="button"
+                    className={`explorer-pill${farmCategory === option.key ? ' active' : ''}`}
+                    onClick={() => setFarmCategory(option.key)}
+                  >
+                    {option.icon} {option.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Farms Grid */}
+            <div className="card-list">
+              {filteredFarms.length === 0 ? (
+                <div className="explorer-empty-state">No family farms match your search criteria.</div>
+              ) : (
+                filteredFarms.map((farm) => (
+                  <article key={farm.id} className="tips-card" style={{ display: 'flex', flexDirection: 'column', padding: '16px', gap: '12px' }}>
+                    
+                    {/* Header Block: Media + Title metadata */}
+                    <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
+                      <ExplorerCardMedia
+                        name={farm.name}
+                        imageCandidates={buildImageCandidates(farm.id)}
+                        backgroundColor={farm.imagePlaceholderColor}
+                      />
+                      <div>
+                        <span style={{ fontSize: '0.75rem', fontWeight: 'bold', color: '#2f855a', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                          {farm.category.replace('_', ' ')} • {farm.place}
+                        </span>
+                        <h3 style={{ margin: '2px 0 0 0', fontSize: '1.25rem', fontWeight: '700' }}>{farm.name}</h3>
+                      </div>
+                    </div>
+
+                    {/* Content Section */}
+                    <div style={{ flex: '1' }}>
+                      <p style={{ margin: '0 0 8px 0', fontSize: '0.95rem', color: '#4a5568', lineHeight: '1.4' }}>
+                        {farm.description}
+                      </p>
+                      
+                      {/* What they offer */}
+                      <div style={{ backgroundColor: '#f0fff4', borderLeft: '3px solid #38a169', padding: '8px 12px', borderRadius: '4px', margin: '10px 0' }}>
+                        <strong style={{ fontSize: '0.8rem', color: '#276749', textTransform: 'uppercase', display: 'block', marginBottom: '2px' }}>
+                          🎁 What They Offer:
+                        </strong>
+                        <span style={{ fontSize: '0.9rem', color: '#2f855a' }}>{farm.offer}</span>
+                      </div>
+                    </div>
+
+                    {/* Contact footer */}
+                    <div style={{ fontSize: '0.8rem', color: '#718096', borderTop: '1px dashed #e2e8f0', paddingTop: '10px', marginTop: 'auto' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: '6px' }}>
+                        <div>📞 <b>Phone:</b> <a href={`tel:${farm.phone}`} style={{ color: '#4a5568', textDecoration: 'none' }}>{farm.phone}</a></div>
+                        <div>✉️ <b>Email:</b> <a href={`mailto:${farm.email}`} style={{ color: '#4a5568', textDecoration: 'none' }}>{farm.email}</a></div>
+                      </div>
+                    </div>
+
+                  </article>
+                ))
+              )}
             </div>
           </div>
         ) : (
