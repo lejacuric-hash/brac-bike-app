@@ -1,0 +1,387 @@
+.book-page {
+  min-height: 100vh;
+  background-color: #370063;
+  color: #ffffff;
+  padding: 24px 20px 100px;
+  box-sizing: border-box;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.book-title {
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin-bottom: 16px;
+  color: #ffffff;
+}
+
+.book-steps {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 24px;
+}
+
+.book-step-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  transition: background 0.2s;
+}
+
+.book-step-dot.active {
+  background: #753cae;
+}
+
+.book-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.book-section-title {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.book-subsection-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.8);
+  margin-top: 8px;
+}
+
+.book-category-filter {
+  display: flex;
+  gap: 10px;
+}
+
+.book-filter-btn {
+  flex: 1;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: 999px;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.7);
+  padding: 10px 16px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.book-filter-btn.active {
+  border-color: #753cae;
+  background: #753cae;
+  color: #ffffff;
+}
+
+.book-bikes-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.book-bike-card {
+  background: rgba(255, 255, 255, 0.06);
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 16px;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+}
+
+.book-bike-card.selected {
+  border-color: #753cae;
+  background: rgba(117, 60, 174, 0.2);
+}
+
+.book-bike-image-container {
+  width: 100%;
+  height: 160px;
+  border-radius: 10px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.05);
+  margin-bottom: 12px;
+}
+
+.book-bike-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.book-bike-name {
+  font-weight: 700;
+  font-size: 1rem;
+  color: #ffffff;
+  margin-bottom: 4px;
+}
+
+.book-bike-type {
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.6);
+  margin-bottom: 8px;
+}
+
+.book-bike-specs {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.book-bike-specs li {
+  font-size: 0.82rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.book-bike-specs li::before {
+  content: '· ';
+}
+
+.book-spec-link {
+  color: #a78bfa;
+  font-size: 0.85rem;
+  text-decoration: none;
+}
+
+.book-bike-selected-badge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: #753cae;
+  color: white;
+  border-radius: 999px;
+  padding: 4px 10px;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.book-size-picker {
+  margin-top: 4px;
+}
+
+.book-size-buttons {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+
+.book-size-btn {
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: 999px;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.7);
+  padding: 10px 20px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.95rem;
+  min-width: 56px;
+  transition: all 0.2s;
+}
+
+.book-size-btn.active {
+  border-color: #753cae;
+  background: #753cae;
+  color: #ffffff;
+}
+
+.book-btn-primary {
+  width: 100%;
+  background: #753cae;
+  color: #ffffff;
+  border: none;
+  border-radius: 999px;
+  padding: 16px;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 8px;
+  transition: background 0.2s;
+}
+
+.book-btn-primary:hover {
+  background: #8f4fd4;
+}
+
+.book-btn-primary:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.book-back-btn {
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.6);
+  cursor: pointer;
+  font-size: 0.95rem;
+  padding: 0;
+  text-align: left;
+}
+
+.book-selected-summary {
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
+  padding: 14px;
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.8);
+  line-height: 1.6;
+}
+
+.book-dates {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.book-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.book-field label {
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.7);
+  font-weight: 600;
+}
+
+.book-input {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 10px;
+  padding: 12px;
+  color: #ffffff;
+  font-size: 0.95rem;
+  font-family: inherit;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.book-input:focus {
+  outline: none;
+  border-color: #753cae;
+}
+
+.book-textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+.book-extras {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.book-extra-btn {
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: 999px;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.7);
+  padding: 8px 16px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.2s;
+}
+
+.book-extra-btn.active {
+  border-color: #753cae;
+  background: #753cae;
+  color: #ffffff;
+}
+
+.book-delivery-type {
+  display: flex;
+  gap: 10px;
+}
+
+.book-delivery-btn {
+  flex: 1;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: 999px;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.7);
+  padding: 10px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.book-delivery-btn.active {
+  border-color: #753cae;
+  background: #753cae;
+  color: #ffffff;
+}
+
+.book-price-preview {
+  background: rgba(117, 60, 174, 0.3);
+  border: 1px solid #753cae;
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 1rem;
+}
+
+.book-price-preview strong {
+  font-size: 1.4rem;
+  color: #ffffff;
+}
+
+.book-error {
+  background: rgba(248, 113, 113, 0.15);
+  border: 1px solid #f87171;
+  border-radius: 10px;
+  padding: 12px;
+  color: #f87171;
+  font-size: 0.9rem;
+}
+
+.book-note {
+  text-align: center;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.85rem;
+  margin-top: 8px;
+}
+
+.book-success {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 16px;
+  padding: 48px 0;
+}
+
+.book-success-icon {
+  font-size: 4rem;
+}
+
+.book-success h2 {
+  font-size: 1.8rem;
+  font-weight: 700;
+}
+
+.book-success p {
+  color: rgba(255, 255, 255, 0.8);
+  line-height: 1.6;
+  max-width: 320px;
+}
+
+/* Dark date/time input styling */
+input[type="date"]::-webkit-calendar-picker-indicator,
+input[type="time"]::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+}
+
+select.book-input option {
+  background: #370063;
+  color: #ffffff;
+}
