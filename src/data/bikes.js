@@ -17,13 +17,13 @@ export const bikes = [
     description: 'Perfect for trails and mountain roads on Brač.',
   },
   {
-    id: 'sprint-elite',
-    name: 'Sprint Elite GRX600 Gravel',
+    id: 'sprint-whisper',
+    name: 'Sprint Whisper GRX600 Gravel',
     category: 'bike',
     type: 'Gravel Bike',
     sizes: ['L'],
-    image: 'https://r-and-r.eu/wp-content/uploads/sprint-elite.jpg',
-    specUrl: 'https://r-and-r.eu/rent-a-bike/',
+    image: 'https://r-and-r.eu/wp-content/uploads/sprint-whisper.jpg',
+    specUrl: 'https://r-and-r.eu/rent-a-bike/sprint-whisper-grx600-gravel/',
     specs: [
       'Frame: Sprint aluminium',
       'Wheel: 700c',
