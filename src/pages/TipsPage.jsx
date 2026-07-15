@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { explorerPois } from '../data/poiData'
 import finalPlaces from '../final_places.json'
+import gastroData from '../gastroData.json'
 import './TipsPage.css'
 
 const menuItems = [
@@ -53,19 +54,6 @@ const placesData = [
     title: 'Blaca Hermitage',
     description: 'A remarkable historic retreat tucked into the island hills with dramatic scenery.',
     emoji: '⛰️',
-  },
-]
-
-const gastroData = [
-  {
-    title: 'Seafood Taverns',
-    description: 'Enjoy fresh island dishes by the shore with local olive oil and herbs.',
-    emoji: '🍽️',
-  },
-  {
-    title: 'Coffee & Cake Stops',
-    description: 'Pause for a relaxed break between rides with pastries and espresso.',
-    emoji: '☕',
   },
 ]
 
@@ -875,7 +863,7 @@ export default function TipsPage() {
               </>
             )}
           </div>
-        ) : currentView === 'Places to Visit' ? (
+ ) : currentView === 'Places to Visit' ? (
           <PlacesToVisitView
             onBack={() => setCurrentView('menu')}
             townships={placesTownships}
@@ -892,17 +880,64 @@ export default function TipsPage() {
             onToggleExpanded={(id) => setExpandedPoiId(expandedPoiId === id ? null : id)}
             categoryOptions={placesCategoryOptions}
           />
+        ) : currentView === 'Gastro Corner' ? (
+          <div className="tips-subview">
+            <button type="button" className="tips-back-button" onClick={() => setCurrentView('menu')}>
+              ← Back to Tips
+            </button>
+
+            <div className="tips-subview-header">
+              <h2>🍷 Gastro Corner</h2>
+              <p>Recharge after your ride with legendary local dishes and partner taverns.</p>
+            </div>
+
+            {/* 1. Traditional Foods Section */}
+            <h3 style={{ fontSize: '1.2rem', color: '#dd6b20', marginBottom: '15px', marginTop: '20px', fontWeight: 'bold' }}>🍽️ Must-Try Traditional Dishes</h3>
+            <div className="card-list">
+              {gastroData.traditionalFoods.map((food) => (
+                <article key={food.id} className="tips-card">
+                  <div className="tips-card-media" aria-hidden="true" style={{ fontSize: '1.5rem' }}>
+                    🍲
+                  </div>
+                  <div className="tips-card-body">
+                    <span style={{ fontSize: '0.75rem', fontWeight: 'bold', color: '#dd6b20', textTransform: 'uppercase' }}>
+                      Traditional Specialty • Brač Island
+                    </span>
+                    <h3 style={{ margin: '4px 0 6px 0' }}>{food.name}</h3>
+                    <p>{food.description}</p>
+                  </div>
+                </article>
+              ))}
+            </div>
+
+            {/* 2. Partner Restaurants Section */}
+            <h3 style={{ fontSize: '1.2rem', color: '#dd6b20', marginBottom: '15px', marginTop: '30px', fontWeight: 'bold' }}>📍 Recommended Bicycle-Friendly Stops</h3>
+            <div className="card-list">
+              {gastroData.restaurants.map((rest) => (
+                <article key={rest.id} className="tips-card" style={{ display: 'block', padding: '16px' }}>
+                  <span style={{ fontSize: '0.75rem', fontWeight: 'bold', color: '#319795', textTransform: 'uppercase' }}>
+                    Konoba / Restoran • {rest.place}
+                  </span>
+                  <h3 style={{ margin: '4px 0 8px 0', fontSize: '1.2rem' }}>{rest.name}</h3>
+                  <p style={{ marginBottom: '12px' }}>{rest.description}</p>
+                  
+                  {/* Contact Block */}
+                  <div style={{ fontSize: '0.8rem', color: '#718096', borderTop: '1px dashed #e2e8f0', paddingTop: '8px', marginTop: '10px' }}>
+                    <div>🕒 <b>Hours:</b> {rest.workingHours}</div>
+                    <div>📞 <b>Phone:</b> {rest.phone}</div>
+                    <div>✉️ <b>Email:</b> {rest.email}</div>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </div>
         ) : (
           <SectionView
             title={sectionContent[currentView].title}
             description={sectionContent[currentView].description}
-            items={
-              currentView === 'Gastro Corner'
-                ? explorerSectionItems
-                : sectionContent[currentView].items
-            }
+            items={sectionContent[currentView].items}
             onBack={() => setCurrentView('menu')}
-            variant={currentView === 'Gastro Corner' ? 'explorer' : 'default'}
+            variant="default"
             searchValue={poiSearch}
             onSearchChange={setPoiSearch}
             activeCategory={poiCategory}
