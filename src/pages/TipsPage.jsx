@@ -9,7 +9,6 @@ const menuItems = [
   'Places to Visit',
   'Gastro Corner',
   'Connect with Local Family Farms',
-  'Events',
 ]
 
 const BRAC_LOCATIONS = [
@@ -59,7 +58,7 @@ const placesData = [
 
 const farmsData = [
   {
-    id: 'opg-romano-kusanovic',
+        id: 'opg-romano-kusanovic',
     name: 'OPG Romano Kusanović',
     category: 'olive_oil',
     place: 'Sutivan',
@@ -68,7 +67,7 @@ const farmsData = [
     phone: '+385 91 570 9912',
     email: 'romano.kusanovic@gmail.com',
     imagePlaceholderColor: '#2f855a', // Deep olive green
-  },
+},
   {
     id: 'opg-gospodnetic-cheese',
     name: 'Gospodnetić Cheese Farm',
@@ -124,19 +123,6 @@ const farmsData = [
     email: 'jaksic.stone@gmail.com',
     imagePlaceholderColor: '#718096', // Slate stone gray
   }
-]
-
-const eventsData = [
-  {
-    title: 'Summer Night Markets',
-    description: 'Enjoy live music, local crafts, and evening gatherings along the coast.',
-    emoji: '🎶',
-  },
-  {
-    title: 'Cycling Meetups',
-    description: 'Join friendly group rides that blend scenic routes with local culture.',
-    emoji: '🚲',
-  },
 ]
 
 function buildImageCandidates(id, imageFileName) {
@@ -777,29 +763,6 @@ export default function TipsPage() {
     { key: 'village', label: 'Villages', icon: '🏘' },
   ]
 
-  const explorerSectionItems = useMemo(() => {
-    const categoryFilter = currentView === 'Gastro Corner' ? 'gastro' : 'all'
-    
-    const baseItems = categoryFilter === 'all' 
-      ? explorerPois 
-      : explorerPois.filter((poi) => poi.category === categoryFilter)
-
-    const normalizedSearch = poiSearch.trim().toLowerCase()
-
-    return baseItems.filter((poi) => {
-      if (poiCategory !== 'all' && poi.category !== poiCategory) {
-        return false
-      }
-
-      if (!normalizedSearch) {
-        return true
-      }
-
-      const searchableText = `${poi.name} ${poi.township} ${poi.shortDesc} ${poi.story}`.toLowerCase()
-      return searchableText.includes(normalizedSearch)
-    })
-  }, [poiCategory, poiSearch, currentView])
-
   const sectionContent = {
     'Places to Visit': {
       title: 'Places to Visit',
@@ -815,11 +778,6 @@ export default function TipsPage() {
       title: 'Connect with Local Family Farms',
       description: 'Meet producers and explore Brač through its food and traditions.',
       items: farmsData,
-    },
-    Events: {
-      title: 'Events',
-      description: 'Check out cultural happenings and casual local gatherings nearby.',
-      items: eventsData,
     },
   }
 
@@ -985,7 +943,7 @@ export default function TipsPage() {
             </div>
 
             {/* 1. Traditional Foods Section */}
-            <h3 style={{ fontSize: '1.2rem', color: '#dd6b20', marginBottom: '15px', marginTop: '20px', fontWeight: 'bold' }}>🍽️ Must-Try Traditional Dishes</h3>
+            <h3 style={{ fontSize: '1.2rem', color: '#b794f4', marginBottom: '15px', marginTop: '20px', fontWeight: 'bold' }}>🍽️ Must-Try Traditional Dishes</h3>
             <div className="card-list">
               {gastroData.traditionalFoods.map((food) => (
                 <article key={food.id} className="tips-card">
@@ -993,32 +951,32 @@ export default function TipsPage() {
                     🍲
                   </div>
                   <div className="tips-card-body">
-                    <span style={{ fontSize: '0.75rem', fontWeight: 'bold', color: '#dd6b20', textTransform: 'uppercase' }}>
+                    <span style={{ fontSize: '0.75rem', fontWeight: 'bold', color: '#d6bcfa', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                       Traditional Specialty • Brač Island
                     </span>
-                    <h3 style={{ margin: '4px 0 6px 0' }}>{food.name}</h3>
-                    <p>{food.description}</p>
+                    <h3 style={{ margin: '4px 0 6px 0', color: '#ffffff' }}>{food.name}</h3>
+                    <p style={{ color: '#f7fafc' }}>{food.description}</p>
                   </div>
                 </article>
               ))}
             </div>
 
             {/* 2. Partner Restaurants Section */}
-            <h3 style={{ fontSize: '1.2rem', color: '#dd6b20', marginBottom: '15px', marginTop: '30px', fontWeight: 'bold' }}>📍 Recommended Bicycle-Friendly Stops</h3>
+            <h3 style={{ fontSize: '1.2rem', color: '#b794f4', marginBottom: '15px', marginTop: '30px', fontWeight: 'bold' }}>📍 Recommended Bicycle-Friendly Stops</h3>
             <div className="card-list">
               {gastroData.restaurants.map((rest) => (
                 <article key={rest.id} className="tips-card" style={{ display: 'block', padding: '16px' }}>
-                  <span style={{ fontSize: '0.75rem', fontWeight: 'bold', color: '#319795', textTransform: 'uppercase' }}>
+                  <span style={{ fontSize: '0.75rem', fontWeight: 'bold', color: '#d6bcfa', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                     Konoba / Restoran • {rest.place}
                   </span>
-                  <h3 style={{ margin: '4px 0 8px 0', fontSize: '1.2rem' }}>{rest.name}</h3>
-                  <p style={{ marginBottom: '12px' }}>{rest.description}</p>
+                  <h3 style={{ margin: '4px 0 8px 0', fontSize: '1.2rem', color: '#ffffff' }}>{rest.name}</h3>
+                  <p style={{ marginBottom: '12px', color: '#f7fafc' }}>{rest.description}</p>
                   
                   {/* Contact Block */}
-                  <div style={{ fontSize: '0.8rem', color: '#718096', borderTop: '1px dashed #e2e8f0', paddingTop: '8px', marginTop: '10px' }}>
-                    <div>🕒 <b>Hours:</b> {rest.workingHours}</div>
-                    <div>📞 <b>Phone:</b> {rest.phone}</div>
-                    <div>✉️ <b>Email:</b> {rest.email}</div>
+                  <div style={{ fontSize: '0.8rem', color: '#edf2f7', borderTop: '1px dashed rgba(255, 255, 255, 0.2)', paddingTop: '8px', marginTop: '10px' }}>
+                    <div style={{ marginBottom: '4px' }}><span style={{ color: '#d6bcfa' }}>🕒 Hours:</span> {rest.workingHours}</div>
+                    <div style={{ marginBottom: '4px' }}><span style={{ color: '#d6bcfa' }}>📞 Phone:</span> {rest.phone}</div>
+                    <div><span style={{ color: '#d6bcfa' }}>✉️ Email:</span> {rest.email}</div>
                   </div>
                 </article>
               ))}
@@ -1077,33 +1035,36 @@ export default function TipsPage() {
                         backgroundColor={farm.imagePlaceholderColor}
                       />
                       <div>
-                        <span style={{ fontSize: '0.75rem', fontWeight: 'bold', color: '#2f855a', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                        {/* Subtitle Category tag */}
+                        <span style={{ fontSize: '0.75rem', fontWeight: 'bold', color: '#d6bcfa', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                           {farm.category.replace('_', ' ')} • {farm.place}
                         </span>
-                        <h3 style={{ margin: '2px 0 0 0', fontSize: '1.25rem', fontWeight: '700' }}>{farm.name}</h3>
+                        {/* Card Title Header */}
+                        <h3 style={{ margin: '2px 0 0 0', fontSize: '1.25rem', fontWeight: '700', color: '#ffffff' }}>{farm.name}</h3>
                       </div>
                     </div>
 
                     {/* Content Section */}
                     <div style={{ flex: '1' }}>
-                      <p style={{ margin: '0 0 8px 0', fontSize: '0.95rem', color: '#4a5568', lineHeight: '1.4' }}>
+                      {/* Main description paragraph */}
+                      <p style={{ margin: '0 0 8px 0', fontSize: '0.95rem', color: '#f7fafc', lineHeight: '1.4' }}>
                         {farm.description}
                       </p>
                       
                       {/* What they offer */}
-                      <div style={{ backgroundColor: '#f0fff4', borderLeft: '3px solid #38a169', padding: '8px 12px', borderRadius: '4px', margin: '10px 0' }}>
-                        <strong style={{ fontSize: '0.8rem', color: '#276749', textTransform: 'uppercase', display: 'block', marginBottom: '2px' }}>
+                      <div style={{ backgroundColor: 'rgba(255, 255, 255, 0.08)', borderLeft: '3px solid #b794f4', padding: '8px 12px', borderRadius: '4px', margin: '10px 0' }}>
+                        <strong style={{ fontSize: '0.8rem', color: '#e2e8f0', textTransform: 'uppercase', display: 'block', marginBottom: '2px' }}>
                           🎁 What They Offer:
                         </strong>
-                        <span style={{ fontSize: '0.9rem', color: '#2f855a' }}>{farm.offer}</span>
+                        <span style={{ fontSize: '0.9rem', color: '#ffffff' }}>{farm.offer}</span>
                       </div>
                     </div>
 
                     {/* Contact footer */}
-                    <div style={{ fontSize: '0.8rem', color: '#718096', borderTop: '1px dashed #e2e8f0', paddingTop: '10px', marginTop: 'auto' }}>
+                    <div style={{ fontSize: '0.8rem', color: '#f7fafc', borderTop: '1px dashed rgba(255, 255, 255, 0.2)', paddingTop: '10px', marginTop: 'auto' }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: '6px' }}>
-                        <div>📞 <b>Phone:</b> <a href={`tel:${farm.phone}`} style={{ color: '#4a5568', textDecoration: 'none' }}>{farm.phone}</a></div>
-                        <div>✉️ <b>Email:</b> <a href={`mailto:${farm.email}`} style={{ color: '#4a5568', textDecoration: 'none' }}>{farm.email}</a></div>
+                        <div>📞 <b style={{ color: '#d6bcfa' }}>Phone:</b> <a href={`tel:${farm.phone}`} style={{ color: '#ffffff', textDecoration: 'underline' }}>{farm.phone}</a></div>
+                        <div>✉️ <b style={{ color: '#d6bcfa' }}>Email:</b> <a href={`mailto:${farm.email}`} style={{ color: '#ffffff', textDecoration: 'underline' }}>{farm.email}</a></div>
                       </div>
                     </div>
 
