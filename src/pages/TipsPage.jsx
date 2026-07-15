@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { explorerPois } from '../data/poiData'
 import finalPlaces from '../final_places.json'
-import gastroData from '../gastroData.json'
+import gastroData from "../data/gastroData.json"
 import './TipsPage.css'
 
 const menuItems = [
