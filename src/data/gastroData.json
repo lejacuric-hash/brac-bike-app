@@ -1,0 +1,54 @@
+{
+  "traditionalFoods": [
+    {
+      "id": "vitalac",
+      "name": "Brački Vitalac",
+      "description": "One of the most authentic, ancient culinary traditions on Brač, protected as a national cultural heritage. Vitalac consists of lamb or kid offal (heart, lungs, liver) skewered, wrapped in lamb's caul, and then wrapped tightly in intestines before being roasted over open embers. It is crispy on the outside, tender inside, and traditionally served sliced as an appetizer while waiting for the main spit-roast lamb.",
+      "image": "/assets/images/gastro/vitalac.jpg"
+    },
+    {
+      "id": "hrapocusa",
+      "name": "Hrapoćuša Cake",
+      "description": "Hailing from the stone village of Dol, this sweet, heavy cake is named after the local craggy, reddish breccia stone ('hrapoćuša') because its rough topping of walnuts and baked sugar mimics the cave formations. It is sweet, extremely calorie-dense (perfect for cyclists!), and protected by UNESCO as an intangible cultural heritage asset.",
+      "image": "/assets/images/gastro/hrapocusa.jpg"
+    },
+    {
+      "id": "procic",
+      "name": "Pročić",
+      "description": "An incredibly old, traditional shepherd snack. It is made by melting young, unsalted Brač cheese in caramelized sugar. It must be eaten immediately while warm and gooey, combining savory, rich cheese notes with deep sweet caramel.",
+      "image": "/assets/images/gastro/procic.jpg"
+    },
+    {
+      "id": "lamb-peka",
+      "name": "Spit-Roast Lamb & Peka",
+      "description": "Due to the island's aromatic wild herbs (like sage, rosemary, and thyme), Brač lamb has a completely unique flavor profile. Whether slow-roasted on a spit or baked under a heavy iron bell ('peka') surrounded by potatoes and wild herbs, this is the definitive culinary centerpiece of any trip to the island.",
+      "image": "/assets/images/gastro/lamb-peka.jpg"
+    }
+  ],
+  "restaurants": [
+    {
+      "id": "restaurant-placeholder-1",
+      "name": "Tavern / Konoba Name (Example)",
+      "description": "This is a placeholder for your future restaurant partner! Introduce their atmosphere, specialty dishes (e.g., direct-from-boat seafood or organic garden veggies), and outdoor terrace setup ideal for bike parking.",
+      "place": "Sutivan",
+      "workingHours": "12:00 - 23:00",
+      "phone": "+385 (0)91 123 4567",
+      "email": "info@example.com",
+      "categories": ["traditional", "meat"],
+      "coordinates": [16.4831, 43.3853],
+      "image": "/assets/images/gastro/placeholder.jpg"
+    },
+    {
+      "id": "restaurant-placeholder-2",
+      "name": "Seaside Fish House (Example)",
+      "description": "Place your partner's description here. Highlight their sunset views, cold drinks, and focus on fresh catches of the day or vegan-friendly local olive-oil based pastas.",
+      "place": "Bol",
+      "workingHours": "08:00 - 23:00",
+      "phone": "+385 (0)91 987 6543",
+      "email": "contact@example.com",
+      "categories": ["fish", "vegan"],
+      "coordinates": [16.6560, 43.2620],
+      "image": "/assets/images/gastro/placeholder.jpg"
+    }
+  ]
+}

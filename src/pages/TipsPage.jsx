@@ -501,45 +501,6 @@ function hashToColor(value) {
   return `hsl(${hue} 65% 52%)`
 }
 
-function normalizeCategory(category = '') {
-  const source = category.toLowerCase()
-
-  if (source.includes('beach') || source.includes('bay') || source.includes('cove')) {
-    return 'beach_cove'
-  }
-
-  if (
-    source.includes('church') ||
-    source.includes('chapel') ||
-    source.includes('monastery') ||
-    source.includes('hermitage') ||
-    source.includes('basilica')
-  ) {
-    return 'monastery'
-  }
-
-  if (source.includes('viewpoint') || source.includes('peak')) {
-    return 'viewpoint'
-  }
-
-  if (
-    source.includes('museum') ||
-    source.includes('gallery') ||
-    source.includes('history') ||
-    source.includes('archaeological') ||
-    source.includes('ruin') ||
-    source.includes('lighthouse')
-  ) {
-    return 'stone_heritage'
-  }
-
-  if (source.includes('gastro')) {
-    return 'gastro'
-  }
-
-  return 'village'
-}
-
 const placesToVisitPois = (finalPlaces.features || []).map((feature) => {
   const properties = feature.properties || {}
   const name = properties['name-en'] || properties.name || properties.title || 'Unnamed place'
@@ -741,7 +702,12 @@ export default function TipsPage() {
       ]
 
   const explorerSectionItems = useMemo(() => {
-    const baseItems = explorerPois.filter((poi) => poi.category === 'gastro')
+    // FIX: Instead of hardcoding to 'gastro', dynamically filter by view
+    const categoryFilter = currentView === 'Gastro Corner' ? 'gastro' : 'all'
+    
+    const baseItems = categoryFilter === 'all' 
+      ? explorerPois 
+      : explorerPois.filter((poi) => poi.category === categoryFilter)
 
     const normalizedSearch = poiSearch.trim().toLowerCase()
 
@@ -757,7 +723,7 @@ export default function TipsPage() {
       const searchableText = `${poi.name} ${poi.township} ${poi.shortDesc} ${poi.story}`.toLowerCase()
       return searchableText.includes(normalizedSearch)
     })
-  }, [poiCategory, poiSearch])
+  }, [poiCategory, poiSearch, currentView])
 
   const sectionContent = {
     'Places to Visit': {
@@ -881,46 +847,33 @@ export default function TipsPage() {
                 </div>
 
                 <div className="weather-card">
-                  <span className="weather-badge">Live forecast</span>
-                  <div className="weather-main">
-                    <div>
-                      <div className="weather-location">{selectedLocation.name}</div>
-                      <div className="weather-meta">{activeWeather.displayTime}</div>
+                  <span className="weather-badge">{activeWeather?.label}</span>
+                  <div className="weather-display-row">
+                    <div className="weather-temp-hero">
+                      <h3>{activeWeather?.temp}°C</h3>
+                      <p>{activeWeather?.displayTime}</p>
                     </div>
-                    <div className="weather-temp">{activeWeather.temp}°C</div>
-                  </div>
-
-                  <div className="weather-stat-grid">
-                    <div className="weather-stat">
-                      <span>Wind</span>
-                      <strong>{activeWeather.windDirection}</strong>
-                    </div>
-                    <div className="weather-stat">
-                      <span>Speed</span>
-                      <strong>{activeWeather.windSpeed} km/h</strong>
+                    <div className="weather-stats-grid">
+                      <div>💨 Wind Speed: <strong>{activeWeather?.windSpeed} km/h</strong></div>
+                      <div>🧭 Direction: <strong>{activeWeather?.windDirection}</strong></div>
+                      <div>🌧️ Rain Prob: <strong>{activeWeather?.rainProbability}%</strong></div>
                     </div>
                   </div>
-
-                  <div className="weather-meta">Rain risk: {activeWeather.rainProbability}%</div>
+                  <div className="weather-recommendation">
+                    <p>{recommendation}</p>
+                  </div>
+                  {safetyReport?.safetyAlerts.length > 0 && (
+                    <div className="safety-alerts-box">
+                      {safetyReport.safetyAlerts.map((alert, idx) => (
+                        <div key={idx} className={`safety-alert alert-${alert.severity.toLowerCase()}`}>
+                          {alert.message}
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </>
             )}
-
-            <div className="recommendation-box">
-              <div className="recommendation-title">Route recommendation</div>
-              <p>{recommendation}</p>
-
-              {safetyReport?.safetyAlerts.length > 0 && (
-                <div className="alert-list">
-                  {safetyReport.safetyAlerts.map((alert) => (
-                    <div key={alert.type} className={`alert-badge ${alert.severity.toUpperCase()}`}>
-                      <strong>{alert.severity}</strong>
-                      <span>{alert.message}</span>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
           </div>
         ) : currentView === 'Places to Visit' ? (
           <PlacesToVisitView
@@ -929,21 +882,25 @@ export default function TipsPage() {
             selectedTownship={selectedTownship}
             onSelectTownship={setSelectedTownship}
             onClearTownship={() => setSelectedTownship(null)}
-            townStory={(finalPlaces.townStories || {})[selectedTownship]}
+            townStory={finalPlaces.townStories?.[selectedTownship]}
             items={selectedTownshipItems}
             searchValue={poiSearch}
             onSearchChange={setPoiSearch}
             activeCategory={poiCategory}
             onCategoryChange={setPoiCategory}
             expandedId={expandedPoiId}
-            onToggleExpanded={(itemId) => setExpandedPoiId((currentId) => (currentId === itemId ? null : itemId))}
+            onToggleExpanded={(id) => setExpandedPoiId(expandedPoiId === id ? null : id)}
             categoryOptions={placesCategoryOptions}
           />
         ) : (
           <SectionView
             title={sectionContent[currentView].title}
             description={sectionContent[currentView].description}
-            items={currentView === 'Gastro Corner' ? explorerSectionItems : sectionContent[currentView].items}
+            items={
+              currentView === 'Gastro Corner'
+                ? explorerSectionItems
+                : sectionContent[currentView].items
+            }
             onBack={() => setCurrentView('menu')}
             variant={currentView === 'Gastro Corner' ? 'explorer' : 'default'}
             searchValue={poiSearch}
@@ -951,7 +908,7 @@ export default function TipsPage() {
             activeCategory={poiCategory}
             onCategoryChange={setPoiCategory}
             expandedId={expandedPoiId}
-            onToggleExpanded={(itemId) => setExpandedPoiId((currentId) => (currentId === itemId ? null : itemId))}
+            onToggleExpanded={(id) => setExpandedPoiId(expandedPoiId === id ? null : id)}
             categoryOptions={explorerCategoryOptions}
           />
         )}
