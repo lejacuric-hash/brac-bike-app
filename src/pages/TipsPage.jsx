@@ -59,14 +59,15 @@ const placesData = [
 
 const farmsData = [
   {
-    title: 'Olive Farm Visits',
-    description: 'Meet local producers and discover traditional island farming practices.',
-    emoji: '🌿',
-  },
-  {
-    title: 'Cheese & Honey Tastings',
-    description: 'Sample island favorites while learning about family-run production.',
-    emoji: '🧀',
+    id: 'opg-romano-kusanovic',
+    name: 'OPG Romano Kusanović',
+    category: 'olive_oil',
+    place: ['Sutivan', 'Supetar'],
+    description: 'A multi-generational family estate producing organic extra-virgin olive oil',
+    offer: 'Premium hand-harvested organic certified olive oil.',
+    phone: '+385 91 570 9912',
+    email: 'romano.kusanovic@gmail.com',
+    imagePlaceholderColor: '#2f855a', // Deep olive green
   },
 ]
 
