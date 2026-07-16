@@ -58,6 +58,20 @@ function ReportPinDropListener({ enabled, onPick }) {
   return null
 }
 
+function WaypointPinListener({ activePinningIndex, onPick }) {
+  useMapEvents({
+    click(event) {
+      if (activePinningIndex == null) return
+      onPick(activePinningIndex, {
+        lat: event.latlng.lat,
+        lng: event.latlng.lng,
+      })
+    },
+  })
+
+  return null
+}
+
 function haversineDistanceKm([lat1, lng1], [lat2, lng2]) {
   const toRad = (value) => (value * Math.PI) / 180
   const R = 6371
@@ -92,11 +106,12 @@ export default function TrailsPage() {
   const [roadPreference, setRoadPreference] = useState('gravel')
   const [routeDifficulty, setRouteDifficulty] = useState('moderate')
   const [avoidHikingTrails, setAvoidHikingTrails] = useState(true)
+  const [activePinningIndex, setActivePinningIndex] = useState(null)
+  const [waypointSearchLoadingIndex, setWaypointSearchLoadingIndex] = useState(null)
   const [routeGeometry, setRouteGeometry] = useState([])
   const [routePlannerStats, setRoutePlannerStats] = useState(null)
   const [routeError, setRouteError] = useState(null)
   const [routeLoading, setRouteLoading] = useState(false)
-  const [routeWarnings, setRouteWarnings] = useState([])
 
   // Community & Saved Routes states
   const [selectedCommunityRoute, setSelectedCommunityRoute] = useState(null)
@@ -110,25 +125,14 @@ export default function TrailsPage() {
   const [selectedCategories, setSelectedCategories] = useState([])
   
   const [activeRecording, setActiveRecording] = useState(false)
-  const [hazards, setHazards] = useState([])
   const [isDropPinMode, setIsDropPinMode] = useState(false)
   const [reportCoordinates, setReportCoordinates] = useState(null)
   const [routeFeedbackRefreshKey, setRouteFeedbackRefreshKey] = useState(0)
+  const [selectedTrailCommunityData, setSelectedTrailCommunityData] = useState(null)
 
   const mapRef = useRef(null)
   const gpsTrackerRef = useRef(null)
   const reportProblemRef = useRef(null)
-
-  // Fetch hazards from Supabase
-  useEffect(() => {
-    const fetchHazards = async () => {
-      const { data, error } = await supabase.from('reports').select('*')
-      if (!error && data) {
-        setHazards(data)
-      }
-    }
-    fetchHazards()
-  }, [reportsRefreshKey])
 
   const normalizedPois = useMemo(() => {
     const rawItems = Array.isArray(finalPlacesData)
@@ -243,6 +247,163 @@ export default function TrailsPage() {
     setSelectedTrail(trail.filename)
   }, [])
 
+  const getTrailIdentifier = useCallback((trail) => {
+    if (!trail) return null
+    if (trail.gpx_path_identifier) return trail.gpx_path_identifier
+    if (trail.filename) return trail.filename
+    if (trail.name) {
+      return trail.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '')
+    }
+    return null
+  }, [])
+
+  useEffect(() => {
+    if (!selectedTrail) {
+      setSelectedTrailCommunityData(null)
+      return
+    }
+
+    const trail = trails.find((item) => item.filename === selectedTrail)
+    if (!trail) {
+      setSelectedTrailCommunityData(null)
+      return
+    }
+
+    const trailIdentifier = getTrailIdentifier(trail)
+    if (!trailIdentifier) {
+      setSelectedTrailCommunityData(null)
+      return
+    }
+
+    const currentStats = trailStats?.[selectedTrail]
+    const staticDistance = Number(currentStats?.distance || trail.distance || trail.distance_km || 0)
+    const staticElevation = Number(currentStats?.elevationMax || currentStats?.elevationGain || trail.elevation || 0)
+    const staticWaypoints = Array.isArray(currentStats?.elevationData)
+      ? currentStats.elevationData
+          .filter((point) => Number.isFinite(point.lat) && Number.isFinite(point.lng))
+          .map((point) => ({ lat: point.lat, lng: point.lng }))
+      : []
+
+    let cancelled = false
+
+    const syncAndFetchCommunityData = async () => {
+      setSelectedTrailCommunityData((prev) => ({
+        routeId: prev?.routeId || null,
+        loading: true,
+        error: null,
+        averageRating: prev?.averageRating ?? null,
+        completionCount: prev?.completionCount ?? 0,
+        reviews: prev?.reviews || [],
+      }))
+
+      let routeRow = null
+      const { data: existingRoute, error: existingRouteError } = await supabase
+        .from('shared_routes')
+        .select('id, gpx_path_identifier, name')
+        .eq('gpx_path_identifier', trailIdentifier)
+        .maybeSingle()
+
+      if (existingRouteError) {
+        if (!cancelled) {
+          setSelectedTrailCommunityData({
+            routeId: null,
+            loading: false,
+            error: 'Could not sync route with database.',
+            averageRating: null,
+            completionCount: 0,
+            reviews: [],
+          })
+        }
+        return
+      }
+
+      routeRow = existingRoute
+
+      if (!routeRow) {
+        const { data: insertedRoute, error: insertError } = await supabase
+          .from('shared_routes')
+          .insert([
+            {
+              gpx_path_identifier: trailIdentifier,
+              name: trail.name || trailIdentifier,
+              estimated_distance_km: Number.isFinite(staticDistance) ? staticDistance : null,
+              estimated_elevation_m: Number.isFinite(staticElevation) ? staticElevation : null,
+              waypoints: staticWaypoints,
+            },
+          ])
+          .select('id, gpx_path_identifier, name')
+          .single()
+
+        if (insertError) {
+          if (!cancelled) {
+            setSelectedTrailCommunityData({
+              routeId: null,
+              loading: false,
+              error: 'Could not create shared route entry.',
+              averageRating: null,
+              completionCount: 0,
+              reviews: [],
+            })
+          }
+          return
+        }
+
+        routeRow = insertedRoute
+      }
+
+      const routeId = routeRow?.id
+      if (!routeId) {
+        if (!cancelled) {
+          setSelectedTrailCommunityData({
+            routeId: null,
+            loading: false,
+            error: 'Route synchronization returned an invalid route id.',
+            averageRating: null,
+            completionCount: 0,
+            reviews: [],
+          })
+        }
+        return
+      }
+
+      const [reviewsResult, completionsResult] = await Promise.all([
+        supabase
+          .from('route_reviews')
+          .select('id, rating, comment, created_at')
+          .eq('route_id', routeId)
+          .order('created_at', { ascending: false }),
+        supabase
+          .from('completed_rides')
+          .select('id', { count: 'exact', head: true })
+          .eq('route_id', routeId),
+      ])
+
+      if (!cancelled) {
+        const reviews = reviewsResult.data || []
+        const numericRatings = reviews
+          .map((review) => Number(review.rating))
+          .filter((value) => Number.isFinite(value))
+
+        setSelectedTrailCommunityData({
+          routeId,
+          loading: false,
+          error: reviewsResult.error ? 'Could not load route reviews.' : null,
+          averageRating: numericRatings.length > 0
+            ? numericRatings.reduce((sum, value) => sum + value, 0) / numericRatings.length
+            : null,
+          completionCount: completionsResult.count || 0,
+          reviews,
+        })
+      }
+    }
+
+    syncAndFetchCommunityData()
+
+    return () => {
+      cancelled = true
+    }
+  }, [getTrailIdentifier, routeFeedbackRefreshKey, selectedTrail, supabase, trailStats, trails])
+
   const waypointCoordinates = useMemo(
     () => waypoints
       .map((waypoint) => waypoint.latlng)
@@ -263,27 +424,86 @@ export default function TrailsPage() {
     }))
   }, [])
 
+  const handleAddWaypoint = useCallback(() => {
+    setWaypoints((prev) => [...prev, createWaypoint(prev.length + 1)])
+  }, [])
+
+  const updateWaypointCoordsAndAddress = useCallback((index, nextLat, nextLng, nextAddress = null) => {
+    setWaypoints((prev) => prev.map((waypoint, idx) => {
+      if (idx !== index) return waypoint
+
+      return {
+        ...waypoint,
+        latlng: Number.isFinite(nextLat) && Number.isFinite(nextLng) ? [nextLat, nextLng] : waypoint.latlng,
+        address: nextAddress ?? waypoint.address,
+      }
+    }))
+  }, [])
+
   const handleWaypointAddressChange = useCallback((index, value) => {
     setWaypoints((prev) => prev.map((waypoint, idx) => (
       idx === index ? { ...waypoint, address: value } : waypoint
     )))
   }, [])
 
-  const handleWaypointLatChange = useCallback((index, value) => {
-    const nextLat = Number(value)
-    const currentLng = waypoints[index]?.latlng?.[1]
-    updateWaypointLatLng(index, Number.isFinite(nextLat) ? nextLat : NaN, currentLng)
-  }, [updateWaypointLatLng, waypoints])
+  const geocodeWaypointAddress = useCallback(async (index, address) => {
+    const query = address.trim()
+    if (!query) return
 
-  const handleWaypointLngChange = useCallback((index, value) => {
-    const nextLng = Number(value)
-    const currentLat = waypoints[index]?.latlng?.[0]
-    updateWaypointLatLng(index, currentLat, Number.isFinite(nextLng) ? nextLng : NaN)
-  }, [updateWaypointLatLng, waypoints])
+    setWaypointSearchLoadingIndex(index)
+    setRouteError(null)
 
-  const handleAddWaypoint = useCallback(() => {
-    setWaypoints((prev) => [...prev, createWaypoint(prev.length + 1)])
+    try {
+      const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`)
+      const data = await response.json()
+
+      if (data && data.length > 0) {
+        const { lat, lon, display_name } = data[0]
+        updateWaypointCoordsAndAddress(index, parseFloat(lat), parseFloat(lon), display_name)
+      } else {
+        setRouteError('Could not find that address. Please try a more specific search.')
+      }
+    } catch {
+      setRouteError('Address lookup failed. Please try again.')
+    } finally {
+      setWaypointSearchLoadingIndex(null)
+    }
+  }, [updateWaypointCoordsAndAddress])
+
+  const reverseGeocodeWaypoint = useCallback(async (index, lat, lng) => {
+    try {
+      const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`)
+      const data = await response.json()
+      if (data?.display_name) {
+        updateWaypointCoordsAndAddress(index, lat, lng, data.display_name)
+      } else {
+        updateWaypointCoordsAndAddress(index, lat, lng)
+      }
+    } catch {
+      updateWaypointCoordsAndAddress(index, lat, lng)
+    }
+  }, [updateWaypointCoordsAndAddress])
+
+  const handleWaypointSearchKeyDown = useCallback((index, event) => {
+    if (event.key === 'Enter') {
+      event.preventDefault()
+      geocodeWaypointAddress(index, waypoints[index]?.address || '')
+    }
+  }, [geocodeWaypointAddress, waypoints])
+
+  const handleWaypointSearchClick = useCallback((index) => {
+    geocodeWaypointAddress(index, waypoints[index]?.address || '')
+  }, [geocodeWaypointAddress, waypoints])
+
+  const handleWaypointPinClick = useCallback((index) => {
+    setActivePinningIndex((current) => (current === index ? null : index))
   }, [])
+
+  const handleMapWaypointPin = useCallback(async (index, coords) => {
+    setActivePinningIndex(null)
+    updateWaypointCoordsAndAddress(index, coords.lat, coords.lng)
+    await reverseGeocodeWaypoint(index, coords.lat, coords.lng)
+  }, [reverseGeocodeWaypoint, updateWaypointCoordsAndAddress])
 
   const fetchElevationProfile = useCallback(async (coords) => {
     if (coords.length === 0) return []
@@ -438,51 +658,101 @@ export default function TrailsPage() {
     <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', padding: '12px 0' }}>
       <h3 style={{ fontSize: '1rem', fontWeight: 'bold', margin: '0' }}>Plan a Custom Trail</h3>
       
-      {waypoints.map((waypoint, idx) => (
-        <div key={waypoint.id} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
-          <input
-            type="text"
-            placeholder={`Waypoint ${idx + 1} address`}
-            value={waypoint.address}
-            onChange={(e) => handleWaypointAddressChange(idx, e.target.value)}
+      {waypoints.map((waypoint, idx) => {
+        const isPinning = activePinningIndex === idx
+        return (
+          <div
+            key={waypoint.id}
             style={{
-              gridColumn: '1 / span 2',
-              padding: '8px 12px',
-              borderRadius: '8px',
-              border: '1px solid #ddd',
-              fontSize: '0.9rem',
+              display: 'flex',
+              gap: '8px',
+              alignItems: 'center',
+              padding: '8px',
+              borderRadius: '12px',
+              border: isPinning ? '1px solid rgba(167, 139, 250, 0.9)' : '1px solid rgba(148, 163, 184, 0.22)',
+              background: isPinning ? 'rgba(88, 28, 135, 0.14)' : 'rgba(15, 23, 42, 0.4)',
             }}
-          />
-          <input
-            type="number"
-            step="any"
-            placeholder="Latitude"
-            value={waypoint.latlng?.[0] ?? ''}
-            onChange={(e) => handleWaypointLatChange(idx, e.target.value)}
-            style={{ padding: '8px 12px', borderRadius: '8px', border: '1px solid #ddd', fontSize: '0.85rem' }}
-          />
-          <input
-            type="number"
-            step="any"
-            placeholder="Longitude"
-            value={waypoint.latlng?.[1] ?? ''}
-            onChange={(e) => handleWaypointLngChange(idx, e.target.value)}
-            style={{ padding: '8px 12px', borderRadius: '8px', border: '1px solid #ddd', fontSize: '0.85rem' }}
-          />
+          >
+            <input
+              type="text"
+              placeholder={`Waypoint ${idx + 1} address`}
+              value={waypoint.address}
+              onChange={(e) => handleWaypointAddressChange(idx, e.target.value)}
+              onKeyDown={(e) => handleWaypointSearchKeyDown(idx, e)}
+              style={{
+                flex: 1,
+                minWidth: 0,
+                height: '40px',
+                padding: '0 12px',
+                borderRadius: '10px',
+                border: '1px solid rgba(148, 163, 184, 0.25)',
+                fontSize: '0.9rem',
+              }}
+            />
+            <button
+              type="button"
+              onClick={() => handleWaypointSearchClick(idx)}
+              disabled={waypointSearchLoadingIndex === idx}
+              title="Search address"
+              style={{
+                width: '40px',
+                height: '40px',
+                borderRadius: '10px',
+                border: 'none',
+                background: '#4c1d95',
+                color: '#f8fafc',
+                cursor: 'pointer',
+                boxShadow: '0 4px 10px rgba(0,0,0,0.18)',
+              }}
+            >
+              {waypointSearchLoadingIndex === idx ? '…' : '⌕'}
+            </button>
+            <button
+              type="button"
+              onClick={() => handleWaypointPinClick(idx)}
+              title={isPinning ? 'Click the map to place this waypoint' : 'Choose on map'}
+              style={{
+                width: '40px',
+                height: '40px',
+                borderRadius: '10px',
+                border: 'none',
+                background: isPinning ? '#a855f7' : '#6d28d9',
+                color: '#f8fafc',
+                cursor: 'pointer',
+                boxShadow: '0 4px 10px rgba(0,0,0,0.18)',
+              }}
+            >
+              📍
+            </button>
+          </div>
+        )
+      })}
+
+      {activePinningIndex != null && (
+        <div style={{
+          fontSize: '0.8rem',
+          color: '#c4b5fd',
+          background: 'rgba(88, 28, 135, 0.14)',
+          border: '1px dashed rgba(167, 139, 250, 0.5)',
+          borderRadius: '10px',
+          padding: '8px 10px',
+        }}>
+          Tap the map to place Waypoint {activePinningIndex + 1}.
         </div>
-      ))}
+      )}
 
       <button
         type="button"
         onClick={handleAddWaypoint}
         style={{
-          background: '#1f2937',
+          background: '#4c1d95',
           color: '#ffffff',
-          border: '1px solid #374151',
-          padding: '8px 10px',
-          borderRadius: '8px',
+          border: 'none',
+          padding: '10px 12px',
+          borderRadius: '10px',
           fontWeight: 'bold',
           cursor: 'pointer',
+          height: '40px',
         }}
       >
         Add Waypoint
@@ -527,10 +797,11 @@ export default function TrailsPage() {
           background: '#370063',
           color: '#ffffff',
           border: 'none',
-          padding: '10px',
-          borderRadius: '8px',
+          padding: '10px 12px',
+          borderRadius: '10px',
           fontWeight: 'bold',
           cursor: 'pointer',
+          height: '40px',
           opacity: routeLoading ? 0.7 : 1
         }}
       >
@@ -712,11 +983,11 @@ export default function TrailsPage() {
           )}
 
           <MapContainer
+            ref={mapRef}
             center={[43.307, 16.635]}
             zoom={11}
             style={{ height: '100%', width: '100%' }}
             scrollWheelZoom={true}
-            whenCreated={(map) => { mapRef.current = map }}
           >
             {mapStyle === 'street' ? (
               <TileLayer
@@ -741,6 +1012,7 @@ export default function TrailsPage() {
             <ReportMarkers refreshKey={reportsRefreshKey} />
             <GpsTracker
               ref={gpsTrackerRef}
+              activeRouteId={selectedTrailCommunityData?.routeId || null}
               onRideSaved={() => setRouteFeedbackRefreshKey((value) => value + 1)}
             />
             <ReportProblem
@@ -750,6 +1022,7 @@ export default function TrailsPage() {
               onReportSaved={() => setReportsRefreshKey((k) => k + 1)}
             />
             <ReportPinDropListener enabled={isDropPinMode} onPick={handleMapReportPinPick} />
+            <WaypointPinListener activePinningIndex={activePinningIndex} onPick={handleMapWaypointPin} />
 
             {plannerTab === 'planNew' && waypoints.map((waypoint, index) => (
               waypoint.latlng ? (
@@ -834,6 +1107,7 @@ export default function TrailsPage() {
           onRouteSelect={handleCommunityRouteSelect}
           selectedRouteId={selectedCommunityRoute?.id}
           routeFeedbackRefreshKey={routeFeedbackRefreshKey}
+          trailCommunityData={selectedTrailCommunityData}
           planNewContent={planNewContent}
         />
       </div>

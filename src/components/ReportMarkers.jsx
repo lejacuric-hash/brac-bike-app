@@ -50,7 +50,7 @@ function ReportMarkers({ refreshKey = 0 }) {
             <div style={{ minWidth: 160 }}>
               <strong>{r.type}</strong>
               {r.description ? <div style={{ marginTop: 6 }}>{r.description}</div> : null}
-              <div style={{ marginTop: 8, color: '#94a3b8' }}>{timeAgo(r.createdAt)}</div>
+              <div style={{ marginTop: 8, color: '#94a3b8' }}>{timeAgo(r.created_at)}</div>
             </div>
           </Popup>
         </Marker>

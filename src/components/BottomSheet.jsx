@@ -17,6 +17,12 @@ const difficultyOptions = [
   { id: 'hard', label: 'Hard' },
 ]
 
+function findNearestSnap(height, snapPositions) {
+  return Object.entries(snapPositions).reduce((prev, curr) =>
+    Math.abs(curr[1] - height) < Math.abs(prev[1] - height) ? curr : prev
+  )
+}
+
 function BottomSheet({
   trails = [],
   selectedTrail = null,
@@ -29,6 +35,7 @@ function BottomSheet({
   onRouteSelect,
   selectedRouteId,
   routeFeedbackRefreshKey,
+  trailCommunityData,
 
 }) {
   const [internalActiveTab, setInternalActiveTab] = useState('routes')
@@ -42,13 +49,34 @@ function BottomSheet({
     }
   }
 
+  // Mobile shows a fixed bottom tab bar (see Navigation.css) that sits on top of
+  // (higher z-index than) this sheet. Without this offset the sheet's own bottom
+  // edge is covered by the tab bar and its lowest content can never be scrolled
+  // into view. Track viewport size live so rotating the device keeps this correct.
+  const [viewportSize, setViewportSize] = useState(() => ({
+    width: typeof window !== 'undefined' ? window.innerWidth : 1024,
+    height: typeof window !== 'undefined' ? window.innerHeight : 600,
+  }))
+
+  React.useEffect(() => {
+    const handleResize = () => {
+      setViewportSize({ width: window.innerWidth, height: window.innerHeight })
+    }
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
+
+  const navBarHeight = viewportSize.width <= 767 ? 64 : 0
+  const availableHeight = Math.max(viewportSize.height - navBarHeight, 0)
+
   const snapPositions = useMemo(() => ({
     COLLAPSED: 80,
-    HALF: typeof window !== 'undefined' ? window.innerHeight * 0.5 : 300,
-    FULL: typeof window !== 'undefined' ? window.innerHeight * 0.95 : 600,
-  }), [])
+    HALF: availableHeight * 0.5,
+    FULL: availableHeight * 0.95,
+  }), [availableHeight])
 
   const [currentHeight, setCurrentHeight] = useState(snapPositions.COLLAPSED)
+  const [snapKey, setSnapKey] = useState('COLLAPSED')
   const [isDragging, setIsDragging] = useState(false)
   const [dragStart, setDragStart] = useState(0)
   const [dragStartHeight, setDragStartHeight] = useState(snapPositions.COLLAPSED)
@@ -94,12 +122,9 @@ function BottomSheet({
     if (!isDragging) return
     setIsDragging(false)
 
-    const positions = [snapPositions.COLLAPSED, snapPositions.HALF, snapPositions.FULL]
-    const nearest = positions.reduce((prev, curr) =>
-      Math.abs(curr - currentHeight) < Math.abs(prev - currentHeight) ? curr : prev
-    )
-
-    setCurrentHeight(nearest)
+    const [nearestKey, nearestValue] = findNearestSnap(currentHeight, snapPositions)
+    setSnapKey(nearestKey)
+    setCurrentHeight(nearestValue)
   }, [isDragging, currentHeight, snapPositions])
 
   const handleTouchMove = useCallback(
@@ -119,21 +144,20 @@ function BottomSheet({
     if (!isDragging) return
     setIsDragging(false)
 
-    const positions = [snapPositions.COLLAPSED, snapPositions.HALF, snapPositions.FULL]
-    const nearest = positions.reduce((prev, curr) =>
-      Math.abs(curr - currentHeight) < Math.abs(prev - currentHeight) ? curr : prev
-    )
-
-    setCurrentHeight(nearest)
+    const [nearestKey, nearestValue] = findNearestSnap(currentHeight, snapPositions)
+    setSnapKey(nearestKey)
+    setCurrentHeight(nearestValue)
   }, [isDragging, currentHeight, snapPositions])
 
   const handleTrailClick = (trail) => {
     onTrailClick?.(trail)
     setActiveTab('routes')
+    setSnapKey('HALF')
     setCurrentHeight(snapPositions.HALF)
   }
 
   const handleBackToList = () => {
+    setSnapKey('COLLAPSED')
     setCurrentHeight(snapPositions.COLLAPSED)
   }
 
@@ -152,6 +176,11 @@ function BottomSheet({
   const handleChartMouseLeave = () => {
     onChartHover?.(null)
   }
+
+  React.useEffect(() => {
+    if (isDragging) return
+    setCurrentHeight(snapPositions[snapKey])
+  }, [snapPositions, snapKey, isDragging])
 
   React.useEffect(() => {
     if (!isDragging) return
@@ -333,6 +362,49 @@ function BottomSheet({
             </ResponsiveContainer>
           </div>
         )}
+
+        <div className="elevation-chart-container" style={{ marginTop: '10px' }}>
+          <h4>Community Feedback</h4>
+          {trailCommunityData?.loading ? (
+            <p className="trail-description">Syncing route and loading reviews...</p>
+          ) : (
+            <>
+              {trailCommunityData?.error && (
+                <p className="trail-description" style={{ color: '#fca5a5' }}>{trailCommunityData.error}</p>
+              )}
+              <p className="trail-description" style={{ marginBottom: '6px' }}>
+                {trailCommunityData?.averageRating != null
+                  ? `⭐ ${trailCommunityData.averageRating.toFixed(1)} / 5`
+                  : '⭐ No ratings yet'}
+                {' · '}
+                {trailCommunityData?.completionCount || 0} completions
+              </p>
+              {trailCommunityData?.reviews?.length > 0 ? (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                  {trailCommunityData.reviews.slice(0, 5).map((review) => (
+                    <div
+                      key={review.id}
+                      style={{
+                        backgroundColor: '#11203b',
+                        border: '1px solid #1e3a5f',
+                        borderRadius: '8px',
+                        padding: '8px',
+                        fontSize: '0.82rem',
+                      }}
+                    >
+                      <div style={{ color: '#facc15', marginBottom: '4px' }}>
+                        {'★'.repeat(Math.max(0, Number(review.rating) || 0))}
+                      </div>
+                      <div style={{ color: '#e2e8f0' }}>{review.comment || 'No comment'}</div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="trail-description">No public reviews yet.</p>
+              )}
+            </>
+          )}
+        </div>
       </div>
     )
   }
@@ -367,6 +439,7 @@ function BottomSheet({
       className="bottom-sheet"
       style={{
         height: `${currentHeight}px`,
+        bottom: `${navBarHeight}px`,
         transition: isDragging ? 'none' : 'height 0.3s ease-out',
       }}
     >
@@ -432,6 +505,20 @@ BottomSheet.propTypes = {
   onTabChange: PropTypes.func,
   planNewContent: PropTypes.node,
   routeFeedbackRefreshKey: PropTypes.number,
+  trailCommunityData: PropTypes.shape({
+    routeId: PropTypes.string,
+    loading: PropTypes.bool,
+    error: PropTypes.string,
+    averageRating: PropTypes.number,
+    completionCount: PropTypes.number,
+    reviews: PropTypes.arrayOf(
+      PropTypes.shape({
+        id: PropTypes.string,
+        rating: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+        comment: PropTypes.string,
+      })
+    ),
+  }),
 }
 
 export default BottomSheet

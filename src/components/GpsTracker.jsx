@@ -22,7 +22,7 @@ function formatTime(seconds) {
   return `${hrs.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`
 }
 
-const GpsTracker = forwardRef(function GpsTracker({ onRideSaved }, ref) {
+const GpsTracker = forwardRef(function GpsTracker({ onRideSaved, activeRouteId = null }, ref) {
   const map = useMap()
   const [position, setPosition] = useState(null)
   const [error, setError] = useState(null)
@@ -198,7 +198,7 @@ const GpsTracker = forwardRef(function GpsTracker({ onRideSaved }, ref) {
       .insert([
         {
           user_id: user.id,
-          route_id: routeData?.id,
+          route_id: activeRouteId || null,
           distance_km: distanceKm,
           duration_seconds: durationSec,
           elevation_max: maxElevation,
@@ -214,21 +214,23 @@ const GpsTracker = forwardRef(function GpsTracker({ onRideSaved }, ref) {
       return
     }
 
-    const { error: reviewError } = await supabase
-      .from('route_reviews')
-      .insert([
-        {
-          route_id: routeData?.id,
-          user_id: user.id,
-          rating,
-          comment: reviewComment || null,
-        },
-      ])
+    if (activeRouteId) {
+      const { error: reviewError } = await supabase
+        .from('route_reviews')
+        .insert([
+          {
+            route_id: activeRouteId,
+            user_id: user.id,
+            rating,
+            comment: reviewComment || null,
+          },
+        ])
 
-    if (reviewError) {
-      setSavingRide(false)
-      setSaveError('Unable to publish review: ' + reviewError.message)
-      return
+      if (reviewError) {
+        setSavingRide(false)
+        setSaveError('Unable to publish review: ' + reviewError.message)
+        return
+      }
     }
 
     setSavingRide(false)

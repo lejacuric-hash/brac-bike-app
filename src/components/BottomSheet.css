@@ -1,6 +1,5 @@
 /* Bottom Sheet Container */
-.bottom-sheet,
-.bottom-sheet-container {
+.bottom-sheet {
   position: fixed;
   bottom: 0;
   left: 0;
@@ -13,17 +12,6 @@
   flex-direction: column;
   z-index: 900;
   box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3);
-}
-
-.bottom-sheet-container {
-  z-index: 900;
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  background: #370063;
-  transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-  box-shadow: 0 -5px 15px rgba(0,0,0,0.4);
 }
 
 /* Handle/Grip Bar */
