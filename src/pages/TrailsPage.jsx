@@ -9,6 +9,7 @@ import GpsTracker from '../components/GpsTracker'
 import BottomSheet from '../components/BottomSheet'
 import ReportMarkers from '../components/ReportMarkers'
 import ReportProblem from '../components/ReportProblem'
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer } from 'recharts'
 
 // Ensure your Supabase client is imported correctly
 import { supabase } from '../supabaseClient.js'
@@ -72,6 +73,113 @@ function WaypointPinListener({ activePinningIndex, onPick }) {
   return null
 }
 
+function WaypointLongPressListener({ enabled, onLongPress }) {
+  const pressTimerRef = useRef(null)
+  const pressLatLngRef = useRef(null)
+
+  const clearPressTimer = useCallback(() => {
+    if (pressTimerRef.current != null) {
+      clearTimeout(pressTimerRef.current)
+      pressTimerRef.current = null
+    }
+  }, [])
+
+  useEffect(() => clearPressTimer, [clearPressTimer])
+
+  useMapEvents({
+    mousedown(event) {
+      if (!enabled) return
+      clearPressTimer()
+      pressLatLngRef.current = event.latlng
+      pressTimerRef.current = window.setTimeout(() => {
+        if (pressLatLngRef.current) {
+          onLongPress(pressLatLngRef.current)
+        }
+      }, 3000)
+    },
+    mouseup() {
+      clearPressTimer()
+    },
+    touchstart(event) {
+      if (!enabled) return
+      clearPressTimer()
+      pressLatLngRef.current = event.latlng
+      pressTimerRef.current = window.setTimeout(() => {
+        if (pressLatLngRef.current) {
+          onLongPress(pressLatLngRef.current)
+        }
+      }, 3000)
+    },
+    touchend() {
+      clearPressTimer()
+    },
+    dragstart() {
+      clearPressTimer()
+    },
+  })
+
+  return null
+}
+
+function RouteElevationChart({ data, chartColor, onHover }) {
+  if (!Array.isArray(data) || data.length === 0) return null
+
+  return (
+    <div className="elevation-chart-container">
+      <h4>Elevation Profile</h4>
+      <ResponsiveContainer width="100%" height={250}>
+        <AreaChart
+          data={data}
+          onMouseMove={(state) => {
+            if (state && state.activeTooltipIndex != null) {
+              const index = parseInt(state.activeTooltipIndex, 10)
+              const point = data[index]
+              if (point && point.lat != null && point.lng != null) {
+                onHover?.(point)
+                return
+              }
+            }
+            onHover?.(null)
+          }}
+          onMouseLeave={() => onHover?.(null)}
+        >
+          <defs>
+            <linearGradient id="customRouteElevationGradient" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="5%" stopColor={chartColor} stopOpacity={0.8} />
+              <stop offset="95%" stopColor={chartColor} stopOpacity={0.1} />
+            </linearGradient>
+          </defs>
+          <CartesianGrid strokeDasharray="3 3" stroke="#ffffff" opacity={0.18} />
+          <XAxis
+            dataKey="distance"
+            stroke="#f8fafc"
+            tick={{ fill: '#f8fafc', fontSize: 12 }}
+            label={{ value: 'Distance (km)', position: 'insideBottomRight', offset: -5, fill: '#f8fafc' }}
+          />
+          <YAxis
+            stroke="#f8fafc"
+            tick={{ fill: '#f8fafc', fontSize: 12 }}
+            label={{ value: 'Elevation (m)', angle: -90, position: 'insideLeft', fill: '#f8fafc' }}
+          />
+          <RechartsTooltip
+            contentStyle={{ backgroundColor: '#1f0931', border: '1px solid rgba(255,255,255,0.15)', borderRadius: '10px' }}
+            labelStyle={{ color: '#f8fafc' }}
+            itemStyle={{ color: '#f8fafc' }}
+            formatter={(value) => [Number(value).toFixed(0) + ' m', 'Elevation']}
+          />
+          <Area
+            type="monotone"
+            dataKey="elevation"
+            stroke={chartColor}
+            fillOpacity={1}
+            fill="url(#customRouteElevationGradient)"
+          />
+        </AreaChart>
+      </ResponsiveContainer>
+    </div>
+  )
+}
+
 function haversineDistanceKm([lat1, lng1], [lat2, lng2]) {
   const toRad = (value) => (value * Math.PI) / 180
   const R = 6371
@@ -133,6 +241,7 @@ export default function TrailsPage() {
   const mapRef = useRef(null)
   const gpsTrackerRef = useRef(null)
   const reportProblemRef = useRef(null)
+  const lastWaypointPlacementIndexRef = useRef(null)
 
   const normalizedPois = useMemo(() => {
     const rawItems = Array.isArray(finalPlacesData)
@@ -499,6 +608,62 @@ export default function TrailsPage() {
     setActivePinningIndex((current) => (current === index ? null : index))
   }, [])
 
+  const placeWaypointAtCoords = useCallback((lat, lng, address = '') => {
+    setWaypoints((prev) => {
+      const emptyIndex = prev.findIndex((waypoint) => !waypoint.latlng)
+      const targetIndex = emptyIndex === -1 ? prev.length : emptyIndex
+      lastWaypointPlacementIndexRef.current = targetIndex
+
+      if (emptyIndex === -1) {
+        return [
+          ...prev,
+          {
+            ...createWaypoint(prev.length + 1),
+            latlng: [lat, lng],
+            address,
+          },
+        ]
+      }
+
+      return prev.map((waypoint, idx) => (
+        idx === emptyIndex
+          ? {
+              ...waypoint,
+              latlng: [lat, lng],
+              address: address || waypoint.address,
+            }
+          : waypoint
+      ))
+    })
+  }, [])
+
+  const handleMapLongPress = useCallback(async (latlng) => {
+    if (!latlng) return
+
+    setActivePinningIndex(null)
+    placeWaypointAtCoords(latlng.lat, latlng.lng)
+
+    const targetIndex = lastWaypointPlacementIndexRef.current
+
+    if (navigator.vibrate) {
+      navigator.vibrate([100])
+    }
+
+    try {
+      const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latlng.lat}&lon=${latlng.lng}`)
+      const data = await response.json()
+      if (data?.display_name) {
+        if (targetIndex != null) {
+          setWaypoints((prev) => prev.map((waypoint, idx) => (
+            idx === targetIndex ? { ...waypoint, address: data.display_name } : waypoint
+          )))
+        }
+      }
+    } catch {
+      // Reverse geocoding is optional; silently ignore failures.
+    }
+  }, [placeWaypointAtCoords])
+
   const handleMapWaypointPin = useCallback(async (index, coords) => {
     setActivePinningIndex(null)
     updateWaypointCoordsAndAddress(index, coords.lat, coords.lng)
@@ -543,6 +708,65 @@ export default function TrailsPage() {
     }
   }, [])
 
+  const parseBrouterProfilePoints = useCallback((profileSource, geometryCoords) => {
+    if (Array.isArray(profileSource)) {
+      return profileSource
+        .map((entry, index) => {
+          if (Array.isArray(entry)) {
+            const [distanceValue, elevationValue] = entry
+            const distanceKm = Number(distanceValue)
+            const elevation = Number(elevationValue)
+            if (Number.isFinite(distanceKm) && Number.isFinite(elevation)) {
+              return { distKm: distanceKm, elev: elevation }
+            }
+            return null
+          }
+
+          if (entry && typeof entry === 'object') {
+            const distanceKm = Number(entry.distKm ?? entry.distance ?? entry.distance_km ?? entry.x ?? index)
+            const elevation = Number(entry.elev ?? entry.elevation ?? entry.y ?? entry.z)
+            if (Number.isFinite(distanceKm) && Number.isFinite(elevation)) {
+              return { distKm: distanceKm, elev: elevation }
+            }
+          }
+
+          return null
+        })
+        .filter(Boolean)
+    }
+
+    if (Array.isArray(geometryCoords) && geometryCoords.some((point) => point.length >= 3)) {
+      let cumulativeKm = 0
+      return geometryCoords.map((point, index) => {
+        if (index > 0) {
+          cumulativeKm += haversineDistanceKm(
+            [geometryCoords[index - 1][1], geometryCoords[index - 1][0]],
+            [point[1], point[0]]
+          )
+        }
+
+        return {
+          distKm: cumulativeKm,
+          elev: Number(point[2]) || 0,
+        }
+      })
+    }
+
+    return []
+  }, [])
+
+  const getBrouterProfile = useCallback(() => {
+    if (roadPreference === 'paved') {
+      return 'trekking'
+    }
+
+    if (roadPreference === 'gravel' && !avoidHikingTrails) {
+      return 'mtb'
+    }
+
+    return 'gravel'
+  }, [avoidHikingTrails, roadPreference])
+
   const calculateRouteFromWaypoints = useCallback(async (coords) => {
     if (coords.length < 2) {
       setRouteGeometry([])
@@ -554,22 +778,56 @@ export default function TrailsPage() {
     setRouteError(null)
 
     try {
-      const osrmCoordinates = coords.map(([lat, lng]) => `${lng},${lat}`).join(';')
-      const routeResponse = await fetch(`https://router.project-osrm.org/route/v1/driving/${osrmCoordinates}?overview=full&geometries=geojson`)
+      const coordinatesJoined = coords.map(([lat, lng]) => `${lng},${lat}`).join('|')
+      const profile = getBrouterProfile()
+      const routeResponse = await fetch(
+        `https://brouter.de/brouter?lonlats=${encodeURIComponent(coordinatesJoined)}&profile=${profile}&alternativeidx=0&format=geojson`
+      )
 
       let geometry
       let distanceKm
+      let elevationProfile = []
 
       if (routeResponse.ok) {
-        const osrmData = await routeResponse.json()
-        const route = osrmData?.routes?.[0]
+        const brouterData = await routeResponse.json()
+        const routeFeature = Array.isArray(brouterData?.features)
+          ? brouterData.features[0]
+          : brouterData?.feature || brouterData
+        const routeGeometryCoords = routeFeature?.geometry?.coordinates || brouterData?.geometry?.coordinates || []
+        const routeProperties = routeFeature?.properties || brouterData?.properties || {}
 
-        if (!route?.geometry?.coordinates?.length) {
+        if (!routeGeometryCoords.length) {
           throw new Error('No valid route returned')
         }
 
-        geometry = route.geometry.coordinates.map(([lng, lat]) => [lat, lng])
-        distanceKm = route.distance / 1000
+        geometry = routeGeometryCoords.map((point) => [point[1], point[0]])
+
+        const propertyDistanceKm = Number(
+          routeProperties.distance_km ??
+          routeProperties.distanceKm ??
+          routeProperties.distance ??
+          routeProperties.track_length_km ??
+          routeProperties.trackLengthKm ??
+          routeProperties.length_km ??
+          routeProperties.length
+        )
+
+        distanceKm = Number.isFinite(propertyDistanceKm)
+          ? propertyDistanceKm
+          : geometry.reduce((sum, point, idx) => {
+              if (idx === 0) return 0
+              return sum + haversineDistanceKm(geometry[idx - 1], point)
+            }, 0)
+
+        elevationProfile = parseBrouterProfilePoints(
+          routeProperties.elevation_profile ??
+          routeProperties.elevationProfile ??
+          routeProperties.profile_elevation ??
+          routeProperties.ele_profile ??
+          routeProperties.profileEle ??
+          routeProperties.elevation,
+          routeGeometryCoords
+        )
       } else {
         geometry = coords
         distanceKm = coords.reduce((sum, point, idx) => {
@@ -578,10 +836,27 @@ export default function TrailsPage() {
         }, 0)
       }
 
-      const elevationProfile = await fetchElevationProfile(geometry)
+      if (elevationProfile.length === 0) {
+        elevationProfile = await fetchElevationProfile(geometry)
+      }
+
       const maxElevation = elevationProfile.length > 0
         ? Math.max(...elevationProfile.map((entry) => entry.elev))
         : null
+
+      const elevationData = geometry.map((point, index) => {
+        const ratioIndex = elevationProfile.length > 1 && geometry.length > 1
+          ? Math.round((index / (geometry.length - 1)) * (elevationProfile.length - 1))
+          : 0
+        const profilePoint = elevationProfile[ratioIndex] || elevationProfile[index] || elevationProfile[0] || null
+
+        return {
+          distance: profilePoint?.distKm ?? (index > 0 ? haversineDistanceKm(geometry[0], point) : 0),
+          elevation: profilePoint?.elev ?? 0,
+          lat: point[0],
+          lng: point[1],
+        }
+      })
 
       setRouteGeometry(geometry)
       setRoutePlannerStats({
@@ -589,6 +864,7 @@ export default function TrailsPage() {
         durationSec: (distanceKm / 15) * 3600,
         maxElevation,
         elevationProfile,
+        elevationData,
         geometry,
       })
     } catch (err) {
@@ -598,7 +874,7 @@ export default function TrailsPage() {
     } finally {
       setRouteLoading(false)
     }
-  }, [fetchElevationProfile])
+  }, [avoidHikingTrails, fetchElevationProfile, getBrouterProfile, roadPreference])
 
   useEffect(() => {
     calculateRouteFromWaypoints(waypointCoordinates)
@@ -809,32 +1085,39 @@ export default function TrailsPage() {
       </button>
 
       {routePlannerStats && (
-        <div style={{ marginTop: '8px', padding: '10px', backgroundColor: '#f1f5f9', borderRadius: '8px' }}>
-          <span style={{ display: 'block', fontSize: '0.85rem' }}>
-            <strong>Distance:</strong> {routePlannerStats.distanceKm.toFixed(2)} km
-          </span>
-          <span style={{ display: 'block', fontSize: '0.85rem' }}>
-            <strong>Estimated Time:</strong> {(routePlannerStats.durationSec / 3600).toFixed(2)} h
-          </span>
-          <span style={{ display: 'block', fontSize: '0.85rem' }}>
-            <strong>Max Elevation:</strong> {routePlannerStats.maxElevation != null ? `${Math.round(routePlannerStats.maxElevation)} m` : 'N/A'}
-          </span>
-          <div style={{ marginTop: '8px' }}>
-            <strong style={{ fontSize: '0.8rem' }}>Elevation Profile</strong>
-            <div style={{ display: 'flex', alignItems: 'flex-end', gap: '3px', height: '70px', marginTop: '6px' }}>
-              {routePlannerStats.elevationProfile.map((entry, idx, arr) => {
-                const maxElevation = Math.max(...arr.map((item) => item.elev), 1)
-                const height = Math.max(4, (entry.elev / maxElevation) * 64)
-                return (
-                  <div
-                    key={`${entry.distKm}-${idx}`}
-                    title={`${entry.distKm.toFixed(1)} km | ${Math.round(entry.elev)} m`}
-                    style={{ width: '6px', height: `${height}px`, background: '#6366f1', borderRadius: '2px' }}
-                  />
-                )
-              })}
+        <div style={{
+          marginTop: '8px',
+          padding: '12px',
+          backgroundColor: '#370063',
+          borderRadius: '12px',
+          border: '1px solid rgba(255, 255, 255, 0.15)',
+          color: '#ffffff',
+        }}>
+          <div className="details-header" style={{ marginBottom: '10px' }}>
+            <h3 style={{ margin: 0 }}>Custom Route Summary</h3>
+            <span
+              className="details-difficulty-badge"
+              style={{ backgroundColor: '#a78bfa', color: '#1f0931' }}
+            >
+              Plan New
+            </span>
+          </div>
+
+          <div className="stats-grid" style={{ marginBottom: '10px', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))' }}>
+            <div className="stat-item" style={{ background: 'rgba(255,255,255,0.08)' }}>
+              <span className="stat-label" style={{ color: '#b794f4' }}>Distance</span>
+              <span className="stat-value">{routePlannerStats.distanceKm.toFixed(2)} km</span>
+            </div>
+            <div className="stat-item" style={{ background: 'rgba(255,255,255,0.08)' }}>
+              <span className="stat-label" style={{ color: '#b794f4' }}>Estimated Time</span>
+              <span className="stat-value">{(routePlannerStats.durationSec / 3600).toFixed(2)} h</span>
+            </div>
+            <div className="stat-item" style={{ background: 'rgba(255,255,255,0.08)' }}>
+              <span className="stat-label" style={{ color: '#b794f4' }}>Max Elevation</span>
+              <span className="stat-value">{routePlannerStats.maxElevation != null ? `${Math.round(routePlannerStats.maxElevation)} m` : 'N/A'}</span>
             </div>
           </div>
+          <RouteElevationChart data={routePlannerStats.elevationData} chartColor="#a78bfa" onHover={handleChartHover} />
           <button 
             onClick={handleSaveRoute}
             style={{
@@ -1023,6 +1306,10 @@ export default function TrailsPage() {
             />
             <ReportPinDropListener enabled={isDropPinMode} onPick={handleMapReportPinPick} />
             <WaypointPinListener activePinningIndex={activePinningIndex} onPick={handleMapWaypointPin} />
+            <WaypointLongPressListener
+              enabled={plannerTab === 'planNew'}
+              onLongPress={handleMapLongPress}
+            />
 
             {plannerTab === 'planNew' && waypoints.map((waypoint, index) => (
               waypoint.latlng ? (
