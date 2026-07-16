@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { MapContainer, TileLayer, CircleMarker, Marker, Popup, Polyline, Tooltip } from 'react-leaflet'
+import { MapContainer, TileLayer, CircleMarker, Marker, Popup, Polyline, Tooltip, useMapEvents } from 'react-leaflet'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import './TrailsPage.css'
@@ -39,6 +39,25 @@ const iconButtonStyle = {
   transition: 'background-color 0.2s ease',
 }
 
+// Fix Leaflet default marker URLs for Vite/mobile builds.
+delete L.Icon.Default.prototype._getIconUrl
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
+  iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
+  shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+})
+
+function ReportPinDropListener({ enabled, onPick }) {
+  useMapEvents({
+    click(event) {
+      if (!enabled) return
+      onPick({ lat: event.latlng.lat, lng: event.latlng.lng })
+    },
+  })
+
+  return null
+}
+
 export default function TrailsPage() {
   const [trails, setTrails] = useState([])
   const [selectedTrail, setSelectedTrail] = useState(null)
@@ -71,6 +90,8 @@ export default function TrailsPage() {
   
   const [activeRecording, setActiveRecording] = useState(false)
   const [hazards, setHazards] = useState([])
+  const [isDropPinMode, setIsDropPinMode] = useState(false)
+  const [reportCoordinates, setReportCoordinates] = useState(null)
 
   const mapRef = useRef(null)
   const gpsTrackerRef = useRef(null)
@@ -125,9 +146,9 @@ export default function TrailsPage() {
 
   // Filter dynamic POIs
   const filteredPois = useMemo(() => {
-    if (!showPoiMenu || selectedCategories.length === 0) return []
+    if (selectedCategories.length === 0) return []
     return normalizedPois.filter((poi) => selectedCategories.includes(poi.category))
-  }, [normalizedPois, showPoiMenu, selectedCategories])
+  }, [normalizedPois, selectedCategories])
 
   const handleToggleCategory = (category) => {
     setSelectedCategories(prev => 
@@ -135,6 +156,7 @@ export default function TrailsPage() {
         ? prev.filter(c => c !== category) 
         : [...prev, category]
     )
+    setShowPoiMenu(false)
   }
 
   const handleTogglePoiMenu = () => {
@@ -162,7 +184,7 @@ export default function TrailsPage() {
       (position) => {
         const { latitude, longitude } = position.coords
         if (mapRef.current) {
-          mapRef.current.flyTo([latitude, longitude], 15)
+          mapRef.current.flyTo([latitude, longitude], 16, { animate: true, duration: 1.5 })
         }
       },
       (error) => {
@@ -177,8 +199,21 @@ export default function TrailsPage() {
   }, [])
 
   const handleReportProblem = useCallback(() => {
+    setIsDropPinMode(false)
     if (reportProblemRef.current?.openModal) {
       reportProblemRef.current.openModal()
+    }
+  }, [])
+
+  const handleDropPinRequest = useCallback(() => {
+    setIsDropPinMode(true)
+  }, [])
+
+  const handleMapReportPinPick = useCallback((coords) => {
+    setReportCoordinates(coords)
+    setIsDropPinMode(false)
+    if (reportProblemRef.current?.openModal) {
+      reportProblemRef.current.openModal(coords)
     }
   }, [])
 
@@ -456,6 +491,24 @@ export default function TrailsPage() {
             </div>
           )}
 
+          {isDropPinMode && (
+            <div style={{
+              position: 'absolute',
+              top: '130px',
+              right: '16px',
+              zIndex: 1001,
+              backgroundColor: '#370063',
+              color: '#f7fafc',
+              padding: '8px 10px',
+              borderRadius: '10px',
+              border: '1px solid rgba(255,255,255,0.2)',
+              fontSize: '0.75rem',
+              maxWidth: '220px',
+            }}>
+              Tap anywhere on the map to drop a hazard pin.
+            </div>
+          )}
+
           <MapContainer
             center={[43.307, 16.635]}
             zoom={11}
@@ -485,7 +538,13 @@ export default function TrailsPage() {
             
             <ReportMarkers refreshKey={reportsRefreshKey} />
             <GpsTracker ref={gpsTrackerRef} />
-            <ReportProblem ref={reportProblemRef} onReportSaved={() => setReportsRefreshKey((k) => k + 1)} />
+            <ReportProblem
+              ref={reportProblemRef}
+              initialCoordinates={reportCoordinates}
+              onRequestDropPin={handleDropPinRequest}
+              onReportSaved={() => setReportsRefreshKey((k) => k + 1)}
+            />
+            <ReportPinDropListener enabled={isDropPinMode} onPick={handleMapReportPinPick} />
 
             {/* Dynamic filtered Places from final_places.json */}
             {filteredPois.map((poi) => (

@@ -193,13 +193,6 @@ const GpsTracker = forwardRef(function GpsTracker(props, ref) {
         />
       )}
       <div className="gps-recorder-panel">
-        <button
-          className="gps-record-button"
-          type="button"
-          onClick={handleRecordToggle}
-        >
-          {recording ? '⏹ Stop Recording' : '🔴 Record Route'}
-        </button>
         {recording && (
           <div className="gps-record-status">
             <div>Elapsed: {formatTime(elapsedSeconds)}</div>
