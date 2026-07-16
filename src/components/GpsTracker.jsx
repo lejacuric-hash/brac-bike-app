@@ -16,20 +16,25 @@ function haversineDistance([lat1, lng1], [lat2, lng2]) {
 }
 
 function formatTime(seconds) {
-  const minutes = Math.floor(seconds / 60)
+  const hrs = Math.floor(seconds / 3600)
+  const minutes = Math.floor((seconds % 3600) / 60)
   const secs = Math.floor(seconds % 60)
-  return `${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`
+  return `${hrs.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`
 }
 
-const GpsTracker = forwardRef(function GpsTracker(props, ref) {
+const GpsTracker = forwardRef(function GpsTracker({ onRideSaved }, ref) {
   const map = useMap()
   const [position, setPosition] = useState(null)
   const [error, setError] = useState(null)
   const [recording, setRecording] = useState(false)
   const [trackPoints, setTrackPoints] = useState([])
   const [elapsedSeconds, setElapsedSeconds] = useState(0)
-  const [saveName, setSaveName] = useState('')
-  const [savedRoute, setSavedRoute] = useState(null)
+  const [routeName, setRouteName] = useState('')
+  const [showSummaryModal, setShowSummaryModal] = useState(false)
+  const [rating, setRating] = useState(5)
+  const [reviewComment, setReviewComment] = useState('')
+  const [savingRide, setSavingRide] = useState(false)
+  const [saveError, setSaveError] = useState(null)
   const watchIdRef = useRef(null)
   const intervalRef = useRef(null)
 
@@ -40,6 +45,15 @@ const GpsTracker = forwardRef(function GpsTracker(props, ref) {
       const prev = trackPoints[index - 1]
       return sum + haversineDistance([prev.lat, prev.lng], [point.lat, point.lng])
     }, 0)
+  }, [trackPoints])
+
+  const maxElevationM = useMemo(() => {
+    const validElevations = trackPoints
+      .map((point) => point.altitude)
+      .filter((value) => Number.isFinite(value))
+
+    if (validElevations.length === 0) return 0
+    return Math.max(...validElevations)
   }, [trackPoints])
 
   useEffect(() => {
@@ -86,6 +100,7 @@ const GpsTracker = forwardRef(function GpsTracker(props, ref) {
           {
             lat: position.coords.latitude,
             lng: position.coords.longitude,
+            altitude: position.coords.altitude,
             timestamp: position.timestamp,
           },
         ])
@@ -111,7 +126,11 @@ const GpsTracker = forwardRef(function GpsTracker(props, ref) {
     if (!recording) {
       setTrackPoints([])
       setElapsedSeconds(0)
-      setSaveName('')
+      setRouteName(`Ride ${new Date().toLocaleDateString()}`)
+      setReviewComment('')
+      setRating(5)
+      setSaveError(null)
+      setShowSummaryModal(false)
       setRecording(true)
 
       const timer = window.setInterval(() => {
@@ -123,6 +142,9 @@ const GpsTracker = forwardRef(function GpsTracker(props, ref) {
       if (intervalRef.current != null) {
         clearInterval(intervalRef.current)
       }
+      if (trackPoints.length > 1) {
+        setShowSummaryModal(true)
+      }
     }
   }
 
@@ -130,36 +152,108 @@ const GpsTracker = forwardRef(function GpsTracker(props, ref) {
     toggleRecording: handleRecordToggle,
   }))
 
-  const handleSave = async () => {
-    const routeName = saveName || `Route ${new Date().toLocaleString()}`
+  const handleSaveRideAndReview = async () => {
+    const nextRouteName = routeName || `Ride ${new Date().toLocaleString()}`
     const distanceKm = Number(totalDistanceKm.toFixed(3))
     const coordinates = trackPoints
+    const recordedPath = trackPoints.map((point) => ({
+      lat: point.lat,
+      lng: point.lng,
+      altitude: point.altitude,
+      timestamp: point.timestamp,
+    }))
+    const durationSec = elapsedSeconds
+    const maxElevation = Number(maxElevationM.toFixed(1))
 
-    const { error } = await supabase.from('user_routes').insert([
-      { name: routeName, coordinates, distance_km: distanceKm },
-    ])
+    setSavingRide(true)
+    setSaveError(null)
 
-    if (error) {
-      alert('Unable to save route: ' + error.message)
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser()
+
+    if (authError || !user?.id) {
+      setSavingRide(false)
+      setSaveError('You must be signed in to save rides and reviews.')
       return
     }
 
-    setSavedRoute({
-      name: routeName,
-      coordinates,
-      distanceKm,
-    })
+    const { data: routeData, error: routeError } = await supabase
+      .from('user_routes')
+      .insert([
+        { name: nextRouteName, coordinates, distance_km: distanceKm },
+      ])
+      .select('id, name')
+      .single()
+
+    if (routeError) {
+      setSavingRide(false)
+      setSaveError('Unable to save route: ' + routeError.message)
+      return
+    }
+
+    const { data: completedRideData, error: completedRideError } = await supabase
+      .from('completed_rides')
+      .insert([
+        {
+          user_id: user.id,
+          route_id: routeData?.id,
+          distance_km: distanceKm,
+          duration_seconds: durationSec,
+          elevation_max: maxElevation,
+          recorded_path: recordedPath,
+        },
+      ])
+      .select('id')
+      .single()
+
+    if (completedRideError) {
+      setSavingRide(false)
+      setSaveError('Unable to save completed ride: ' + completedRideError.message)
+      return
+    }
+
+    const { error: reviewError } = await supabase
+      .from('route_reviews')
+      .insert([
+        {
+          route_id: routeData?.id,
+          user_id: user.id,
+          rating,
+          comment: reviewComment || null,
+        },
+      ])
+
+    if (reviewError) {
+      setSavingRide(false)
+      setSaveError('Unable to publish review: ' + reviewError.message)
+      return
+    }
+
+    setSavingRide(false)
+    setShowSummaryModal(false)
+    if (typeof onRideSaved === 'function') {
+      onRideSaved()
+    }
+
     setRecording(false)
     setTrackPoints([])
     setElapsedSeconds(0)
-    setSaveName('')
+    setRouteName('')
+    setReviewComment('')
+    setRating(5)
   }
 
   const handleDiscard = () => {
+    setShowSummaryModal(false)
     setRecording(false)
     setTrackPoints([])
     setElapsedSeconds(0)
-    setSaveName('')
+    setRouteName('')
+    setReviewComment('')
+    setRating(5)
+    setSaveError(null)
   }
 
   if (error) {
@@ -199,26 +293,137 @@ const GpsTracker = forwardRef(function GpsTracker(props, ref) {
             <div>Distance: {totalDistanceKm.toFixed(2)} km</div>
           </div>
         )}
-        {!recording && trackPoints.length > 0 && (
-          <div className="gps-save-panel">
+      </div>
+
+      {showSummaryModal && (
+        <div style={{
+          position: 'absolute',
+          inset: 0,
+          background: 'rgba(2, 6, 23, 0.72)',
+          zIndex: 1400,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: '20px',
+        }}>
+          <div style={{
+            width: '100%',
+            maxWidth: '440px',
+            background: '#0f172a',
+            color: '#f8fafc',
+            borderRadius: '14px',
+            border: '1px solid rgba(148, 163, 184, 0.35)',
+            padding: '16px',
+            boxShadow: '0 10px 35px rgba(2, 6, 23, 0.45)',
+          }}>
+            <h3 style={{ margin: '0 0 10px 0' }}>Ride Summary</h3>
+            <div style={{ fontSize: '0.9rem', marginBottom: '4px' }}>
+              <strong>Total Distance Biked:</strong> {totalDistanceKm.toFixed(2)} km
+            </div>
+            <div style={{ fontSize: '0.9rem', marginBottom: '4px' }}>
+              <strong>Time Spent:</strong> {formatTime(elapsedSeconds)}
+            </div>
+            <div style={{ fontSize: '0.9rem', marginBottom: '12px' }}>
+              <strong>Max Elevation Reached:</strong> {Math.round(maxElevationM)} m
+            </div>
+
+            <label style={{ display: 'block', fontSize: '0.8rem', marginBottom: '4px' }}>Route Name</label>
             <input
-              className="gps-save-input"
               type="text"
-              value={saveName}
-              placeholder="Route name"
-              onChange={(event) => setSaveName(event.target.value)}
+              value={routeName}
+              onChange={(event) => setRouteName(event.target.value)}
+              placeholder="My Ride"
+              style={{
+                width: '100%',
+                padding: '8px 10px',
+                borderRadius: '8px',
+                border: '1px solid rgba(148, 163, 184, 0.45)',
+                background: '#111827',
+                color: '#f8fafc',
+                marginBottom: '10px',
+              }}
             />
-            <div className="gps-save-actions">
-              <button className="gps-save-button" type="button" onClick={handleSave}>
-                Save Route
-              </button>
-              <button className="gps-discard-button" type="button" onClick={handleDiscard}>
+
+            <label style={{ display: 'block', fontSize: '0.8rem', marginBottom: '6px' }}>Star Rating</label>
+            <div style={{ display: 'flex', gap: '6px', marginBottom: '10px' }}>
+              {[1, 2, 3, 4, 5].map((value) => (
+                <button
+                  key={value}
+                  type="button"
+                  onClick={() => setRating(value)}
+                  style={{
+                    border: 'none',
+                    background: 'transparent',
+                    color: value <= rating ? '#fbbf24' : '#64748b',
+                    fontSize: '1.2rem',
+                    cursor: 'pointer',
+                    padding: 0,
+                  }}
+                  aria-label={`Rate ${value} star${value > 1 ? 's' : ''}`}
+                >
+                  ★
+                </button>
+              ))}
+            </div>
+
+            <label style={{ display: 'block', fontSize: '0.8rem', marginBottom: '4px' }}>Review comments/tips</label>
+            <textarea
+              value={reviewComment}
+              onChange={(event) => setReviewComment(event.target.value)}
+              rows={3}
+              placeholder="Trail condition, hazards, best time to ride..."
+              style={{
+                width: '100%',
+                padding: '8px 10px',
+                borderRadius: '8px',
+                border: '1px solid rgba(148, 163, 184, 0.45)',
+                background: '#111827',
+                color: '#f8fafc',
+                marginBottom: '10px',
+                resize: 'vertical',
+              }}
+            />
+
+            {saveError && (
+              <div style={{ color: '#fda4af', fontSize: '0.8rem', marginBottom: '8px' }}>{saveError}</div>
+            )}
+
+            <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
+              <button
+                type="button"
+                onClick={handleDiscard}
+                disabled={savingRide}
+                style={{
+                  padding: '8px 10px',
+                  borderRadius: '8px',
+                  border: '1px solid rgba(148, 163, 184, 0.45)',
+                  background: '#1e293b',
+                  color: '#e2e8f0',
+                  cursor: 'pointer',
+                }}
+              >
                 Discard
+              </button>
+              <button
+                type="button"
+                onClick={handleSaveRideAndReview}
+                disabled={savingRide}
+                style={{
+                  padding: '8px 10px',
+                  borderRadius: '8px',
+                  border: 'none',
+                  background: '#22c55e',
+                  color: '#052e16',
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                }}
+              >
+                {savingRide ? 'Saving...' : 'Save Ride & Publish Review'}
               </button>
             </div>
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </>
   )
 })

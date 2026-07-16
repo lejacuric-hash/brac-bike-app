@@ -28,6 +28,7 @@ function BottomSheet({
   planNewContent,
   onRouteSelect,
   selectedRouteId,
+  routeFeedbackRefreshKey,
 
 }) {
   const [internalActiveTab, setInternalActiveTab] = useState('routes')
@@ -346,6 +347,7 @@ function BottomSheet({
       activeTab={activeTab}
       onRouteSelect={onRouteSelect}
       selectedRouteId={selectedRouteId}
+        refreshKey={routeFeedbackRefreshKey}
     />
   )
       case 'planNew':
@@ -429,6 +431,7 @@ BottomSheet.propTypes = {
   activeTab: PropTypes.oneOf(['routes', 'userRoutes', 'planNew']),
   onTabChange: PropTypes.func,
   planNewContent: PropTypes.node,
+  routeFeedbackRefreshKey: PropTypes.number,
 }
 
 export default BottomSheet

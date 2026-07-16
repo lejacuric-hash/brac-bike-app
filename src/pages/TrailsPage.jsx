@@ -58,6 +58,27 @@ function ReportPinDropListener({ enabled, onPick }) {
   return null
 }
 
+function haversineDistanceKm([lat1, lng1], [lat2, lng2]) {
+  const toRad = (value) => (value * Math.PI) / 180
+  const R = 6371
+  const dLat = toRad(lat2 - lat1)
+  const dLng = toRad(lng2 - lng1)
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
+    Math.sin(dLng / 2) * Math.sin(dLng / 2)
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
+  return R * c
+}
+
+function createWaypoint(seed) {
+  return {
+    id: `wp-${Date.now()}-${seed}-${Math.random().toString(36).slice(2, 8)}`,
+    latlng: null,
+    address: '',
+  }
+}
+
 export default function TrailsPage() {
   const [trails, setTrails] = useState([])
   const [selectedTrail, setSelectedTrail] = useState(null)
@@ -67,7 +88,7 @@ export default function TrailsPage() {
   const [plannerTab, setPlannerTab] = useState('routes')
   
   // Custom Planning states
-  const [waypoints, setWaypoints] = useState(['', ''])
+  const [waypoints, setWaypoints] = useState([createWaypoint(1), createWaypoint(2)])
   const [roadPreference, setRoadPreference] = useState('gravel')
   const [routeDifficulty, setRouteDifficulty] = useState('moderate')
   const [avoidHikingTrails, setAvoidHikingTrails] = useState(true)
@@ -92,6 +113,7 @@ export default function TrailsPage() {
   const [hazards, setHazards] = useState([])
   const [isDropPinMode, setIsDropPinMode] = useState(false)
   const [reportCoordinates, setReportCoordinates] = useState(null)
+  const [routeFeedbackRefreshKey, setRouteFeedbackRefreshKey] = useState(0)
 
   const mapRef = useRef(null)
   const gpsTrackerRef = useRef(null)
@@ -184,7 +206,7 @@ export default function TrailsPage() {
       (position) => {
         const { latitude, longitude } = position.coords
         if (mapRef.current) {
-          mapRef.current.flyTo([latitude, longitude], 16, { animate: true, duration: 1.5 })
+          mapRef.current.flyTo([latitude, longitude], 18, { animate: true, duration: 1.5 })
         }
       },
       (error) => {
@@ -221,9 +243,150 @@ export default function TrailsPage() {
     setSelectedTrail(trail.filename)
   }, [])
 
+  const waypointCoordinates = useMemo(
+    () => waypoints
+      .map((waypoint) => waypoint.latlng)
+      .filter((latlng) => Array.isArray(latlng) && Number.isFinite(latlng[0]) && Number.isFinite(latlng[1])),
+    [waypoints]
+  )
+
+  const updateWaypointLatLng = useCallback((index, nextLat, nextLng) => {
+    setWaypoints((prev) => prev.map((waypoint, idx) => {
+      if (idx !== index) return waypoint
+
+      const hasLat = Number.isFinite(nextLat)
+      const hasLng = Number.isFinite(nextLng)
+      return {
+        ...waypoint,
+        latlng: hasLat && hasLng ? [nextLat, nextLng] : null,
+      }
+    }))
+  }, [])
+
+  const handleWaypointAddressChange = useCallback((index, value) => {
+    setWaypoints((prev) => prev.map((waypoint, idx) => (
+      idx === index ? { ...waypoint, address: value } : waypoint
+    )))
+  }, [])
+
+  const handleWaypointLatChange = useCallback((index, value) => {
+    const nextLat = Number(value)
+    const currentLng = waypoints[index]?.latlng?.[1]
+    updateWaypointLatLng(index, Number.isFinite(nextLat) ? nextLat : NaN, currentLng)
+  }, [updateWaypointLatLng, waypoints])
+
+  const handleWaypointLngChange = useCallback((index, value) => {
+    const nextLng = Number(value)
+    const currentLat = waypoints[index]?.latlng?.[0]
+    updateWaypointLatLng(index, currentLat, Number.isFinite(nextLng) ? nextLng : NaN)
+  }, [updateWaypointLatLng, waypoints])
+
+  const handleAddWaypoint = useCallback(() => {
+    setWaypoints((prev) => [...prev, createWaypoint(prev.length + 1)])
+  }, [])
+
+  const fetchElevationProfile = useCallback(async (coords) => {
+    if (coords.length === 0) return []
+
+    const step = Math.max(1, Math.ceil(coords.length / 30))
+    const sampled = coords.filter((_, idx) => idx % step === 0)
+    if (sampled[sampled.length - 1] !== coords[coords.length - 1]) {
+      sampled.push(coords[coords.length - 1])
+    }
+
+    let cumulativeKm = 0
+    const sampledWithDistance = sampled.map((point, idx) => {
+      if (idx > 0) {
+        cumulativeKm += haversineDistanceKm(sampled[idx - 1], point)
+      }
+      return { point, distKm: cumulativeKm }
+    })
+
+    try {
+      const locations = sampled.map(([lat, lng]) => `${lat},${lng}`).join('|')
+      const elevationResponse = await fetch(`https://api.open-elevation.com/api/v1/lookup?locations=${encodeURIComponent(locations)}`)
+
+      if (!elevationResponse.ok) {
+        throw new Error('Elevation request failed')
+      }
+
+      const elevationData = await elevationResponse.json()
+      return sampledWithDistance.map((entry, idx) => ({
+        distKm: entry.distKm,
+        elev: elevationData?.results?.[idx]?.elevation ?? 0,
+      }))
+    } catch {
+      return sampledWithDistance.map((entry, idx) => ({
+        distKm: entry.distKm,
+        elev: 20 + idx * 5,
+      }))
+    }
+  }, [])
+
+  const calculateRouteFromWaypoints = useCallback(async (coords) => {
+    if (coords.length < 2) {
+      setRouteGeometry([])
+      setRoutePlannerStats(null)
+      return
+    }
+
+    setRouteLoading(true)
+    setRouteError(null)
+
+    try {
+      const osrmCoordinates = coords.map(([lat, lng]) => `${lng},${lat}`).join(';')
+      const routeResponse = await fetch(`https://router.project-osrm.org/route/v1/driving/${osrmCoordinates}?overview=full&geometries=geojson`)
+
+      let geometry
+      let distanceKm
+
+      if (routeResponse.ok) {
+        const osrmData = await routeResponse.json()
+        const route = osrmData?.routes?.[0]
+
+        if (!route?.geometry?.coordinates?.length) {
+          throw new Error('No valid route returned')
+        }
+
+        geometry = route.geometry.coordinates.map(([lng, lat]) => [lat, lng])
+        distanceKm = route.distance / 1000
+      } else {
+        geometry = coords
+        distanceKm = coords.reduce((sum, point, idx) => {
+          if (idx === 0) return 0
+          return sum + haversineDistanceKm(coords[idx - 1], point)
+        }, 0)
+      }
+
+      const elevationProfile = await fetchElevationProfile(geometry)
+      const maxElevation = elevationProfile.length > 0
+        ? Math.max(...elevationProfile.map((entry) => entry.elev))
+        : null
+
+      setRouteGeometry(geometry)
+      setRoutePlannerStats({
+        distanceKm,
+        durationSec: (distanceKm / 15) * 3600,
+        maxElevation,
+        elevationProfile,
+        geometry,
+      })
+    } catch (err) {
+      setRouteError('Failed to calculate route. Please adjust waypoint coordinates and try again.')
+      setRouteGeometry([])
+      setRoutePlannerStats(null)
+    } finally {
+      setRouteLoading(false)
+    }
+  }, [fetchElevationProfile])
+
+  useEffect(() => {
+    calculateRouteFromWaypoints(waypointCoordinates)
+  }, [calculateRouteFromWaypoints, waypointCoordinates])
+
   const handleSaveRoute = useCallback(async () => {
     if (!routePlannerStats) {
-      alert('Please calculate your route before saving.')
+      alert('Please provide at least two valid waypoint coordinates first.')
       return
     }
 
@@ -231,17 +394,24 @@ export default function TrailsPage() {
     const coordinates = routePlannerStats.geometry.map(([lat, lng]) => ({ lat, lng }))
     const distanceKm = Number(routePlannerStats.distanceKm.toFixed(1))
 
-    const { error } = await supabase.from('user_routes').insert([
-      { name: routeName, coordinates, distance_km: distanceKm },
-    ])
+    const { data, error } = await supabase.rpc('save_or_increment_route', {
+      route_name: routeName,
+      route_coordinates: coordinates,
+      distance_km: distanceKm,
+      estimated_time_sec: Math.round(routePlannerStats.durationSec),
+      max_elevation_m: routePlannerStats.maxElevation,
+      road_preference: roadPreference,
+      route_difficulty: routeDifficulty,
+      avoid_hiking_trails: avoidHikingTrails,
+    })
 
     if (error) {
       alert('Unable to save: ' + error.message)
       return
     }
 
-    alert('Route saved successfully!')
-  }, [routePlannerStats])
+    alert(data?.message || 'Route saved successfully!')
+  }, [avoidHikingTrails, roadPreference, routeDifficulty, routePlannerStats])
 
   const handleCommunityRouteSelect = useCallback((route) => {
     const positions = Array.isArray(route.coordinates)
@@ -259,26 +429,9 @@ export default function TrailsPage() {
     setHoverPosition(point)
   }, [])
 
-  // Dummy route calculation handler to link up the UI fields
-  const handleCalculateRoute = async () => {
-    setRouteLoading(true)
-    setRouteError(null)
-    try {
-      // Mock Route calculations (replace with your dynamic routing engine call if needed)
-      setTimeout(() => {
-        setRouteGeometry([[43.307, 16.635], [43.312, 16.645]])
-        setRoutePlannerStats({
-          distanceKm: 4.2,
-          elevationGain: 120,
-          geometry: [[43.307, 16.635], [43.312, 16.645]]
-        })
-        setRouteLoading(false)
-      }, 1000)
-    } catch (err) {
-      setRouteError('Failed to parse route. Check your internet connection.')
-      setRouteLoading(false)
-    }
-  }
+  const handleCalculateRoute = useCallback(() => {
+    calculateRouteFromWaypoints(waypointCoordinates)
+  }, [calculateRouteFromWaypoints, waypointCoordinates])
 
   // Construct UI for the Custom Planner Panel
   const planNewContent = (
@@ -286,24 +439,54 @@ export default function TrailsPage() {
       <h3 style={{ fontSize: '1rem', fontWeight: 'bold', margin: '0' }}>Plan a Custom Trail</h3>
       
       {waypoints.map((waypoint, idx) => (
-        <input
-          key={idx}
-          type="text"
-          placeholder={idx === 0 ? "Start Location" : "End Location"}
-          value={waypoint}
-          onChange={(e) => {
-            const next = [...waypoints]
-            next[idx] = e.target.value
-            setWaypoints(next)
-          }}
-          style={{
-            padding: '8px 12px',
-            borderRadius: '8px',
-            border: '1px solid #ddd',
-            fontSize: '0.9rem'
-          }}
-        />
+        <div key={waypoint.id} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+          <input
+            type="text"
+            placeholder={`Waypoint ${idx + 1} address`}
+            value={waypoint.address}
+            onChange={(e) => handleWaypointAddressChange(idx, e.target.value)}
+            style={{
+              gridColumn: '1 / span 2',
+              padding: '8px 12px',
+              borderRadius: '8px',
+              border: '1px solid #ddd',
+              fontSize: '0.9rem',
+            }}
+          />
+          <input
+            type="number"
+            step="any"
+            placeholder="Latitude"
+            value={waypoint.latlng?.[0] ?? ''}
+            onChange={(e) => handleWaypointLatChange(idx, e.target.value)}
+            style={{ padding: '8px 12px', borderRadius: '8px', border: '1px solid #ddd', fontSize: '0.85rem' }}
+          />
+          <input
+            type="number"
+            step="any"
+            placeholder="Longitude"
+            value={waypoint.latlng?.[1] ?? ''}
+            onChange={(e) => handleWaypointLngChange(idx, e.target.value)}
+            style={{ padding: '8px 12px', borderRadius: '8px', border: '1px solid #ddd', fontSize: '0.85rem' }}
+          />
+        </div>
       ))}
+
+      <button
+        type="button"
+        onClick={handleAddWaypoint}
+        style={{
+          background: '#1f2937',
+          color: '#ffffff',
+          border: '1px solid #374151',
+          padding: '8px 10px',
+          borderRadius: '8px',
+          fontWeight: 'bold',
+          cursor: 'pointer',
+        }}
+      >
+        Add Waypoint
+      </button>
 
       <div style={{ display: 'flex', gap: '8px' }}>
         <select 
@@ -357,11 +540,30 @@ export default function TrailsPage() {
       {routePlannerStats && (
         <div style={{ marginTop: '8px', padding: '10px', backgroundColor: '#f1f5f9', borderRadius: '8px' }}>
           <span style={{ display: 'block', fontSize: '0.85rem' }}>
-            <strong>Distance:</strong> {routePlannerStats.distanceKm} km
+            <strong>Distance:</strong> {routePlannerStats.distanceKm.toFixed(2)} km
           </span>
           <span style={{ display: 'block', fontSize: '0.85rem' }}>
-            <strong>Elevation Gain:</strong> {routePlannerStats.elevationGain} m
+            <strong>Estimated Time:</strong> {(routePlannerStats.durationSec / 3600).toFixed(2)} h
           </span>
+          <span style={{ display: 'block', fontSize: '0.85rem' }}>
+            <strong>Max Elevation:</strong> {routePlannerStats.maxElevation != null ? `${Math.round(routePlannerStats.maxElevation)} m` : 'N/A'}
+          </span>
+          <div style={{ marginTop: '8px' }}>
+            <strong style={{ fontSize: '0.8rem' }}>Elevation Profile</strong>
+            <div style={{ display: 'flex', alignItems: 'flex-end', gap: '3px', height: '70px', marginTop: '6px' }}>
+              {routePlannerStats.elevationProfile.map((entry, idx, arr) => {
+                const maxElevation = Math.max(...arr.map((item) => item.elev), 1)
+                const height = Math.max(4, (entry.elev / maxElevation) * 64)
+                return (
+                  <div
+                    key={`${entry.distKm}-${idx}`}
+                    title={`${entry.distKm.toFixed(1)} km | ${Math.round(entry.elev)} m`}
+                    style={{ width: '6px', height: `${height}px`, background: '#6366f1', borderRadius: '2px' }}
+                  />
+                )
+              })}
+            </div>
+          </div>
           <button 
             onClick={handleSaveRoute}
             style={{
@@ -537,7 +739,10 @@ export default function TrailsPage() {
             )}
             
             <ReportMarkers refreshKey={reportsRefreshKey} />
-            <GpsTracker ref={gpsTrackerRef} />
+            <GpsTracker
+              ref={gpsTrackerRef}
+              onRideSaved={() => setRouteFeedbackRefreshKey((value) => value + 1)}
+            />
             <ReportProblem
               ref={reportProblemRef}
               initialCoordinates={reportCoordinates}
@@ -545,6 +750,24 @@ export default function TrailsPage() {
               onReportSaved={() => setReportsRefreshKey((k) => k + 1)}
             />
             <ReportPinDropListener enabled={isDropPinMode} onPick={handleMapReportPinPick} />
+
+            {plannerTab === 'planNew' && waypoints.map((waypoint, index) => (
+              waypoint.latlng ? (
+                <Marker
+                  key={waypoint.id}
+                  position={waypoint.latlng}
+                  draggable={true}
+                  eventHandlers={{
+                    dragend: (event) => {
+                      const dragged = event.target.getLatLng()
+                      updateWaypointLatLng(index, dragged.lat, dragged.lng)
+                    },
+                  }}
+                >
+                  <Popup>Waypoint {index + 1}</Popup>
+                </Marker>
+              ) : null
+            ))}
 
             {/* Dynamic filtered Places from final_places.json */}
             {filteredPois.map((poi) => (
@@ -610,6 +833,7 @@ export default function TrailsPage() {
           onTabChange={setPlannerTab}
           onRouteSelect={handleCommunityRouteSelect}
           selectedRouteId={selectedCommunityRoute?.id}
+          routeFeedbackRefreshKey={routeFeedbackRefreshKey}
           planNewContent={planNewContent}
         />
       </div>
