@@ -13,9 +13,12 @@ const difficultyColors = {
 function GpxTrails({ onTracksLoaded, selectedTrail, onStatsUpdate }) {
   const [tracks, setTracks] = useState([])
   const map = useMap()
-  const gpxLayersRef = useRef([])
+  
+  // Keep track of loaded layers and bounds dynamically
+  const activeLayersRef = useRef([])
   const trackBoundsRef = useRef({})
 
+  // 1. Fetch tracks metadata configuration list
   useEffect(() => {
     let mounted = true
 
@@ -35,7 +38,7 @@ function GpxTrails({ onTracksLoaded, selectedTrail, onStatsUpdate }) {
         }
       })
       .catch((error) => {
-        console.error(error)
+        console.error('Error fetching tracks.json:', error)
       })
 
     return () => {
@@ -43,19 +46,32 @@ function GpxTrails({ onTracksLoaded, selectedTrail, onStatsUpdate }) {
     }
   }, [onTracksLoaded])
 
+  // 2. Clear out and rebuild route lines on selection changes
   useEffect(() => {
     if (!map || tracks.length === 0) {
       return
     }
 
-    // If a trail is selected, only render that trail; otherwise render all
-    const tracksToRender = selectedTrail
-      ? tracks.filter((track) => track.filename === selectedTrail)
-      : tracks
+    // CLEANUP STEP: Explicitly and cleanly tear down previous tracks from the Leaflet map
+    activeLayersRef.current.forEach((layer) => {
+      if (layer && map.hasLayer(layer)) {
+        map.removeLayer(layer)
+      }
+    })
+    activeLayersRef.current = []
 
-    const layers = tracksToRender.map((track) => {
+    // REQUIREMENT: If nothing is selected, do not paint any routes on the map.
+    if (!selectedTrail) {
+      return
+    }
+
+    // Filter to render ONLY the explicitly active trail
+    const tracksToRender = tracks.filter((track) => track.filename === selectedTrail)
+
+    const loadedLayers = tracksToRender.map((track) => {
       const color = difficultyColors[track.difficulty] ?? difficultyColors.easy
       const gpxUrl = `/tracks/${track.filename}`
+
       const gpxLayer = new L.GPX(gpxUrl, {
         async: true,
         marker_options: {
@@ -65,13 +81,13 @@ function GpxTrails({ onTracksLoaded, selectedTrail, onStatsUpdate }) {
         },
         polyline_options: {
           color,
-          weight: 5,
-          opacity: 0.85,
+          weight: 3, // REQUIREMENT: Narrower route line for a tidier map presentation
+          opacity: 0.9,
         },
       })
 
       gpxLayer.on('loaded', (event) => {
-        // Remove the default start/end marker pins, keep only the polyline
+        // Strip out default pin markers from leaflet-gpx, leaving only the track line
         const sublayer = Object.values(event.target._layers)[0]
         if (sublayer && sublayer._layers) {
           Object.values(sublayer._layers).forEach((nested) => {
@@ -83,17 +99,17 @@ function GpxTrails({ onTracksLoaded, selectedTrail, onStatsUpdate }) {
 
         const bounds = event.target.getBounds()
         trackBoundsRef.current[track.filename] = bounds
+        map.flyToBounds(bounds, { padding: [50, 50] })
 
-        // Extract statistics from the loaded GPX
+        // Extract statistics and format elevation data with 0.1 km precision
         const rawDistance = event.target.get_distance?.() || 0
-        const distance = rawDistance / 1000 // convert total route distance to km
+        const distance = rawDistance / 1000 // Convert to km
         const elevationGain = event.target.get_elevation_gain?.() || 0
         const elevationLoss = event.target.get_elevation_loss?.() || 0
         const elevationMax = event.target.get_elevation_max?.() || 0
         const elevationMin = event.target.get_elevation_min?.() || 0
         const elevationData = event.target.get_elevation_data?.() || []
 
-        // Get actual track coordinates from the rendered polyline
         let trackLatLngs = []
         try {
           const polylineCandidate = Object.values(sublayer._layers).find(
@@ -107,20 +123,18 @@ function GpxTrails({ onTracksLoaded, selectedTrail, onStatsUpdate }) {
           console.warn('Could not extract coordinates from GPX:', err)
         }
 
-        // Format elevation data for recharts, matching coordinates by proportional position
         const formattedElevationData = elevationData.map((point, index) => {
           const ratio = index / Math.max(elevationData.length - 1, 1)
           const latLngIndex = Math.round(ratio * (trackLatLngs.length - 1))
           const matched = trackLatLngs[latLngIndex]
           return {
-            distance: point[0],
-            elevation: point[1],
+            distance: Number(point[0].toFixed(1)), // Standardize step precision to 0.1 km
+            elevation: Math.round(point[1]),
             lat: matched ? matched.lat : null,
             lng: matched ? matched.lng : null,
           }
         })
 
-        // Report stats to parent
         if (typeof onStatsUpdate === 'function') {
           onStatsUpdate(track.filename, {
             distance,
@@ -133,14 +147,12 @@ function GpxTrails({ onTracksLoaded, selectedTrail, onStatsUpdate }) {
         }
 
         const popupContent = `
-          <div>
-            <strong>${track.name}</strong><br />
-            Difficulty: ${track.difficulty}<br />
-            ${track.description || ''}<br />
-            ${track.startLocation ? `Start: ${track.startLocation}` : ''}
+          <div style="font-family: sans-serif; padding: 2px;">
+            <strong style="font-size: 14px;">${track.name}</strong><br />
+            <span style="font-size: 11px; color: #666; font-weight: bold;">DIFFICULTY: ${track.difficulty.toUpperCase()}</span>
+            ${track.description ? `<p style="margin: 5px 0 0 0; font-size: 12px;">${track.description}</p>` : ''}
           </div>
         `
-
         event.target.bindPopup(popupContent)
       })
 
@@ -148,28 +160,17 @@ function GpxTrails({ onTracksLoaded, selectedTrail, onStatsUpdate }) {
       return gpxLayer
     })
 
-    gpxLayersRef.current = layers
+    activeLayersRef.current = loadedLayers
 
+    // Cleanup hook when the component unmounts or state updates
     return () => {
-      layers.forEach((layer) => {
-        if (layer && layer.remove) {
-          layer.remove()
+      loadedLayers.forEach((layer) => {
+        if (layer && map.hasLayer(layer)) {
+          map.removeLayer(layer)
         }
       })
-      gpxLayersRef.current = []
     }
   }, [map, tracks, selectedTrail, onStatsUpdate])
-
-  useEffect(() => {
-    if (!map || !selectedTrail) {
-      return
-    }
-
-    const bounds = trackBoundsRef.current[selectedTrail]
-    if (bounds) {
-      map.flyToBounds(bounds, { padding: [50, 50] })
-    }
-  }, [map, selectedTrail])
 
   return null
 }

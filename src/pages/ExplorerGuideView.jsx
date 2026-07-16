@@ -1,11 +1,11 @@
 import { useMemo, useState } from 'react'
 import { CircleMarker, MapContainer, TileLayer, Tooltip } from 'react-leaflet'
 import './TrailsPage.css'
-import { BRAC_POIS } from '../data/poiData'
+import { BRAC_POIS } from '../data/poiData.js'
 
 const CATEGORY_MAP = {
-  viewpoint: { label: '🏔 Viewpoints', color: '#FF5722' },
-  beach_cove: { label: '🏖 Beaches & Coves', color: '#00BCD4' },
+  viewpoint: { label: 'Viewpoints', color: '#FF5722' },
+  beach_cove: { label: 'Beaches', color: '#00BCD4' },
   geological: { label: '🪨 Geology Museum', color: '#795548' },
   archaeology: { label: '🏛 Archaeology', color: '#607D8B' },
   monastery: { label: '⛪ Churches & Chapels', color: '#E91E63' },
