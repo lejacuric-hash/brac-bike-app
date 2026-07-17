@@ -1302,8 +1302,8 @@ export default function TrailsPage() {
           >
             {mapStyle === 'street' ? (
               <TileLayer
-                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                attribution='&copy; OpenStreetMap contributors'
+                url="https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png"
+attribution='© OpenTopoMap contributors, © OpenStreetMap contributors'
               />
             ) : (
               <TileLayer
