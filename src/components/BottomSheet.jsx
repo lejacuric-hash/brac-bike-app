@@ -28,6 +28,7 @@ function BottomSheet({
   selectedTrail = null,
   trailStats = {},
   onTrailClick,
+  onBackToRoutes,
   onChartHover,
   activeTab: activeTabProp,
   onTabChange,
@@ -157,8 +158,10 @@ function BottomSheet({
   }
 
   const handleBackToList = () => {
-    setSnapKey('COLLAPSED')
-    setCurrentHeight(snapPositions.COLLAPSED)
+    onBackToRoutes?.()
+    setActiveTab('routes')
+    setSnapKey('HALF')
+    setCurrentHeight(snapPositions.HALF)
   }
 
   const handleChartMouseMove = (state) => {
@@ -499,6 +502,7 @@ BottomSheet.propTypes = {
   selectedTrail: PropTypes.string,
   trailStats: PropTypes.object,
   onTrailClick: PropTypes.func,
+  onBackToRoutes: PropTypes.func,
   onChartHover: PropTypes.func,
   onRouteSelect: PropTypes.func,
   activeTab: PropTypes.oneOf(['routes', 'userRoutes', 'planNew']),

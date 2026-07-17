@@ -10,7 +10,7 @@
   border-top-right-radius: 20px;
   display: flex;
   flex-direction: column;
-  z-index: 900;
+  z-index: 2000;
   box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3);
 }
 

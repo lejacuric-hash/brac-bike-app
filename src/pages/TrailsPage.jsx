@@ -82,9 +82,16 @@ function WaypointLongPressListener({ enabled, onLongPress }) {
       clearTimeout(pressTimerRef.current)
       pressTimerRef.current = null
     }
+    pressLatLngRef.current = null
   }, [])
 
   useEffect(() => clearPressTimer, [clearPressTimer])
+
+  useEffect(() => {
+    if (!enabled) {
+      clearPressTimer()
+    }
+  }, [clearPressTimer, enabled])
 
   useMapEvents({
     mousedown(event) {
@@ -114,6 +121,12 @@ function WaypointLongPressListener({ enabled, onLongPress }) {
       clearPressTimer()
     },
     dragstart() {
+      clearPressTimer()
+    },
+    movestart() {
+      clearPressTimer()
+    },
+    zoomstart() {
       clearPressTimer()
     },
   })
@@ -608,13 +621,16 @@ export default function TrailsPage() {
     setActivePinningIndex((current) => (current === index ? null : index))
   }, [])
 
-  const placeWaypointAtCoords = useCallback((lat, lng, address = '') => {
+  const placeWaypointAtCoords = useCallback((lat, lng, address = '', preferredIndex = null) => {
     setWaypoints((prev) => {
+      const canUsePreferredIndex = Number.isInteger(preferredIndex) && preferredIndex >= 0 && preferredIndex < prev.length
       const emptyIndex = prev.findIndex((waypoint) => !waypoint.latlng)
-      const targetIndex = emptyIndex === -1 ? prev.length : emptyIndex
+      const targetIndex = canUsePreferredIndex
+        ? preferredIndex
+        : (emptyIndex === -1 ? prev.length : emptyIndex)
       lastWaypointPlacementIndexRef.current = targetIndex
 
-      if (emptyIndex === -1) {
+      if (targetIndex === prev.length) {
         return [
           ...prev,
           {
@@ -626,7 +642,7 @@ export default function TrailsPage() {
       }
 
       return prev.map((waypoint, idx) => (
-        idx === emptyIndex
+        idx === targetIndex
           ? {
               ...waypoint,
               latlng: [lat, lng],
@@ -640,10 +656,14 @@ export default function TrailsPage() {
   const handleMapLongPress = useCallback(async (latlng) => {
     if (!latlng) return
 
-    setActivePinningIndex(null)
-    placeWaypointAtCoords(latlng.lat, latlng.lng)
+    const targetIndex = Number.isInteger(activePinningIndex)
+      ? activePinningIndex
+      : null
 
-    const targetIndex = lastWaypointPlacementIndexRef.current
+    setActivePinningIndex(null)
+    placeWaypointAtCoords(latlng.lat, latlng.lng, '', targetIndex)
+
+    const resolvedTargetIndex = lastWaypointPlacementIndexRef.current
 
     if (navigator.vibrate) {
       navigator.vibrate([100])
@@ -653,16 +673,16 @@ export default function TrailsPage() {
       const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latlng.lat}&lon=${latlng.lng}`)
       const data = await response.json()
       if (data?.display_name) {
-        if (targetIndex != null) {
+        if (resolvedTargetIndex != null) {
           setWaypoints((prev) => prev.map((waypoint, idx) => (
-            idx === targetIndex ? { ...waypoint, address: data.display_name } : waypoint
+            idx === resolvedTargetIndex ? { ...waypoint, address: data.display_name } : waypoint
           )))
         }
       }
     } catch {
       // Reverse geocoding is optional; silently ignore failures.
     }
-  }, [placeWaypointAtCoords])
+  }, [activePinningIndex, placeWaypointAtCoords])
 
   const handleMapWaypointPin = useCallback(async (index, coords) => {
     setActivePinningIndex(null)
@@ -928,6 +948,14 @@ export default function TrailsPage() {
   const handleCalculateRoute = useCallback(() => {
     calculateRouteFromWaypoints(waypointCoordinates)
   }, [calculateRouteFromWaypoints, waypointCoordinates])
+
+  const handleBackToRoutes = useCallback(() => {
+    setSelectedTrail(null)
+    setSelectedCommunityRoute(null)
+    setCommunityRoutePositions([])
+    setSelectedTrailCommunityData(null)
+    setHoverPosition(null)
+  }, [])
 
   // Construct UI for the Custom Planner Panel
   const planNewContent = (
@@ -1388,6 +1416,7 @@ export default function TrailsPage() {
           selectedTrail={selectedTrail}
           trailStats={trailStats}
           onTrailClick={handleTrailClick}
+          onBackToRoutes={handleBackToRoutes}
           onChartHover={handleChartHover}
           activeTab={plannerTab}
           onTabChange={setPlannerTab}
