@@ -1389,8 +1389,8 @@ export default function TrailsPage() {
           >
             {mapStyle === 'street' ? (
               <TileLayer
-                url="https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png"
-attribution='© OpenTopoMap contributors, © OpenStreetMap contributors'
+                url={`https://{s}.tile.thunderforest.com/cycle/{z}/{x}/{y}.png?apikey=${import.meta.env.VITE_THUNDERFOREST_KEY}`}
+attribution='© Thunderforest, © OpenStreetMap contributors'
               />
             ) : (
               <TileLayer
