@@ -15,6 +15,10 @@ import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip as RechartsToolti
 import { supabase } from '../supabaseClient.js'
 // Import dynamic POIs
 import finalPlacesData from '../final_places.json'
+import { haversineDistanceKm } from '../utils/geo'
+import useNavigationMode from '../hooks/useNavigationMode'
+import NavigationMapController from '../components/NavigationMapController'
+import NavigationHud from '../components/NavigationHud'
 
 // User-friendly labels and icons for POI categories
 const POI_METADATA = {
@@ -193,19 +197,6 @@ function RouteElevationChart({ data, chartColor, onHover }) {
   )
 }
 
-function haversineDistanceKm([lat1, lng1], [lat2, lng2]) {
-  const toRad = (value) => (value * Math.PI) / 180
-  const R = 6371
-  const dLat = toRad(lat2 - lat1)
-  const dLng = toRad(lng2 - lng1)
-  const a =
-    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-    Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
-    Math.sin(dLng / 2) * Math.sin(dLng / 2)
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
-  return R * c
-}
-
 function createWaypoint(seed) {
   return {
     id: `wp-${Date.now()}-${seed}-${Math.random().toString(36).slice(2, 8)}`,
@@ -250,6 +241,13 @@ export default function TrailsPage() {
   const [reportCoordinates, setReportCoordinates] = useState(null)
   const [routeFeedbackRefreshKey, setRouteFeedbackRefreshKey] = useState(0)
   const [selectedTrailCommunityData, setSelectedTrailCommunityData] = useState(null)
+
+  // Navigate mode
+  const [navigationModeActive, setNavigationModeActive] = useState(false)
+  const [activeNavigationPath, setActiveNavigationPath] = useState(null)
+  const [pendingNavTarget, setPendingNavTarget] = useState(null)
+  const [collapseRequestToken, setCollapseRequestToken] = useState(null)
+  const nav = useNavigationMode()
 
   const mapRef = useRef(null)
   const gpsTrackerRef = useRef(null)
@@ -957,6 +955,63 @@ export default function TrailsPage() {
     setHoverPosition(null)
   }, [])
 
+  const enterNavigationMode = useCallback((pathEntry) => {
+    setActiveNavigationPath(pathEntry)
+    setCollapseRequestToken((token) => (token == null ? 1 : token + 1))
+    setNavigationModeActive(true)
+    nav.start(pathEntry)
+  }, [nav])
+
+  const exitNavigationMode = useCallback(() => {
+    nav.stop()
+    setNavigationModeActive(false)
+    setActiveNavigationPath(null)
+    setPendingNavTarget(null)
+  }, [nav])
+
+  const handleNavigateClick = useCallback((payload, source) => {
+    if (source === 'gpx') {
+      const trail = payload
+      setSelectedTrail(trail.filename)
+      const existingRawPath = trailStats[trail.filename]?.rawPath
+      if (existingRawPath && existingRawPath.length >= 2) {
+        enterNavigationMode({ source: 'gpx', name: trail.name, points: existingRawPath })
+      } else {
+        setPendingNavTarget(trail.filename)
+      }
+      return
+    }
+
+    if (source === 'community') {
+      const route = payload
+      handleCommunityRouteSelect(route)
+      const points = Array.isArray(route.coordinates)
+        ? route.coordinates.map((point) => [point.lat, point.lng])
+        : []
+      if (points.length >= 2) {
+        enterNavigationMode({ source: 'community', name: route.name, points })
+      }
+      return
+    }
+
+    if (source === 'planned') {
+      enterNavigationMode(payload)
+    }
+  }, [enterNavigationMode, handleCommunityRouteSelect, trailStats])
+
+  // GPX trails' full-resolution path only becomes available once GpxTrails
+  // finishes loading the file. If Navigate was clicked on a trail that
+  // hasn't been shown/loaded yet, wait here until its rawPath appears.
+  useEffect(() => {
+    if (!pendingNavTarget) return
+    const rawPath = trailStats[pendingNavTarget]?.rawPath
+    if (rawPath && rawPath.length >= 2) {
+      const trail = trails.find((item) => item.filename === pendingNavTarget)
+      enterNavigationMode({ source: 'gpx', name: trail?.name || pendingNavTarget, points: rawPath })
+      setPendingNavTarget(null)
+    }
+  }, [pendingNavTarget, trailStats, trails, enterNavigationMode])
+
   // Construct UI for the Custom Planner Panel
   const planNewContent = (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', padding: '12px 0' }}>
@@ -1146,22 +1201,41 @@ export default function TrailsPage() {
             </div>
           </div>
           <RouteElevationChart data={routePlannerStats.elevationData} chartColor="#a78bfa" onHover={handleChartHover} />
-          <button 
-            onClick={handleSaveRoute}
-            style={{
-              background: '#10b981',
-              color: '#fff',
-              border: 'none',
-              padding: '6px 12px',
-              borderRadius: '6px',
-              fontSize: '0.8rem',
-              fontWeight: 'bold',
-              marginTop: '8px',
-              cursor: 'pointer'
-            }}
-          >
-            Save Route to Account
-          </button>
+          <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
+            <button
+              onClick={handleSaveRoute}
+              style={{
+                background: '#10b981',
+                color: '#fff',
+                border: 'none',
+                padding: '6px 12px',
+                borderRadius: '6px',
+                fontSize: '0.8rem',
+                fontWeight: 'bold',
+                cursor: 'pointer'
+              }}
+            >
+              Save Route to Account
+            </button>
+            <button
+              onClick={() => handleNavigateClick(
+                { source: 'planned', name: 'Custom Route', points: routePlannerStats.geometry },
+                'planned'
+              )}
+              style={{
+                background: '#0ea5e9',
+                color: '#fff',
+                border: 'none',
+                padding: '6px 12px',
+                borderRadius: '6px',
+                fontSize: '0.8rem',
+                fontWeight: 'bold',
+                cursor: 'pointer'
+              }}
+            >
+              Navigate
+            </button>
+          </div>
         </div>
       )}
     </div>
@@ -1170,9 +1244,10 @@ export default function TrailsPage() {
   return (
     <div className="app-container">
       <div className="main-content">
-        <div className="map-wrapper" style={{ position: 'relative' }}>
+        <div className="map-wrapper" style={{ position: 'relative', overflow: navigationModeActive ? 'hidden' : 'visible' }}>
 
           {/* FLOATING CONTROL DECK - PURE ICONS ONLY */}
+          {!navigationModeActive && (
           <div className="map-floating-actions" style={{
             position: 'absolute',
             top: '75px',
@@ -1226,9 +1301,10 @@ export default function TrailsPage() {
               <img src="/report-problem.svg" alt="" style={{ width: '22px', height: '22px' }} />
             </button>
           </div>
+          )}
 
           {/* CATEGORY FILTER PILL CARD - Displayed dynamically over map */}
-          {showPoiMenu && (
+          {!navigationModeActive && showPoiMenu && (
             <div style={{
               position: 'absolute',
               top: '75px',
@@ -1293,6 +1369,17 @@ export default function TrailsPage() {
             </div>
           )}
 
+          <div
+            className={navigationModeActive ? 'map-rotate-wrapper active' : 'map-rotate-wrapper'}
+            style={navigationModeActive ? {
+              position: 'absolute',
+              top: '50%',
+              left: '50%',
+              width: '200vmax',
+              height: '200vmax',
+              transform: `translate(-50%, -50%) rotate(${nav.mapRotationDeg || 0}deg)`,
+            } : { position: 'absolute', inset: 0 }}
+          >
           <MapContainer
             ref={mapRef}
             center={[43.307, 16.635]}
@@ -1407,7 +1494,34 @@ attribution='© OpenTopoMap contributors, © OpenStreetMap contributors'
                 </Tooltip>
               </CircleMarker>
             )}
+
+            {navigationModeActive && (
+              <NavigationMapController
+                isActive={navigationModeActive}
+                userPosition={nav.userPosition}
+                headingDeg={nav.userHeadingDeg}
+                mapRotationDeg={nav.mapRotationDeg}
+                remainingPath={nav.remainingPath}
+              />
+            )}
           </MapContainer>
+          </div>
+
+          {navigationModeActive && (
+            <NavigationHud
+              loading={nav.loading}
+              distanceRemainingKm={nav.distanceRemainingKm}
+              progressFraction={nav.progressFraction}
+              relativeBearingDeg={nav.relativeBearingDeg}
+              activeHazardWarning={nav.activeHazardWarning}
+              onDismissHazardWarning={nav.dismissHazardWarning}
+              mapRotationDeg={nav.mapRotationDeg}
+              isNorthUpLocked={nav.isNorthUpLocked}
+              onToggleNorthUpLock={nav.toggleNorthUpLock}
+              onExit={exitNavigationMode}
+              routeName={activeNavigationPath?.name}
+            />
+          )}
         </div>
 
         {/* Bottom Drawer Section */}
@@ -1421,10 +1535,12 @@ attribution='© OpenTopoMap contributors, © OpenStreetMap contributors'
           activeTab={plannerTab}
           onTabChange={setPlannerTab}
           onRouteSelect={handleCommunityRouteSelect}
+          onNavigateClick={handleNavigateClick}
           selectedRouteId={selectedCommunityRoute?.id}
           routeFeedbackRefreshKey={routeFeedbackRefreshKey}
           trailCommunityData={selectedTrailCommunityData}
           planNewContent={planNewContent}
+          collapseRequestToken={collapseRequestToken}
         />
       </div>
     </div>

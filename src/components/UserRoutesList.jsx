@@ -16,7 +16,7 @@ function timeAgo(dateString) {
   return `${months} month${months !== 1 ? 's' : ''} ago`
 }
 
-function UserRoutesList({ activeTab, onRouteSelect, selectedRouteId, refreshKey = 0 }) {
+function UserRoutesList({ activeTab, onRouteSelect, onNavigateClick, selectedRouteId, refreshKey = 0 }) {
   const [routes, setRoutes] = useState([])
   const [reviews, setReviews] = useState([])
   const [loading, setLoading] = useState(false)
@@ -134,13 +134,22 @@ function UserRoutesList({ activeTab, onRouteSelect, selectedRouteId, refreshKey 
                 {' · '}
                 {routeStats.commentCount} community comment{routeStats.commentCount === 1 ? '' : 's'}
               </div>
-              <button
-                className="show-button"
-                type="button"
-                onClick={() => onRouteSelect(route)}
-              >
-                Show on Map
-              </button>
+              <div className="trail-card-actions">
+                <button
+                  className="show-button"
+                  type="button"
+                  onClick={() => onRouteSelect(route)}
+                >
+                  Show on Map
+                </button>
+                <button
+                  className="navigate-button"
+                  type="button"
+                  onClick={() => onNavigateClick?.(route)}
+                >
+                  Navigate
+                </button>
+              </div>
             </div>
           )
         })()

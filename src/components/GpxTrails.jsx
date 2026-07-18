@@ -143,6 +143,7 @@ function GpxTrails({ onTracksLoaded, selectedTrail, onStatsUpdate }) {
             elevationMax,
             elevationMin,
             elevationData: formattedElevationData,
+            rawPath: trackLatLngs.map((ll) => [ll.lat, ll.lng]),
           })
         }
 

@@ -37,6 +37,8 @@ function BottomSheet({
   selectedRouteId,
   routeFeedbackRefreshKey,
   trailCommunityData,
+  onNavigateClick,
+  collapseRequestToken,
 
 }) {
   const [internalActiveTab, setInternalActiveTab] = useState('routes')
@@ -186,6 +188,14 @@ function BottomSheet({
   }, [snapPositions, snapKey, isDragging])
 
   React.useEffect(() => {
+    if (collapseRequestToken == null) return
+    setSnapKey('COLLAPSED')
+    setCurrentHeight(snapPositions.COLLAPSED)
+    // Only meant to react when the parent explicitly requests a collapse.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [collapseRequestToken])
+
+  React.useEffect(() => {
     if (!isDragging) return
 
     document.addEventListener('mousemove', handleMouseMove)
@@ -252,13 +262,22 @@ function BottomSheet({
                 <span className="start-icon">📍</span>
                 <span>{trail.startLocation}</span>
               </div>
-              <button
-                className="show-button"
-                type="button"
-                onClick={() => handleTrailClick(trail)}
-              >
-                Show on Map
-              </button>
+              <div className="trail-card-actions">
+                <button
+                  className="show-button"
+                  type="button"
+                  onClick={() => handleTrailClick(trail)}
+                >
+                  Show on Map
+                </button>
+                <button
+                  className="navigate-button"
+                  type="button"
+                  onClick={() => onNavigateClick?.(trail, 'gpx')}
+                >
+                  Navigate
+                </button>
+              </div>
             </div>
           ))
         )}
@@ -421,6 +440,7 @@ function BottomSheet({
     <UserRoutesList
       activeTab={activeTab}
       onRouteSelect={onRouteSelect}
+      onNavigateClick={(route) => onNavigateClick?.(route, 'community')}
       selectedRouteId={selectedRouteId}
         refreshKey={routeFeedbackRefreshKey}
     />
@@ -505,6 +525,8 @@ BottomSheet.propTypes = {
   onBackToRoutes: PropTypes.func,
   onChartHover: PropTypes.func,
   onRouteSelect: PropTypes.func,
+  onNavigateClick: PropTypes.func,
+  collapseRequestToken: PropTypes.number,
   activeTab: PropTypes.oneOf(['routes', 'userRoutes', 'planNew']),
   onTabChange: PropTypes.func,
   planNewContent: PropTypes.node,

@@ -1,0 +1,182 @@
+.nav-hud {
+  position: absolute;
+  inset: 0;
+  z-index: 1500;
+  pointer-events: none;
+}
+
+.nav-hud-exit {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: #370063;
+  color: #f8fafc;
+  font-size: 1.1rem;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  pointer-events: auto;
+}
+
+.nav-hud-compass {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: #370063;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.nav-hud-compass.locked {
+  background: #b794f4;
+}
+
+.nav-hud-compass-needle {
+  color: #f8fafc;
+  font-weight: 700;
+  font-size: 0.9rem;
+  transition: transform 0.2s ease-out;
+}
+
+.nav-hud-compass.locked .nav-hud-compass-needle {
+  color: #1f0931;
+}
+
+.nav-hud-pill {
+  position: absolute;
+  top: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  max-width: min(320px, calc(100vw - 140px));
+  min-width: 200px;
+  background: #370063;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 16px;
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+  pointer-events: auto;
+  color: #f8fafc;
+}
+
+.nav-hud-loading {
+  font-size: 0.9rem;
+  color: #e2e8f0;
+  padding: 4px 0;
+}
+
+.nav-hud-arrow {
+  font-size: 2rem;
+  line-height: 1;
+  transition: transform 0.3s ease-out;
+  flex-shrink: 0;
+}
+
+.nav-hud-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.nav-hud-route-name {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #b794f4;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.nav-hud-distance {
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.nav-hud-progress-track {
+  margin-top: 6px;
+  height: 5px;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.15);
+  overflow: hidden;
+}
+
+.nav-hud-progress-fill {
+  height: 100%;
+  background: #0ea5e9;
+  transition: width 0.4s ease-out;
+}
+
+.nav-hud-hazard-banner {
+  position: absolute;
+  top: 78px;
+  left: 50%;
+  transform: translateX(-50%);
+  max-width: min(360px, calc(100vw - 32px));
+  background: #7c2d12;
+  border: 1px solid rgba(251, 191, 36, 0.5);
+  border-radius: 12px;
+  padding: 10px 12px;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  color: #fef3c7;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+  pointer-events: auto;
+  animation: nav-hud-hazard-slide-down 0.25s ease-out;
+}
+
+.nav-hud-hazard-icon {
+  font-size: 1.1rem;
+  line-height: 1;
+}
+
+.nav-hud-hazard-text {
+  flex: 1;
+  font-size: 0.82rem;
+}
+
+.nav-hud-hazard-dismiss {
+  border: none;
+  background: transparent;
+  color: #fef3c7;
+  font-size: 1.2rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0 2px;
+}
+
+@keyframes nav-hud-hazard-slide-down {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -10px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+
+@media (max-width: 480px) {
+  .nav-hud-pill {
+    min-width: 160px;
+    padding: 8px 12px;
+  }
+
+  .nav-hud-arrow {
+    font-size: 1.6rem;
+  }
+}
