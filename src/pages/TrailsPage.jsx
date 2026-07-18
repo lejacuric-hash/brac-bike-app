@@ -446,8 +446,8 @@ export default function TrailsPage() {
             {
               gpx_path_identifier: trailIdentifier,
               name: trail.name || trailIdentifier,
-              estimated_distance_km: Number.isFinite(staticDistance) ? staticDistance : null,
-              estimated_elevation_m: Number.isFinite(staticElevation) ? staticElevation : null,
+              distance_km: Number.isFinite(staticDistance) ? staticDistance : null,
+              elevation_max: Number.isFinite(staticElevation) ? staticElevation : null,
               waypoints: staticWaypoints,
             },
           ])

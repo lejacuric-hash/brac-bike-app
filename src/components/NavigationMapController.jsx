@@ -49,10 +49,19 @@ function NavigationMapController({ isActive, userPosition, headingDeg, mapRotati
       if (map[handler]) map[handler].disable()
     })
 
+    // The rotate wrapper resizes the map's DOM container (to an oversized
+    // square so rotation never exposes blank corners); Leaflet only tracks
+    // size via its own resize handling and won't notice a plain CSS/layout
+    // resize on its own, so tiles would stay clipped to the old viewport
+    // size without an explicit invalidateSize() nudge.
+    const raf = requestAnimationFrame(() => map.invalidateSize({ animate: false }))
+
     return () => {
+      cancelAnimationFrame(raf)
       INTERACTION_HANDLERS.forEach((handler) => {
         if (map[handler]) map[handler].enable()
       })
+      requestAnimationFrame(() => map.invalidateSize({ animate: false }))
     }
   }, [isActive, map])
 

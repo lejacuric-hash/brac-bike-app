@@ -5,7 +5,7 @@ export const bikes = [
     category: 'bike',
     type: 'Mountain Bike',
     sizes: ['S', 'M', 'L', 'XL'],
-    image: 'ghost-kato.png',
+    image: 'ghost-kato.webp',
     specUrl: 'https://r-and-r.eu/rent-a-bike/ghost-kato-universal-29/',
     specs: [
       'Frame: Ghost aluminium',
@@ -22,7 +22,7 @@ export const bikes = [
     category: 'bike',
     type: 'Gravel Bike',
     sizes: ['L'],
-    image: 'sprint-whisper.png',
+    image: 'sprint-whisper.webp',
     specUrl: 'https://r-and-r.eu/rent-a-bike/sprint-whisper-grx600-gravel/',
     specs: [
       'Frame: Sprint aluminium',
@@ -39,7 +39,7 @@ export const bikes = [
     category: 'ebike',
     type: 'E-MTB Hardtail',
     sizes: ['S', 'M', 'L', 'XL'],
-    image: 'haibike-hardnine.png',
+    image: 'haibike-hardnine.webp',
     specUrl: 'https://r-and-r.eu/rent-a-bike/',
     specs: [
       'Motor: Yamaha PW-ST',
@@ -56,7 +56,7 @@ export const bikes = [
     category: 'ebike',
     type: 'E-MTB Full Suspension',
     sizes: ['S', 'L'],
-    image: 'haibike-allmtn.png',
+    image: 'haibike-allmtn.webp',
     specUrl: 'https://r-and-r.eu/rent-a-bike/',
     specs: [
       'Motor: Yamaha PW-ST',
@@ -73,7 +73,7 @@ export const bikes = [
     category: 'ebike',
     type: 'E-Trekking',
     sizes: ['S', 'M'],
-    image: 'haibike-trekking.png',
+    image: 'haibike-trekking.webp',
     specUrl: 'https://r-and-r.eu/rent-a-bike/',
     specs: [
       'Motor: Yamaha PW-TE',
