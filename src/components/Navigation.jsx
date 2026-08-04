@@ -2,15 +2,16 @@ import { NavLink, useLocation } from 'react-router-dom'
 import './Navigation.css'
 
 const links = [
-  { to: '/', label: 'Home', icon: '🏠' },
-  { to: '/trails', label: 'Trails', icon: '🚵' },
-  { to: '/tips', label: 'Tips', icon: '💡' },
-  { to: '/book', label: 'Book', icon: '🚲' },
+  { to: '/', label: 'Home', icon: '/home.svg' },
+  { to: '/trails', label: 'Trails', icon: '/trails.svg' },
+  { to: '/tips', label: 'Tips', icon: '/tips.svg' },
+  { to: '/book', label: 'Book', icon: '/book-a-bike.svg' },
 ]
 
 export default function Navigation() {
   const location = useLocation()
 
+  // Hide navigation on landing page
   if (location.pathname === '/') {
     return null
   }
@@ -36,7 +37,9 @@ export default function Navigation() {
             to={link.to}
             className={({ isActive }) => `tab-link${isActive ? ' active' : ''}`}
           >
-            <div className="tab-icon" aria-hidden="true">{link.icon}</div>
+            <div className="tab-icon" aria-hidden="true">
+              <img src={link.icon} alt={`${link.label} icon`} className="nav-svg-icon" />
+            </div>
             <div className="tab-label">{link.label}</div>
           </NavLink>
         ))}
