@@ -1,29 +1,56 @@
+.top-navbar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding: 14px 20px;
+  background: #370063;
+  border-bottom: 1px solid #753cae;
+  position: sticky;
+  top: 0;
+  z-index: 3500;
+}
 
-/* bottom tab bar for mobile */
+.nav-link {
+  color: #ffffff;
+  text-decoration: none;
+  padding: 8px 14px;
+  border-radius: 10px;
+  font-weight: 600;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.nav-link.active {
+  background: #753cae;
+}
+
 .bottom-tabbar {
   display: none;
 }
 
 @media (max-width: 767px) {
+  .top-navbar {
+    display: none;
+  }
+
   .bottom-tabbar {
     display: flex;
     position: fixed;
     left: 0;
     right: 0;
     bottom: 0;
-    height: 64px;
+    height: 66px;
     background: #370063;
     border-top: 1px solid #753cae;
-    z-index: 3000;
     justify-content: space-around;
     align-items: center;
     padding: 0 8px;
+    z-index: 6000;
   }
 
   .tab-link {
-    color: #94a3b8;
+    color: #ffffff;
     text-decoration: none;
-    font-size: 12px;
     text-align: center;
     flex: 1;
     display: flex;
@@ -32,10 +59,12 @@
     justify-content: center;
     gap: 2px;
     padding: 6px 4px;
+    line-height: 1;
   }
 
   .tab-link.active {
-    color: #f1f5f9;
+    color: #753cae;
+    font-weight: 700;
   }
 
   .tab-icon {
@@ -43,7 +72,6 @@
   }
 
   .tab-label {
-    font-size: 10px;
-    line-height: 1.2;
+    font-size: 11px;
   }
 }

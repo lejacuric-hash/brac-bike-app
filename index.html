@@ -3,78 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Brač Island Bike Map</title>
-  
-  <!-- MapLibre GL JS CSS -->
-  <link href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css" rel="stylesheet" />
-  
-  <style>
-    body {
-      margin: 0;
-      padding: 0;
-    }
-    #map {
-      position: absolute;
-      top: 0;
-      bottom: 0;
-      width: 100%;
-    }
-  </style>
+  <title>Brač by Bike</title>
 </head>
 <body>
-
-  <div id="map"></div>
-
-  <!-- MapLibre GL JS JS -->
-  <script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
-
-  <script>
-    const MAPTILER_KEY = 'x9B7tRTIUxqU62fQ8847';
-
-    // Bounding box for Brač Island [SW_longitude, SW_latitude, NE_longitude, NE_latitude]
-    const BRAC_BOUNDS = [
-      [16.35, 43.20], // South-West corner (below Milna/Hvar channel)
-      [16.92, 43.43]  // North-East corner (above Supetar/Makarska channel)
-    ];
-
-    // Initialize MapLibre GL JS focused strictly on Brač
-    const map = new maplibregl.Map({
-      container: 'map',
-      style: `https://api.maptiler.com/maps/outdoor-v2/style.json?key=${MAPTILER_KEY}`,
-      center: [16.65, 43.31], // Center of Brač Island
-      zoom: 11,               // Initial zoom level showing the full island
-      minZoom: 10,            // Prevents zooming out too far
-      maxZoom: 18,            // Allows close-up trail detail
-      maxBounds: BRAC_BOUNDS, // Locks panning strictly to Brač
-      pitch: 45,              // Tilted view to show Vidova Gora & terrain
-      bearing: 0
-    });
-
-    // Add navigation controls
-    map.addControl(new maplibregl.NavigationControl({
-      visualizePitch: true
-    }), 'top-right');
-
-    // Add 3D Terrain on load
-    map.on('load', () => {
-      map.addSource('maptiler-dem', {
-        type: 'raster-dem',
-        url: `https://api.maptiler.com/tiles/terrain-rgb-v2/tiles.json?key=${MAPTILER_KEY}`,
-        tileSize: 512
-      });
-
-      map.setTerrain({
-        source: 'maptiler-dem',
-        exaggeration: 1.3 // Extra terrain pop for Vidova Gora elevation
-      });
-
-      map.setSky({
-        'sky-color': '#a0c8f0',
-        'horizon-color': '#ffffff',
-        'sky-horizon-blend': 0.5
-      });
-    });
-  </script>
-
+  <div id="root"></div>
+  <script type="module" src="/src/main.jsx"></script>
 </body>
 </html>

@@ -44,6 +44,8 @@ const iconButtonStyle = {
   transition: 'background-color 0.2s ease',
 }
 
+const MAPTILER_API_KEY = import.meta.env.VITE_MAPTILER_API_KEY || 'x9B7tRTIUxqU62fQ8847'
+
 // Fix Leaflet default marker URLs for Vite/mobile builds.
 delete L.Icon.Default.prototype._getIconUrl
 L.Icon.Default.mergeOptions({
@@ -1369,35 +1371,36 @@ export default function TrailsPage() {
             </div>
           )}
 
-          <div
-            className={navigationModeActive ? 'map-rotate-wrapper active' : 'map-rotate-wrapper'}
-            style={navigationModeActive ? {
-              position: 'absolute',
-              top: '50%',
-              left: '50%',
-              width: '200vmax',
-              height: '200vmax',
-              transform: `translate(-50%, -50%) rotate(${nav.mapRotationDeg || 0}deg)`,
-            } : { position: 'absolute', inset: 0 }}
-          >
-          <MapContainer
-            ref={mapRef}
-            center={[43.307, 16.635]}
-            zoom={11}
-            style={{ height: '100%', width: '100%' }}
-            scrollWheelZoom={true}
-          >
-            {mapStyle === 'street' ? (
-              <TileLayer
-                url={`https://{s}.tile.thunderforest.com/cycle/{z}/{x}/{y}.png?apikey=${import.meta.env.VITE_THUNDERFOREST_KEY}`}
-attribution='© Thunderforest, © OpenStreetMap contributors'
-              />
-            ) : (
-              <TileLayer
-                url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
-                attribution='&copy; Esri World Imagery'
-              />
-            )}
+          <div className="map-container">
+            <div
+              className={navigationModeActive ? 'map-rotate-wrapper active' : 'map-rotate-wrapper'}
+              style={navigationModeActive ? {
+                position: 'absolute',
+                top: '50%',
+                left: '50%',
+                width: '200vmax',
+                height: '200vmax',
+                transform: `translate(-50%, -50%) rotate(${nav.mapRotationDeg || 0}deg)`,
+              } : { position: 'absolute', inset: 0 }}
+            >
+            <MapContainer
+              ref={mapRef}
+              center={[43.307, 16.635]}
+              zoom={11}
+              style={{ height: '100%', width: '100%' }}
+              scrollWheelZoom={true}
+            >
+              {mapStyle === 'street' ? (
+                <TileLayer
+                  attribution='&copy; <a href="https://www.maptiler.com/copyright/">MapTiler</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+                  url={`https://api.maptiler.com/maps/streets-v2/{z}/{x}/{y}.png?key=${MAPTILER_API_KEY}`}
+                />
+              ) : (
+                <TileLayer
+                  attribution='&copy; <a href="https://www.maptiler.com/copyright/">MapTiler</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+                  url={`https://api.maptiler.com/maps/hybrid/{z}/{x}/{y}.jpg?key=${MAPTILER_API_KEY}`}
+                />
+              )}
 
             {plannerTab !== 'planNew' && !selectedCommunityRoute && (
               <GpxTrails
@@ -1504,7 +1507,8 @@ attribution='© Thunderforest, © OpenStreetMap contributors'
                 remainingPath={nav.remainingPath}
               />
             )}
-          </MapContainer>
+            </MapContainer>
+            </div>
           </div>
 
           {navigationModeActive && (
