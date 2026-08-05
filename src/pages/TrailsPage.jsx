@@ -1,13 +1,10 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { MapContainer, TileLayer, CircleMarker, Marker, Popup, Polyline, Tooltip, useMapEvents } from 'react-leaflet'
-import L from 'leaflet'
-import 'leaflet/dist/leaflet.css'
+import Map, { Layer, Marker, Popup, Source } from 'react-map-gl/maplibre'
+import * as maplibregl from 'maplibre-gl'
+import 'maplibre-gl/dist/maplibre-gl.css'
 import './TrailsPage.css'
 import '../App.css'
-import GpxTrails from '../components/GpxTrails'
-import GpsTracker from '../components/GpsTracker'
 import BottomSheet from '../components/BottomSheet'
-import ReportMarkers from '../components/ReportMarkers'
 import ReportProblem from '../components/ReportProblem'
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer } from 'recharts'
 
@@ -17,7 +14,6 @@ import { supabase } from '../supabaseClient.js'
 import finalPlacesData from '../final_places.json'
 import { haversineDistanceKm } from '../utils/geo'
 import useNavigationMode from '../hooks/useNavigationMode'
-import NavigationMapController from '../components/NavigationMapController'
 import NavigationHud from '../components/NavigationHud'
 
 // User-friendly labels and icons for POI categories
@@ -44,100 +40,138 @@ const iconButtonStyle = {
   transition: 'background-color 0.2s ease',
 }
 
-const MAPTILER_API_KEY = import.meta.env.VITE_MAPTILER_API_KEY || 'x9B7tRTIUxqU62fQ8847'
+const MAPTILER_API_KEY = import.meta.env.VITE_MAPTILER_KEY
+const MAPTILER_STYLE_ID = '019fd2b1-1969-70ee-bdd2-bceb14957863'
+const MAPTILER_STREET_STYLE_URL = `https://api.maptiler.com/maps/${MAPTILER_STYLE_ID}/style.json?key=${MAPTILER_API_KEY}`
+const MAPTILER_SATELLITE_STYLE_URL = `https://api.maptiler.com/maps/hybrid/style.json?key=${MAPTILER_API_KEY}`
 
-// Fix Leaflet default marker URLs for Vite/mobile builds.
-delete L.Icon.Default.prototype._getIconUrl
-L.Icon.Default.mergeOptions({
-  iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
-  iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
-  shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
-})
-
-function ReportPinDropListener({ enabled, onPick }) {
-  useMapEvents({
-    click(event) {
-      if (!enabled) return
-      onPick({ lat: event.latlng.lat, lng: event.latlng.lng })
-    },
-  })
-
-  return null
+const GPX_DIFFICULTY_COLORS = {
+  easy: '#4ade80',
+  medium: '#facc15',
+  hard: '#f97316',
 }
 
-function WaypointPinListener({ activePinningIndex, onPick }) {
-  useMapEvents({
-    click(event) {
-      if (activePinningIndex == null) return
-      onPick(activePinningIndex, {
-        lat: event.latlng.lat,
-        lng: event.latlng.lng,
-      })
-    },
-  })
-
-  return null
+const LINE_LAYER_BASE = {
+  type: 'line',
+  paint: {
+    'line-width': 4,
+    'line-opacity': 0.9,
+  },
 }
 
-function WaypointLongPressListener({ enabled, onLongPress }) {
-  const pressTimerRef = useRef(null)
-  const pressLatLngRef = useRef(null)
+function toLineFeature(latLngPairs = []) {
+  return {
+    type: 'Feature',
+    geometry: {
+      type: 'LineString',
+      coordinates: latLngPairs.map(([lat, lng]) => [lng, lat]),
+    },
+  }
+}
 
-  const clearPressTimer = useCallback(() => {
-    if (pressTimerRef.current != null) {
-      clearTimeout(pressTimerRef.current)
-      pressTimerRef.current = null
-    }
-    pressLatLngRef.current = null
-  }, [])
+function toPointFeature(lat, lng) {
+  return {
+    type: 'Feature',
+    geometry: {
+      type: 'Point',
+      coordinates: [lng, lat],
+    },
+  }
+}
 
-  useEffect(() => clearPressTimer, [clearPressTimer])
+function computeBoundsFromLatLngs(latLngPairs = []) {
+  if (!Array.isArray(latLngPairs) || latLngPairs.length === 0) return null
+  let minLat = Infinity
+  let maxLat = -Infinity
+  let minLng = Infinity
+  let maxLng = -Infinity
 
-  useEffect(() => {
-    if (!enabled) {
-      clearPressTimer()
-    }
-  }, [clearPressTimer, enabled])
-
-  useMapEvents({
-    mousedown(event) {
-      if (!enabled) return
-      clearPressTimer()
-      pressLatLngRef.current = event.latlng
-      pressTimerRef.current = window.setTimeout(() => {
-        if (pressLatLngRef.current) {
-          onLongPress(pressLatLngRef.current)
-        }
-      }, 3000)
-    },
-    mouseup() {
-      clearPressTimer()
-    },
-    touchstart(event) {
-      if (!enabled) return
-      clearPressTimer()
-      pressLatLngRef.current = event.latlng
-      pressTimerRef.current = window.setTimeout(() => {
-        if (pressLatLngRef.current) {
-          onLongPress(pressLatLngRef.current)
-        }
-      }, 3000)
-    },
-    touchend() {
-      clearPressTimer()
-    },
-    dragstart() {
-      clearPressTimer()
-    },
-    movestart() {
-      clearPressTimer()
-    },
-    zoomstart() {
-      clearPressTimer()
-    },
+  latLngPairs.forEach(([lat, lng]) => {
+    if (!Number.isFinite(lat) || !Number.isFinite(lng)) return
+    minLat = Math.min(minLat, lat)
+    maxLat = Math.max(maxLat, lat)
+    minLng = Math.min(minLng, lng)
+    maxLng = Math.max(maxLng, lng)
   })
 
-  return null
+  if (!Number.isFinite(minLat) || !Number.isFinite(minLng) || !Number.isFinite(maxLat) || !Number.isFinite(maxLng)) {
+    return null
+  }
+
+  return [[minLng, minLat], [maxLng, maxLat]]
+}
+
+function parseGpxTrack(gpxText) {
+  const parser = new DOMParser()
+  const xml = parser.parseFromString(gpxText, 'application/xml')
+  const points = Array.from(xml.getElementsByTagName('trkpt'))
+
+  const track = points
+    .map((node) => {
+      const lat = Number(node.getAttribute('lat'))
+      const lng = Number(node.getAttribute('lon'))
+      const eleNode = node.getElementsByTagName('ele')[0]
+      const elevation = eleNode ? Number(eleNode.textContent) : 0
+      if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null
+      return { lat, lng, elevation: Number.isFinite(elevation) ? elevation : 0 }
+    })
+    .filter(Boolean)
+
+  if (track.length === 0) {
+    return {
+      rawPath: [],
+      elevationData: [],
+      distance: 0,
+      elevationGain: 0,
+      elevationLoss: 0,
+      elevationMin: 0,
+      elevationMax: 0,
+    }
+  }
+
+  let distance = 0
+  let elevationGain = 0
+  let elevationLoss = 0
+  let elevationMin = track[0].elevation
+  let elevationMax = track[0].elevation
+
+  const elevationData = []
+  track.forEach((point, index) => {
+    if (index > 0) {
+      const prev = track[index - 1]
+      distance += haversineDistanceKm([prev.lat, prev.lng], [point.lat, point.lng])
+      const deltaEle = point.elevation - prev.elevation
+      if (deltaEle > 0) elevationGain += deltaEle
+      if (deltaEle < 0) elevationLoss += Math.abs(deltaEle)
+    }
+    elevationMin = Math.min(elevationMin, point.elevation)
+    elevationMax = Math.max(elevationMax, point.elevation)
+    elevationData.push({
+      distance: Number(distance.toFixed(1)),
+      elevation: Math.round(point.elevation),
+      lat: point.lat,
+      lng: point.lng,
+    })
+  })
+
+  return {
+    rawPath: track.map((point) => [point.lat, point.lng]),
+    elevationData,
+    distance,
+    elevationGain,
+    elevationLoss,
+    elevationMin,
+    elevationMax,
+  }
+}
+
+function timeAgo(iso) {
+  const then = new Date(iso).getTime()
+  const diff = Math.floor((Date.now() - then) / 1000)
+  if (diff < 60) return `${diff} sec ago`
+  if (diff < 3600) return `${Math.floor(diff / 60)} min ago`
+  if (diff < 86400) return `${Math.floor(diff / 3600)} hours ago`
+  return `${Math.floor(diff / 86400)} days ago`
 }
 
 function RouteElevationChart({ data, chartColor, onHover }) {
@@ -252,9 +286,16 @@ export default function TrailsPage() {
   const nav = useNavigationMode()
 
   const mapRef = useRef(null)
-  const gpsTrackerRef = useRef(null)
   const reportProblemRef = useRef(null)
   const lastWaypointPlacementIndexRef = useRef(null)
+  const longPressTimerRef = useRef(null)
+  const longPressPointRef = useRef(null)
+
+  const [reports, setReports] = useState([])
+  const [selectedReportId, setSelectedReportId] = useState(null)
+  const [selectedPoiId, setSelectedPoiId] = useState(null)
+  const [gpsPosition, setGpsPosition] = useState(null)
+  const [gpsTrackPoints, setGpsTrackPoints] = useState([])
 
   const normalizedPois = useMemo(() => {
     const rawItems = Array.isArray(finalPlacesData)
@@ -298,6 +339,185 @@ export default function TrailsPage() {
     return normalizedPois.filter((poi) => selectedCategories.includes(poi.category))
   }, [normalizedPois, selectedCategories])
 
+  const selectedTrailMeta = useMemo(
+    () => trails.find((trail) => trail.filename === selectedTrail) || null,
+    [selectedTrail, trails]
+  )
+
+  const selectedTrailPath = useMemo(
+    () => trailStats?.[selectedTrail]?.rawPath || [],
+    [selectedTrail, trailStats]
+  )
+
+  const remainingPath = useMemo(
+    () => Array.isArray(nav.remainingPath) ? nav.remainingPath : [],
+    [nav.remainingPath]
+  )
+
+  const getMapInstance = useCallback(() => mapRef.current?.getMap?.() || null, [])
+
+  const clearLongPressTimer = useCallback(() => {
+    if (longPressTimerRef.current != null) {
+      clearTimeout(longPressTimerRef.current)
+      longPressTimerRef.current = null
+    }
+    longPressPointRef.current = null
+  }, [])
+
+  useEffect(() => clearLongPressTimer, [clearLongPressTimer])
+
+  useEffect(() => {
+    let mounted = true
+    fetch('/tracks/tracks.json')
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`Failed to load tracks.json: ${response.status}`)
+        }
+        return response.json()
+      })
+      .then((data) => {
+        if (mounted) setTrails(Array.isArray(data) ? data : [])
+      })
+      .catch((error) => {
+        console.error('Error fetching tracks.json:', error)
+        if (mounted) setTrails([])
+      })
+
+    return () => {
+      mounted = false
+    }
+  }, [])
+
+  useEffect(() => {
+    const loadReports = async () => {
+      const { data, error } = await supabase
+        .from('road_reports')
+        .select('*')
+        .order('created_at', { ascending: false })
+
+      if (error) {
+        console.error('Failed to load reports:', error)
+        setReports([])
+        return
+      }
+
+      setReports(data || [])
+    }
+
+    loadReports()
+  }, [reportsRefreshKey])
+
+  useEffect(() => {
+    if (!navigator.geolocation) return undefined
+
+    const watchId = navigator.geolocation.watchPosition(
+      (position) => {
+        setGpsPosition({
+          lat: position.coords.latitude,
+          lng: position.coords.longitude,
+          accuracy: position.coords.accuracy,
+          altitude: position.coords.altitude,
+          timestamp: position.timestamp,
+        })
+      },
+      () => {},
+      { enableHighAccuracy: true, maximumAge: 1000, timeout: 10000 }
+    )
+
+    return () => {
+      navigator.geolocation.clearWatch(watchId)
+    }
+  }, [])
+
+  useEffect(() => {
+    if (!activeRecording) return undefined
+
+    const interval = window.setInterval(() => {
+      setGpsTrackPoints((prev) => {
+        if (!gpsPosition) return prev
+        return [
+          ...prev,
+          {
+            lat: gpsPosition.lat,
+            lng: gpsPosition.lng,
+            altitude: gpsPosition.altitude,
+            timestamp: gpsPosition.timestamp,
+          },
+        ]
+      })
+    }, 3000)
+
+    return () => {
+      clearInterval(interval)
+    }
+  }, [activeRecording, gpsPosition])
+
+  useEffect(() => {
+    if (!selectedTrail) return
+    if (plannerTab !== 'routes') return
+    if (selectedCommunityRoute) return
+
+    const activeTrack = trails.find((track) => track.filename === selectedTrail)
+    if (!activeTrack) return
+
+    let cancelled = false
+
+    const loadGpx = async () => {
+      try {
+        const response = await fetch(`/tracks/${activeTrack.filename}`)
+        if (!response.ok) {
+          throw new Error(`Failed to load GPX: ${response.status}`)
+        }
+        const gpxText = await response.text()
+        const parsed = parseGpxTrack(gpxText)
+        if (cancelled) return
+
+        setTrailStats((prev) => ({
+          ...prev,
+          [activeTrack.filename]: {
+            distance: parsed.distance,
+            elevationGain: parsed.elevationGain,
+            elevationLoss: parsed.elevationLoss,
+            elevationMax: parsed.elevationMax,
+            elevationMin: parsed.elevationMin,
+            elevationData: parsed.elevationData,
+            rawPath: parsed.rawPath,
+          },
+        }))
+
+        const bounds = computeBoundsFromLatLngs(parsed.rawPath)
+        const map = getMapInstance()
+        if (bounds && map) {
+          map.fitBounds(bounds, { padding: 50, duration: 1200 })
+        }
+      } catch (error) {
+        console.error('Failed to parse GPX track:', error)
+      }
+    }
+
+    loadGpx()
+
+    return () => {
+      cancelled = true
+    }
+  }, [getMapInstance, plannerTab, selectedCommunityRoute, selectedTrail, trails])
+
+  useEffect(() => {
+    const map = getMapInstance()
+    if (!map) return
+
+    const handlers = ['dragPan', 'scrollZoom', 'doubleClickZoom', 'touchZoomRotate', 'keyboard', 'boxZoom']
+    if (navigationModeActive) {
+      handlers.forEach((name) => {
+        if (map[name]?.disable) map[name].disable()
+      })
+    } else {
+      handlers.forEach((name) => {
+        if (map[name]?.enable) map[name].enable()
+      })
+    }
+  }, [getMapInstance, navigationModeActive])
+
   const handleToggleCategory = (category) => {
     setSelectedCategories(prev => 
       prev.includes(category) 
@@ -316,10 +536,13 @@ export default function TrailsPage() {
   }
 
   const handleStartRecording = useCallback(() => {
-    setActiveRecording((prev) => !prev)
-    if (gpsTrackerRef.current?.toggleRecording) {
-      gpsTrackerRef.current.toggleRecording()
-    }
+    setActiveRecording((prev) => {
+      const next = !prev
+      if (next) {
+        setGpsTrackPoints([])
+      }
+      return next
+    })
   }, [])
 
   const handleLocateMe = useCallback(() => {
@@ -332,7 +555,7 @@ export default function TrailsPage() {
       (position) => {
         const { latitude, longitude } = position.coords
         if (mapRef.current) {
-          mapRef.current.flyTo([latitude, longitude], 18, { animate: true, duration: 1.5 })
+          mapRef.current.flyTo({ center: [longitude, latitude], zoom: 18, duration: 1500 })
         }
       },
       (error) => {
@@ -689,6 +912,32 @@ export default function TrailsPage() {
     updateWaypointCoordsAndAddress(index, coords.lat, coords.lng)
     await reverseGeocodeWaypoint(index, coords.lat, coords.lng)
   }, [reverseGeocodeWaypoint, updateWaypointCoordsAndAddress])
+
+  const handleMapClick = useCallback((event) => {
+    const { lat, lng } = event.lngLat
+    if (isDropPinMode) {
+      handleMapReportPinPick({ lat, lng })
+      return
+    }
+    if (activePinningIndex != null) {
+      handleMapWaypointPin(activePinningIndex, { lat, lng })
+    }
+  }, [activePinningIndex, handleMapReportPinPick, handleMapWaypointPin, isDropPinMode])
+
+  const handleMapPressStart = useCallback((event) => {
+    if (plannerTab !== 'planNew') return
+    clearLongPressTimer()
+    longPressPointRef.current = { lat: event.lngLat.lat, lng: event.lngLat.lng }
+    longPressTimerRef.current = window.setTimeout(() => {
+      if (longPressPointRef.current) {
+        handleMapLongPress(longPressPointRef.current)
+      }
+    }, 3000)
+  }, [clearLongPressTimer, handleMapLongPress, plannerTab])
+
+  const handleMapPressEnd = useCallback(() => {
+    clearLongPressTimer()
+  }, [clearLongPressTimer])
 
   const fetchElevationProfile = useCallback(async (coords) => {
     if (coords.length === 0) return []
@@ -1372,143 +1621,242 @@ export default function TrailsPage() {
           )}
 
           <div className="map-container">
-            <div
-              className={navigationModeActive ? 'map-rotate-wrapper active' : 'map-rotate-wrapper'}
-              style={navigationModeActive ? {
-                position: 'absolute',
-                top: '50%',
-                left: '50%',
-                width: '200vmax',
-                height: '200vmax',
-                transform: `translate(-50%, -50%) rotate(${nav.mapRotationDeg || 0}deg)`,
-              } : { position: 'absolute', inset: 0 }}
-            >
-            <MapContainer
+            <Map
               ref={mapRef}
-              center={[43.307, 16.635]}
-              zoom={11}
-              style={{ height: '100%', width: '100%' }}
-              scrollWheelZoom={true}
+              mapLib={maplibregl}
+              initialViewState={{ longitude: 16.635, latitude: 43.307, zoom: 11 }}
+              style={{ width: '100%', height: '100%' }}
+              mapStyle={mapStyle === 'street' ? MAPTILER_STREET_STYLE_URL : MAPTILER_SATELLITE_STYLE_URL}
+              onClick={handleMapClick}
+              onMouseDown={handleMapPressStart}
+              onMouseUp={handleMapPressEnd}
+              onTouchStart={handleMapPressStart}
+              onTouchEnd={handleMapPressEnd}
+              onDragStart={handleMapPressEnd}
+              onMoveStart={handleMapPressEnd}
+              onZoomStart={handleMapPressEnd}
+              bearing={navigationModeActive ? (nav.mapRotationDeg || 0) : 0}
             >
-              {mapStyle === 'street' ? (
-                <TileLayer
-                  attribution='&copy; <a href="https://www.maptiler.com/copyright/">MapTiler</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-                  url={`https://api.maptiler.com/maps/streets-v2/{z}/{x}/{y}.png?key=${MAPTILER_API_KEY}`}
-                />
-              ) : (
-                <TileLayer
-                  attribution='&copy; <a href="https://www.maptiler.com/copyright/">MapTiler</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-                  url={`https://api.maptiler.com/maps/hybrid/{z}/{x}/{y}.jpg?key=${MAPTILER_API_KEY}`}
-                />
+              {plannerTab !== 'planNew' && !selectedCommunityRoute && selectedTrailPath.length > 1 && (
+                <Source id="gpx-selected-route" type="geojson" data={toLineFeature(selectedTrailPath)}>
+                  <Layer
+                    id="gpx-selected-route-line"
+                    {...LINE_LAYER_BASE}
+                    paint={{
+                      ...LINE_LAYER_BASE.paint,
+                      'line-width': 3,
+                      'line-color': GPX_DIFFICULTY_COLORS[selectedTrailMeta?.difficulty] || GPX_DIFFICULTY_COLORS.easy,
+                    }}
+                  />
+                </Source>
               )}
 
-            {plannerTab !== 'planNew' && !selectedCommunityRoute && (
-              <GpxTrails
-                onTracksLoaded={setTrails}
-                selectedTrail={selectedTrail}
-                onStatsUpdate={handleStatsUpdate}
-              />
-            )}
-            
-            <ReportMarkers refreshKey={reportsRefreshKey} />
-            <GpsTracker
-              ref={gpsTrackerRef}
-              activeRouteId={selectedTrailCommunityData?.routeId || null}
-              onRideSaved={() => setRouteFeedbackRefreshKey((value) => value + 1)}
-            />
+              {plannerTab === 'routes' && selectedCommunityRoute && communityRoutePositions.length > 0 && (
+                <Source id="community-route" type="geojson" data={toLineFeature(communityRoutePositions)}>
+                  <Layer id="community-route-line" {...LINE_LAYER_BASE} paint={{ ...LINE_LAYER_BASE.paint, 'line-color': '#a78bfa' }} />
+                </Source>
+              )}
+
+              {plannerTab === 'planNew' && routeGeometry.length > 0 && (
+                <Source id="planned-route" type="geojson" data={toLineFeature(routeGeometry)}>
+                  <Layer id="planned-route-line" {...LINE_LAYER_BASE} paint={{ ...LINE_LAYER_BASE.paint, 'line-color': '#00e676' }} />
+                </Source>
+              )}
+
+              {gpsTrackPoints.length > 1 && (
+                <Source id="gps-track" type="geojson" data={toLineFeature(gpsTrackPoints.map((point) => [point.lat, point.lng]))}>
+                  <Layer id="gps-track-line" {...LINE_LAYER_BASE} paint={{ ...LINE_LAYER_BASE.paint, 'line-color': '#3b82f6', 'line-width': 4, 'line-opacity': 0.85 }} />
+                </Source>
+              )}
+
+              {navigationModeActive && remainingPath.length > 1 && (
+                <Source id="navigation-path" type="geojson" data={toLineFeature(remainingPath)}>
+                  <Layer id="navigation-path-line" {...LINE_LAYER_BASE} paint={{ ...LINE_LAYER_BASE.paint, 'line-color': '#22d3ee', 'line-width': 5 }} />
+                </Source>
+              )}
+
+              {hoverPosition && hoverPosition.lat != null && hoverPosition.lng != null && (
+                <Source id="hover-point" type="geojson" data={toPointFeature(hoverPosition.lat, hoverPosition.lng)}>
+                  <Layer
+                    id="hover-point-circle"
+                    type="circle"
+                    paint={{
+                      'circle-radius': 8,
+                      'circle-color': '#4ade80',
+                      'circle-stroke-width': 2,
+                      'circle-stroke-color': '#ffffff',
+                    }}
+                  />
+                </Source>
+              )}
+
+              {gpsPosition && (
+                <>
+                  <Source id="gps-position" type="geojson" data={toPointFeature(gpsPosition.lat, gpsPosition.lng)}>
+                    <Layer
+                      id="gps-position-circle"
+                      type="circle"
+                      paint={{
+                        'circle-radius': 8,
+                        'circle-color': '#3b82f6',
+                        'circle-stroke-width': 2,
+                        'circle-stroke-color': '#3b82f6',
+                      }}
+                    />
+                  </Source>
+                  {Number.isFinite(gpsPosition.accuracy) && (
+                    <Source id="gps-accuracy" type="geojson" data={toPointFeature(gpsPosition.lat, gpsPosition.lng)}>
+                      <Layer
+                        id="gps-accuracy-circle"
+                        type="circle"
+                        paint={{
+                          'circle-radius': Math.max(10, gpsPosition.accuracy / 3),
+                          'circle-color': '#3b82f6',
+                          'circle-opacity': 0.12,
+                        }}
+                      />
+                    </Source>
+                  )}
+                </>
+              )}
+
+              {navigationModeActive && nav.userPosition && (
+                <Marker longitude={nav.userPosition[1]} latitude={nav.userPosition[0]} anchor="center">
+                  <div style={{ transform: `rotate(${(nav.userHeadingDeg ?? 0) - (nav.mapRotationDeg ?? 0)}deg)` }}>
+                    <div style={{ width: 0, height: 0, borderLeft: '9px solid transparent', borderRight: '9px solid transparent', borderBottom: '20px solid #0ea5e9', filter: 'drop-shadow(0 2px 3px rgba(2,6,23,0.5))' }} />
+                  </div>
+                </Marker>
+              )}
+
+              {reports.map((report) => (
+                <Marker key={report.id} longitude={report.lng} latitude={report.lat} anchor="center">
+                  <button
+                    type="button"
+                    onClick={(event) => {
+                      event.stopPropagation()
+                      setSelectedReportId(report.id)
+                    }}
+                    style={{ background: 'transparent', border: 'none', fontSize: '20px', cursor: 'pointer', lineHeight: 1 }}
+                  >
+                    ⚠️
+                  </button>
+                </Marker>
+              ))}
+
+              {selectedReportId != null && (() => {
+                const report = reports.find((item) => item.id === selectedReportId)
+                if (!report) return null
+                return (
+                  <Popup
+                    longitude={report.lng}
+                    latitude={report.lat}
+                    anchor="top"
+                    closeOnClick={false}
+                    onClose={() => setSelectedReportId(null)}
+                  >
+                    <div style={{ minWidth: 160 }}>
+                      <strong>{report.type}</strong>
+                      {report.description ? <div style={{ marginTop: 6 }}>{report.description}</div> : null}
+                      <div style={{ marginTop: 8, color: '#94a3b8' }}>{timeAgo(report.created_at)}</div>
+                    </div>
+                  </Popup>
+                )
+              })()}
+
+              {plannerTab === 'planNew' && waypoints.map((waypoint, index) => (
+                waypoint.latlng ? (
+                  <Marker
+                    key={waypoint.id}
+                    longitude={waypoint.latlng[1]}
+                    latitude={waypoint.latlng[0]}
+                    draggable
+                    onDragEnd={(event) => {
+                      updateWaypointLatLng(index, event.lngLat.lat, event.lngLat.lng)
+                    }}
+                  >
+                    <button
+                      type="button"
+                      style={{
+                        border: 'none',
+                        borderRadius: '999px',
+                        background: '#f8fafc',
+                        color: '#1f2937',
+                        width: 26,
+                        height: 26,
+                        fontSize: 12,
+                        fontWeight: 700,
+                        cursor: 'grab',
+                      }}
+                    >
+                      {index + 1}
+                    </button>
+                  </Marker>
+                ) : null
+              ))}
+
+              {filteredPois.map((poi) => (
+                <Marker key={poi.id} longitude={poi.coordinates.lng} latitude={poi.coordinates.lat} anchor="bottom">
+                  <button
+                    type="button"
+                    onClick={(event) => {
+                      event.stopPropagation()
+                      setSelectedPoiId(poi.id)
+                    }}
+                    style={{
+                      background: '#ffffff',
+                      border: '1px solid rgba(15,23,42,0.2)',
+                      borderRadius: '999px',
+                      width: 18,
+                      height: 18,
+                      cursor: 'pointer',
+                    }}
+                  />
+                </Marker>
+              ))}
+
+              {selectedPoiId != null && (() => {
+                const poi = filteredPois.find((item) => item.id === selectedPoiId)
+                if (!poi) return null
+                return (
+                  <Popup
+                    longitude={poi.coordinates.lng}
+                    latitude={poi.coordinates.lat}
+                    anchor="top"
+                    closeOnClick={false}
+                    onClose={() => setSelectedPoiId(null)}
+                  >
+                    <div style={{ minWidth: '160px', color: '#333', fontFamily: 'sans-serif' }}>
+                      <h4 style={{ margin: '0 0 4px 0', fontSize: '14px' }}>{poi.name}</h4>
+                      <span style={{ fontSize: '11px', color: '#666', textTransform: 'uppercase', fontWeight: 'bold' }}>
+                        {poi.category.replace('_', ' ')}
+                      </span>
+                    </div>
+                  </Popup>
+                )
+              })()}
+
+              {hoverPosition && hoverPosition.lat != null && hoverPosition.lng != null && (
+                <Popup
+                  longitude={hoverPosition.lng}
+                  latitude={hoverPosition.lat}
+                  anchor="top"
+                  closeButton={false}
+                  closeOnClick={false}
+                >
+                  <div style={{ color: '#0f172a', fontWeight: 700 }}>
+                    {hoverPosition.distance != null ? `${hoverPosition.distance.toFixed(1)} km` : ''}
+                    {hoverPosition.elevation != null ? ` · ${Math.round(hoverPosition.elevation)} m` : ''}
+                  </div>
+                </Popup>
+              )}
+            </Map>
+
             <ReportProblem
               ref={reportProblemRef}
               initialCoordinates={reportCoordinates}
               onRequestDropPin={handleDropPinRequest}
               onReportSaved={() => setReportsRefreshKey((k) => k + 1)}
             />
-            <ReportPinDropListener enabled={isDropPinMode} onPick={handleMapReportPinPick} />
-            <WaypointPinListener activePinningIndex={activePinningIndex} onPick={handleMapWaypointPin} />
-            <WaypointLongPressListener
-              enabled={plannerTab === 'planNew'}
-              onLongPress={handleMapLongPress}
-            />
-
-            {plannerTab === 'planNew' && waypoints.map((waypoint, index) => (
-              waypoint.latlng ? (
-                <Marker
-                  key={waypoint.id}
-                  position={waypoint.latlng}
-                  draggable={true}
-                  eventHandlers={{
-                    dragend: (event) => {
-                      const dragged = event.target.getLatLng()
-                      updateWaypointLatLng(index, dragged.lat, dragged.lng)
-                    },
-                  }}
-                >
-                  <Popup>Waypoint {index + 1}</Popup>
-                </Marker>
-              ) : null
-            ))}
-
-            {/* Dynamic filtered Places from final_places.json */}
-            {filteredPois.map((poi) => (
-              <Marker
-                key={poi.id}
-                position={[poi.coordinates.lat, poi.coordinates.lng]}
-              >
-                <Popup>
-                  <div style={{ minWidth: '160px', color: '#333', fontFamily: 'sans-serif' }}>
-                    <h4 style={{ margin: '0 0 4px 0', fontSize: '14px' }}>{poi.name}</h4>
-                    <span style={{ fontSize: '11px', color: '#666', textTransform: 'uppercase', fontWeight: 'bold' }}>
-                      {poi.category.replace('_', ' ')}
-                    </span>
-                  </div>
-                </Popup>
-              </Marker>
-            ))}
-
-            {plannerTab === 'routes' && selectedCommunityRoute && communityRoutePositions.length > 0 && (
-              <Polyline
-                positions={communityRoutePositions}
-                pathOptions={{ color: '#a78bfa', weight: 3, opacity: 0.9 }}
-              />
-            )}
-
-            {plannerTab === 'planNew' && routeGeometry.length > 0 && (
-              <Polyline
-                positions={routeGeometry}
-                pathOptions={{ color: '#00e676', weight: 3, opacity: 0.95 }}
-              />
-            )}
-
-            {hoverPosition && hoverPosition.lat != null && hoverPosition.lng != null && (
-              <CircleMarker
-                center={[hoverPosition.lat, hoverPosition.lng]}
-                radius={8}
-                pathOptions={{
-                  color: '#ffffff',
-                  fillColor: '#4ade80',
-                  fillOpacity: 1,
-                  weight: 2,
-                }}
-              >
-                <Tooltip direction="top" offset={[0, -10]} opacity={1} sticky>
-                  <div style={{ color: '#0f172a', fontWeight: 700 }}>
-                    {hoverPosition.distance != null ? `${hoverPosition.distance.toFixed(1)} km` : ''}
-                    {hoverPosition.elevation != null ? ` · ${Math.round(hoverPosition.elevation)} m` : ''}
-                  </div>
-                </Tooltip>
-              </CircleMarker>
-            )}
-
-            {navigationModeActive && (
-              <NavigationMapController
-                isActive={navigationModeActive}
-                userPosition={nav.userPosition}
-                headingDeg={nav.userHeadingDeg}
-                mapRotationDeg={nav.mapRotationDeg}
-                remainingPath={nav.remainingPath}
-              />
-            )}
-            </MapContainer>
-            </div>
           </div>
 
           {navigationModeActive && (
