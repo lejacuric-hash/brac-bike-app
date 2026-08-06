@@ -1977,25 +1977,41 @@ export default function TrailsPage() {
                 ) : null
               ))}
 
-              {filteredPois.map((poi) => (
-                <Marker key={poi.id} longitude={poi.coordinates.lng} latitude={poi.coordinates.lat} anchor="bottom">
-                  <button
-                    type="button"
-                    onClick={(event) => {
-                      event.stopPropagation()
-                      setSelectedPoiId(poi.id)
-                    }}
-                    style={{
-                      background: '#ffffff',
-                      border: '1px solid rgba(15,23,42,0.2)',
-                      borderRadius: '999px',
-                      width: 18,
-                      height: 18,
-                      cursor: 'pointer',
-                    }}
-                  />
-                </Marker>
-              ))}
+              {filteredPois.map((poi) => {
+                const pinColor = POI_METADATA[poi.category]?.color || '#8b5cf6'
+                return (
+                  <Marker key={poi.id} longitude={poi.coordinates.lng} latitude={poi.coordinates.lat} anchor="bottom">
+                    <button
+                      type="button"
+                      onClick={(event) => {
+                        event.stopPropagation()
+                        setSelectedPoiId(poi.id)
+                      }}
+                      title={poi.name}
+                      style={{
+                        background: 'transparent',
+                        border: 'none',
+                        padding: 0,
+                        lineHeight: 0,
+                        cursor: 'pointer',
+                      }}
+                    >
+                      <svg
+                        width="24"
+                        height="32"
+                        viewBox="0 0 24 32"
+                        style={{ display: 'block', filter: 'drop-shadow(0 2px 3px rgba(15,23,42,0.45))' }}
+                      >
+                        <path
+                          d="M12 0C5.373 0 0 5.373 0 12c0 9 12 20 12 20s12-11 12-20C24 5.373 18.627 0 12 0z"
+                          fill={pinColor}
+                        />
+                        <circle cx="12" cy="12" r="4.5" fill="#ffffff" />
+                      </svg>
+                    </button>
+                  </Marker>
+                )
+              })}
 
               {selectedPoiId != null && (() => {
                 const poi = filteredPois.find((item) => item.id === selectedPoiId)
