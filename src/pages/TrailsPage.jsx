@@ -84,6 +84,16 @@ const BASE_MAP_OPTIONS = [
   { id: 'satellite', label: 'Satellite' },
 ]
 
+// Keep the map locked to Brač Island — no panning to the mainland/other
+// islands, no zooming out to a world view.
+const BRAC_BOUNDS = [
+  [16.20, 43.20], // SW [lng, lat]
+  [16.90, 43.45], // NE [lng, lat]
+]
+const BRAC_CENTER = { longitude: 16.55, latitude: 43.32 }
+const BRAC_MIN_ZOOM = 10
+const BRAC_MAX_ZOOM = 18
+
 // Resolve public assets against the app's deployed base path so fetches still
 // work when the SPA is served from a nested production route (e.g. /trails).
 function resolvePublicAsset(path) {
@@ -1801,7 +1811,10 @@ export default function TrailsPage() {
             <Map
               ref={mapRef}
               mapLib={maplibregl}
-              initialViewState={{ longitude: 16.635, latitude: 43.307, zoom: 11 }}
+              initialViewState={{ longitude: BRAC_CENTER.longitude, latitude: BRAC_CENTER.latitude, zoom: 11 }}
+              maxBounds={BRAC_BOUNDS}
+              minZoom={BRAC_MIN_ZOOM}
+              maxZoom={BRAC_MAX_ZOOM}
               style={{ width: '100%', height: '100%' }}
               mapStyle={BASE_MAP_STYLES[mapStyle] || BASE_MAP_STYLES.maptiler}
               onClick={handleMapClick}
