@@ -1,35 +1,286 @@
 [
   {
-    "filename": "Sutivan.gpx",
+    "filename": "Sv. Roko.gpx",
     "name": "Sv.Roko",
     "difficulty": "easy",
     "description": "Family friendly track with a lot of shade",
     "startLocation": "Supetar",
-    "roadType": ["paved", "path"]
+    "roadType": [
+      "paved",
+      "path"
+    ]
   },
   {
-    "filename": "Lovrečina.gpx",
+    "filename": "Seaside ride.gpx",
     "name": "Seaside ride",
     "difficulty": "easy",
     "description": "Easy ride along the coast with a lot of shade",
     "startLocation": "Supetar",
-    "roadType": ["paved", "street"]
+    "roadType": [
+      "paved",
+      "street"
+    ]
   },
   {
-    "filename": "Škrip.gpx",
-    "name": "Škrip",
+    "filename": "Supetar-Vidova Gora- Škrip loop.gpx",
+    "name": "Supetar-Vidova Gora-Škrip loop",
     "difficulty": "medium",
     "description": "Moderate ride with some steep climbs and descents",
     "startLocation": "Supetar",
-    "roadType": ["unpaved", "gravel"]
+    "roadType": [
+      "unpaved",
+      "gravel",
+      "state road"
+    ]
   },
   {
-    "filename": "Vidova gora.gpx",
+    "filename": "Vidova Gora speedrun.gpx",
     "name": "Vidova Gora",
     "difficulty": "medium",
     "description": "Ride to the highest peak of the island with stunning views",
     "startLocation": "Supetar",
-    "roadType": ["state road", "gravel"]
+    "roadType": [
+      "state road",
+      "gravel"
+    ]
+  },
+  {
+    "filename": "Captains Trail .gpx",
+    "name": "Captains Trail",
+    "difficulty": "medium",
+    "description": "",
+    "startLocation": "Supetar",
+    "roadType": [
+      "state road",
+      "gravel"
+    ]
+  },
+  {
+    "name": "755 Tramuntana",
+    "filename": "755__Tramuntana.gpx",
+    "difficulty": "medium",
+    "roadType": [
+      "gravel"
+    ],
+    "description": "A scenic inland loop from Sutivan passing the St. Roko catacombs, olive groves of Krtina, Vičja Luka cove, and the historic village of Ložišća with its famous Rendić bell tower."
+  },
+  {
+    "name": "754 Maestral",
+    "filename": "754__Maestral.gpx",
+    "difficulty": "easy",
+    "roadType": [
+      "gravel"
+    ],
+    "description": "A coastal and olive grove loop heading west from Sutivan past Likva cove's ancient Roman shipwreck site, Timunić lime kiln, and the Natura 2000 Vela Lokva pond."
+  },
+  {
+    "name": "750 - Sunca",
+    "filename": "750__Sunca.gpx",
+    "difficulty": "medium",
+    "roadType": [
+      "gravel"
+    ],
+    "description": "A 36.7 km loop along the sunlit coastal pathways and rolling hills near Sutivan, featuring sea views, stone vineyards, and historic chapels."
+  },
+  {
+    "name": "751 - Medulla",
+    "filename": "751__Medulla.gpx",
+    "difficulty": "hard",
+    "roadType": [
+      "state road"
+    ],
+    "description": "An epic 109.2 km endurance route starting from Milna, ascending all the way up to Vidova Gora (778m), descending to Bol, and looping back through inland stone villages."
+  },
+  {
+    "name": "752 - Cvrčka",
+    "filename": "752__Cvrčka.gpx",
+    "difficulty": "easy",
+    "roadType": [
+      "gravel"
+    ],
+    "description": "A 16.8 km loop from Postira winding through pine forests and ancient olive groves where the chirping of cicadas ('cvrčak') fills the Mediterranean air."
+  },
+  {
+    "name": "753 - Tvrđava i Lanterna",
+    "filename": "753_Tvrdava_i_lanterna.gpx",
+    "difficulty": "easy",
+    "roadType": [
+      "paved"
+    ],
+    "description": "A short 10.4 km coastal ride starting from Supetar, passing historical coastal fortifications, the lighthouse ('lanterna'), and pristine beaches."
+  },
+  {
+    "name": "756 - Levanat",
+    "filename": "756__Levanat.gpx",
+    "difficulty": "medium",
+    "roadType": [
+      "gravel"
+    ],
+    "description": "Named after the gentle easterly Adriatic wind, this Sutivan route takes you through quiet gravel paths, olive groves, and dry-stone walls."
+  },
+  {
+    "name": "757 - Sv. Josip",
+    "filename": "757__SvJosip.gpx",
+    "difficulty": "medium",
+    "roadType": [
+      "unpaved"
+    ],
+    "description": "A 45 km trail linking Supetar and Mirca, leading past the solitary chapel of St. Joseph, secluded bays, and rich agricultural heritage."
+  },
+  {
+    "name": "758 - Sv. Jere",
+    "filename": "758__SvJere.gpx",
+    "difficulty": "hard",
+    "roadType": [
+      "unpaved"
+    ],
+    "description": "A 55.2 km route exploring the rugged central and southern slopes of Brač, named after Saint Jerome and featuring sweeping sea panoramas."
+  },
+  {
+    "name": "759 - Sv. Petar",
+    "filename": "759__SvPetar.gpx",
+    "difficulty": "medium",
+    "roadType": [
+      "paved"
+    ],
+    "description": "A 49.2 km loop centered around the historic town of Postira, visiting coastal headlands, early Christian basilica ruins, and old stone ports."
+  },
+  {
+    "name": "760 - Sv. Juraj",
+    "filename": "760__SvJuraj.gpx",
+    "difficulty": "hard",
+    "roadType": [
+      "state road"
+    ],
+    "description": "The ultimate Brač cycling challenge: an epic 181.2 km grand tour covering almost the entire island from Supetar across all major mountain peaks and coastal towns."
+  },
+  {
+    "name": "761 - Sv. Jelena",
+    "filename": "761__SvJelena.gpx",
+    "difficulty": "medium",
+    "roadType": [
+      "paved"
+    ],
+    "description": "A 29.5 km scenic route heading up towards Škrip—the oldest settlement on Brač—and named after Saint Helena, mother of Emperor Constantine."
+  },
+  {
+    "name": "762 - Sv. Lovre",
+    "filename": "762__SvLovre.gpx",
+    "difficulty": "medium",
+    "roadType": [
+      "gravel"
+    ],
+    "description": "A 27.6 km ride through eastern Brač surrounding Lovrečina bay, home to a famous sandy beach and 5th-century early Christian church ruins."
+  },
+  {
+    "name": "764 - Macića i Vivera",
+    "filename": "764__Macića_i_vivera.gpx",
+    "difficulty": "medium",
+    "roadType": [
+      "gravel"
+    ],
+    "description": "A 19.7 km mythical trail named after mischievous local folklore spirits ('macić' and 'vivera'), passing ancient cairns and thick woods around Dol and Postira."
+  },
+  {
+    "name": "765 - Profunda",
+    "filename": "765__Profunda.gpx",
+    "difficulty": "medium",
+    "roadType": [
+      "unpaved"
+    ],
+    "description": "A 32.1 km inland trail diving deep into the limestone interior of Brač, featuring deep sinkholes ('foveae'), quarries, and serene oak forests."
+  },
+  {
+    "name": "766 - Srce Brača",
+    "filename": "766__Srce_Brača.gpx",
+    "difficulty": "hard",
+    "roadType": [
+      "state road"
+    ],
+    "description": "A 53.5 km route through the 'Heart of Brač', exploring the interior villages of Nerežišća, Donji Humac, and Dračevica, known for stone masonry."
+  },
+  {
+    "name": "767 - Ružmarin",
+    "filename": "767__Ružmarin.gpx",
+    "difficulty": "easy",
+    "roadType": [
+      "gravel"
+    ],
+    "description": "A 19.8 km aromatic coastal route lined with wild rosemary bushes, connecting coastal coves with gentle gravel trails."
+  },
+  {
+    "name": "768 - Plavac Mali",
+    "filename": "768__Plavac_mali.gpx",
+    "difficulty": "hard",
+    "roadType": [
+      "unpaved"
+    ],
+    "description": "A 44.1 km vineyard trail named after Croatia's famous red grape cultivar, navigating the steep sun-drenched terraced vineyards above Bol."
+  },
+  {
+    "name": "769 - Česmina",
+    "filename": "769__Česmina.gpx",
+    "difficulty": "medium",
+    "roadType": [
+      "gravel"
+    ],
+    "description": "Named after the Mediterranean holm oak ('česmina'), this trail winds through evergreen forests and shaded gravel tracks near Pučišća."
+  },
+  {
+    "name": "770 - Pinija",
+    "filename": "770__Pinija.gpx",
+    "difficulty": "hard",
+    "roadType": [
+      "state road"
+    ],
+    "description": "A major 90.4 km island traverse passing under tall Aleppo pine forests along the northern coast and descending toward the east."
+  },
+  {
+    "name": "771 - Kadulja",
+    "filename": "771__Kadulja.gpx",
+    "difficulty": "hard",
+    "roadType": [
+      "unpaved"
+    ],
+    "description": "A 55.0 km route through high karst meadows blanketed with wild sage ('kadulja'), offering aromatic rides and vast sea views toward the Hvar channel."
+  },
+  {
+    "name": "772 - Panorama Povlja",
+    "filename": "772__Panorama_Povlja.gpx",
+    "difficulty": "medium",
+    "roadType": [
+      "paved"
+    ],
+    "description": "A 17.5 km route offering panoramic views overlooking the deep bay of Povlja, its 6th-century basilica, and the Biokovo mountain range on the mainland."
+  },
+  {
+    "name": "773 - Vrhbrača",
+    "filename": "773__Vrhbrača.gpx",
+    "difficulty": "medium",
+    "roadType": [
+      "paved"
+    ],
+    "description": "A 17.0 km ride across the eastern highlands of Brač around Selca and Novo Selo, rich with white stone quarrying history."
+  },
+  {
+    "name": "774 - Via Brachia",
+    "filename": "774__Via_Brachia.gpx",
+    "difficulty": "medium",
+    "roadType": [
+      "unpaved"
+    ],
+    "description": "A 36.7 km route following historic paths and ancient Roman trails that originally connected the island's settlements."
+  },
+  {
+    "filename": "Bells and Olives.gpx",
+    "name": "Bells and Olives",
+    "difficulty": "medium",
+    "description": "Ride to the highest peak of the island with stunning views",
+    "startLocation": "Supetar",
+    "roadType": [
+      "state road",
+      "gravel"
+    ]
   },
   {
     "filename": "Wild west.gpx",
@@ -37,6 +288,10 @@
     "difficulty": "hard",
     "description": "Challenging ride with amazing views of the island",
     "startLocation": "Supetar",
-    "roadType": ["state road", "gravel", "unpaved"]
+    "roadType": [
+      "state road",
+      "gravel",
+      "unpaved"
+    ]
   }
 ]

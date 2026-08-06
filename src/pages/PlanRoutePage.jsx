@@ -1,7 +1,8 @@
 export default function PlanRoutePage() {
   return (
-    <div className="page center-page">
-      <h2>Plan Your Route - Coming Soon</h2>
+    <div style={{ padding: '20px' }}>
+      <h1>Plan Your Route</h1>
+      <p>Custom route planning coming soon!</p>
     </div>
-  )
+  );
 }
