@@ -6,6 +6,14 @@ export default defineConfig({
   optimizeDeps: {
     exclude: ['maplibre-gl'],
   },
+  build: {
+    rollupOptions: {
+      external: [],
+    },
+    commonjsOptions: {
+      transformMixedEsModules: true,
+    },
+  },
   server: {
     host: true,
     allowedHosts: ['.ngrok-free.dev', '.ngrok-free.app'],
