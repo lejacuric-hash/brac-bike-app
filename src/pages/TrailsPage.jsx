@@ -368,6 +368,17 @@ export default function TrailsPage() {
 
   const getMapInstance = useCallback(() => mapRef.current?.getMap?.() || null, [])
 
+  // The MapTiler style we use ships with globe projection + 3D terrain enabled.
+  // MapLibre GL fails to paint any tiles under that combination here (data loads
+  // fine, but the canvas stays a blank background color) — force a flat mercator
+  // view with terrain off, which is what this bike-trail map actually needs.
+  const handleMapLoad = useCallback((event) => {
+    const map = event?.target
+    if (!map) return
+    map.setProjection({ type: 'mercator' })
+    map.setTerrain(null)
+  }, [])
+
   const clearLongPressTimer = useCallback(() => {
     if (longPressTimerRef.current != null) {
       clearTimeout(longPressTimerRef.current)
@@ -1652,6 +1663,8 @@ export default function TrailsPage() {
               onError={(event) => {
                 console.error(`MapTiler failed to load a map resource (style: ${mapStyle}):`, event?.error || event)
               }}
+              onLoad={handleMapLoad}
+              onStyleData={handleMapLoad}
               bearing={navigationModeActive ? (nav.mapRotationDeg || 0) : 0}
             >
               {plannerTab !== 'planNew' && !selectedCommunityRoute && selectedTrailPath.length > 1 && (
