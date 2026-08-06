@@ -50,6 +50,40 @@ const MAPTILER_STYLE_ID = '019fd2b1-1969-70ee-bdd2-bceb14957863'
 const MAPTILER_STREET_STYLE_URL = `https://api.maptiler.com/maps/${MAPTILER_STYLE_ID}/style.json?key=${MAPTILER_API_KEY}`
 const MAPTILER_SATELLITE_STYLE_URL = `https://api.maptiler.com/maps/hybrid/style.json?key=${MAPTILER_API_KEY}`
 
+// Plain OpenStreetMap raster tiles as a minimal MapLibre style spec — no vector
+// sources/terrain available on this layer, so the 3D toggle falls back to a
+// pitch-only view (no elevation exaggeration) whenever this base map is active.
+const OSM_RASTER_STYLE = {
+  version: 8,
+  sources: {
+    osm: {
+      type: 'raster',
+      tiles: ['https://tile.openstreetmap.org/{z}/{x}/{y}.png'],
+      tileSize: 256,
+      attribution: '© OpenStreetMap contributors',
+    },
+  },
+  layers: [
+    { id: 'osm-tiles', type: 'raster', source: 'osm' },
+  ],
+}
+
+// The DEM source name that ships with the MapTiler style — required by
+// map.setTerrain(); OSM/satellite layers don't have it, so 3D there is tilt-only.
+const MAPTILER_TERRAIN_SOURCE = 'terrain-rgb'
+
+const BASE_MAP_STYLES = {
+  maptiler: MAPTILER_STREET_STYLE_URL,
+  satellite: MAPTILER_SATELLITE_STYLE_URL,
+  osm: OSM_RASTER_STYLE,
+}
+
+const BASE_MAP_OPTIONS = [
+  { id: 'maptiler', label: 'Vector' },
+  { id: 'osm', label: 'OpenStreetMap' },
+  { id: 'satellite', label: 'Satellite' },
+]
+
 // Resolve public assets against the app's deployed base path so fetches still
 // work when the SPA is served from a nested production route (e.g. /trails).
 function resolvePublicAsset(path) {
@@ -278,8 +312,10 @@ export default function TrailsPage() {
   const [communityRoutePositions, setCommunityRoutePositions] = useState([])
   
   // Map settings
-  const [mapStyle, setMapStyle] = useState('street') 
-  
+  const [mapStyle, setMapStyle] = useState('maptiler')
+  const [is3D, setIs3D] = useState(false)
+  const [showLayerMenu, setShowLayerMenu] = useState(false)
+
   // POI & Pill States
   const [showPoiMenu, setShowPoiMenu] = useState(false)
   const [selectedCategories, setSelectedCategories] = useState([])
@@ -370,14 +406,73 @@ export default function TrailsPage() {
 
   // The MapTiler style we use ships with globe projection + 3D terrain enabled.
   // MapLibre GL fails to paint any tiles under that combination here (data loads
-  // fine, but the canvas stays a blank background color) — force a flat mercator
-  // view with terrain off, which is what this bike-trail map actually needs.
+  // fine, but the canvas stays a blank background color) — always force a flat
+  // mercator projection. Terrain itself is fine under mercator, so it's only
+  // re-applied here when the 3D toggle is on (and the active base map actually
+  // has the DEM source) — this also re-establishes both after a base-map switch,
+  // since map.setStyle() wipes projection/terrain along with the old style.
   const handleMapLoad = useCallback((event) => {
     const map = event?.target
     if (!map) return
-    map.setProjection({ type: 'mercator' })
-    map.setTerrain(null)
+
+    // Guard every call against the current actual state before calling
+    // setProjection/setTerrain — this fires on every 'styledata' event, and
+    // those setters can themselves trigger further 'styledata' events, so an
+    // unconditional call here would feed back into itself and hang the tab.
+    if (map.getProjection?.()?.type !== 'mercator') {
+      map.setProjection({ type: 'mercator' })
+    }
+
+    const hasTerrainSource = !!map.getSource(MAPTILER_TERRAIN_SOURCE)
+    const currentTerrain = map.getTerrain?.()
+    if (is3D && hasTerrainSource) {
+      if (!currentTerrain || currentTerrain.source !== MAPTILER_TERRAIN_SOURCE) {
+        map.setTerrain({ source: MAPTILER_TERRAIN_SOURCE, exaggeration: 1.4 })
+      }
+    } else if (currentTerrain) {
+      map.setTerrain(null)
+    }
+  }, [is3D])
+
+  const handleToggleLayerMenu = useCallback(() => {
+    setShowLayerMenu((prev) => !prev)
+    setShowPoiMenu(false)
   }, [])
+
+  const handleSelectBaseMap = useCallback((id) => {
+    // Disable terrain before swapping styles: MapLibre tears down the DEM
+    // shaders as part of setStyle(), and if terrain is still active going
+    // into a style that changes/drops the DEM source, that teardown throws
+    // (leaves a blank canvas). handleMapLoad re-enables it after the new
+    // style loads, if the new style has the source and 3D is still on.
+    const map = getMapInstance()
+    if (map) {
+      map.setTerrain(null)
+    }
+    setMapStyle(id)
+    setShowLayerMenu(false)
+  }, [getMapInstance])
+
+  // Pitch/bearing tilt works on any base map; terrain exaggeration only applies
+  // when the active style actually ships the MapTiler DEM source (not OSM raster).
+  const handleToggle3D = useCallback(() => {
+    const map = getMapInstance()
+    setIs3D((prev) => {
+      const next = !prev
+      if (map) {
+        if (next) {
+          map.easeTo({ pitch: 60, bearing: -15, duration: 1000 })
+          if (map.getSource(MAPTILER_TERRAIN_SOURCE)) {
+            map.setTerrain({ source: MAPTILER_TERRAIN_SOURCE, exaggeration: 1.4 })
+          }
+        } else {
+          map.easeTo({ pitch: 0, bearing: 0, duration: 1000 })
+          map.setTerrain(null)
+        }
+      }
+      return next
+    })
+  }, [getMapInstance])
 
   const clearLongPressTimer = useCallback(() => {
     if (longPressTimerRef.current != null) {
@@ -555,6 +650,7 @@ export default function TrailsPage() {
   const handleTogglePoiMenu = () => {
     const nextState = !showPoiMenu
     setShowPoiMenu(nextState)
+    setShowLayerMenu(false)
     if (nextState) {
       setSelectedCategories([])
     }
@@ -1535,11 +1631,25 @@ export default function TrailsPage() {
             alignItems: 'center'
           }}>
             <button
-              onClick={() => setMapStyle(mapStyle === 'street' ? 'satellite' : 'street')}
-              title="Toggle Map Layers"
-              style={iconButtonStyle}
+              onClick={handleToggleLayerMenu}
+              title="Change Base Map"
+              style={{ ...iconButtonStyle, backgroundColor: showLayerMenu ? '#b794f4' : '#370063' }}
             >
               <img src="/layers.svg" alt="" style={{ width: '22px', height: '22px' }} />
+            </button>
+
+            <button
+              onClick={handleToggle3D}
+              title={is3D ? 'Switch to 2D View' : 'Switch to 3D View'}
+              style={{
+                ...iconButtonStyle,
+                backgroundColor: is3D ? '#a78bfa' : '#370063',
+                fontSize: '0.8rem',
+                fontWeight: 'bold',
+                color: '#ffffff',
+              }}
+            >
+              3D
             </button>
 
             <button
@@ -1577,6 +1687,48 @@ export default function TrailsPage() {
               <img src="/report-problem.svg" alt="" style={{ width: '22px', height: '22px' }} />
             </button>
           </div>
+          )}
+
+          {/* BASE MAP SELECTOR - Vector / OpenStreetMap / Satellite */}
+          {!navigationModeActive && showLayerMenu && (
+            <div style={{
+              position: 'absolute',
+              top: '75px',
+              right: '72px',
+              zIndex: 1000,
+              backgroundColor: '#370063',
+              border: '1px solid rgba(255, 255, 255, 0.2)',
+              borderRadius: '12px',
+              padding: '10px 12px',
+              minWidth: '180px',
+              boxShadow: '0 4px 15px rgba(0,0,0,0.4)',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '6px'
+            }}>
+              <span style={{ fontSize: '0.75rem', fontWeight: 'bold', color: '#b794f4', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                Base Map
+              </span>
+              {BASE_MAP_OPTIONS.map((option) => (
+                <button
+                  key={option.id}
+                  onClick={() => handleSelectBaseMap(option.id)}
+                  style={{
+                    padding: '8px 10px',
+                    borderRadius: '8px',
+                    border: 'none',
+                    fontSize: '0.85rem',
+                    fontWeight: 600,
+                    textAlign: 'left',
+                    cursor: 'pointer',
+                    backgroundColor: mapStyle === option.id ? '#a78bfa' : '#1a1424',
+                    color: mapStyle === option.id ? '#1f0931' : '#e2e8f0',
+                  }}
+                >
+                  {option.label}
+                </button>
+              ))}
+            </div>
           )}
 
           {/* CATEGORY FILTER PILL CARD - Displayed dynamically over map */}
@@ -1651,7 +1803,7 @@ export default function TrailsPage() {
               mapLib={maplibregl}
               initialViewState={{ longitude: 16.635, latitude: 43.307, zoom: 11 }}
               style={{ width: '100%', height: '100%' }}
-              mapStyle={mapStyle === 'street' ? MAPTILER_STREET_STYLE_URL : MAPTILER_SATELLITE_STYLE_URL}
+              mapStyle={BASE_MAP_STYLES[mapStyle] || BASE_MAP_STYLES.maptiler}
               onClick={handleMapClick}
               onMouseDown={handleMapPressStart}
               onMouseUp={handleMapPressEnd}
@@ -1665,7 +1817,8 @@ export default function TrailsPage() {
               }}
               onLoad={handleMapLoad}
               onStyleData={handleMapLoad}
-              bearing={navigationModeActive ? (nav.mapRotationDeg || 0) : 0}
+              bearing={navigationModeActive ? (nav.mapRotationDeg || 0) : (is3D ? -15 : 0)}
+              pitch={navigationModeActive ? 0 : (is3D ? 60 : 0)}
             >
               {plannerTab !== 'planNew' && !selectedCommunityRoute && selectedTrailPath.length > 1 && (
                 <Source id="gpx-selected-route" type="geojson" data={toLineFeature(selectedTrailPath)}>
