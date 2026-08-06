@@ -40,10 +40,22 @@ const iconButtonStyle = {
   transition: 'background-color 0.2s ease',
 }
 
-const MAPTILER_API_KEY = import.meta.env.VITE_MAPTILER_KEY
+// Fallback keeps the map working in production if the env var isn't configured on the host.
+const MAPTILER_FALLBACK_KEY = 'TjtNydvQmJJGJOelz7ji'
+const MAPTILER_API_KEY = import.meta.env.VITE_MAPTILER_API_KEY || import.meta.env.VITE_MAPTILER_KEY || MAPTILER_FALLBACK_KEY
+if (!import.meta.env.VITE_MAPTILER_API_KEY && !import.meta.env.VITE_MAPTILER_KEY) {
+  console.error('VITE_MAPTILER_API_KEY is not set; falling back to the built-in MapTiler key.')
+}
 const MAPTILER_STYLE_ID = '019fd2b1-1969-70ee-bdd2-bceb14957863'
 const MAPTILER_STREET_STYLE_URL = `https://api.maptiler.com/maps/${MAPTILER_STYLE_ID}/style.json?key=${MAPTILER_API_KEY}`
 const MAPTILER_SATELLITE_STYLE_URL = `https://api.maptiler.com/maps/hybrid/style.json?key=${MAPTILER_API_KEY}`
+
+// Resolve public assets against the app's deployed base path so fetches still
+// work when the SPA is served from a nested production route (e.g. /trails).
+function resolvePublicAsset(path) {
+  const base = (import.meta.env.BASE_URL || '/').replace(/\/$/, '')
+  return `${base}/${String(path).replace(/^\//, '')}`
+}
 
 const GPX_DIFFICULTY_COLORS = {
   easy: '#4ade80',
@@ -368,7 +380,8 @@ export default function TrailsPage() {
 
   useEffect(() => {
     let mounted = true
-    fetch('/tracks/tracks.json')
+    const tracksUrl = resolvePublicAsset('tracks/tracks.json')
+    fetch(tracksUrl)
       .then((response) => {
         if (!response.ok) {
           throw new Error(`Failed to load tracks.json: ${response.status}`)
@@ -379,7 +392,7 @@ export default function TrailsPage() {
         if (mounted) setTrails(Array.isArray(data) ? data : [])
       })
       .catch((error) => {
-        console.error('Error fetching tracks.json:', error)
+        console.error(`Error fetching tracks.json from ${tracksUrl}:`, error)
         if (mounted) setTrails([])
       })
 
@@ -463,8 +476,9 @@ export default function TrailsPage() {
     let cancelled = false
 
     const loadGpx = async () => {
+      const gpxUrl = resolvePublicAsset(`tracks/${activeTrack.filename}`)
       try {
-        const response = await fetch(`/tracks/${activeTrack.filename}`)
+        const response = await fetch(gpxUrl)
         if (!response.ok) {
           throw new Error(`Failed to load GPX: ${response.status}`)
         }
@@ -491,7 +505,7 @@ export default function TrailsPage() {
           map.fitBounds(bounds, { padding: 50, duration: 1200 })
         }
       } catch (error) {
-        console.error('Failed to parse GPX track:', error)
+        console.error(`Failed to load/parse GPX track from ${gpxUrl}:`, error)
       }
     }
 
@@ -1635,6 +1649,9 @@ export default function TrailsPage() {
               onDragStart={handleMapPressEnd}
               onMoveStart={handleMapPressEnd}
               onZoomStart={handleMapPressEnd}
+              onError={(event) => {
+                console.error(`MapTiler failed to load a map resource (style: ${mapStyle}):`, event?.error || event)
+              }}
               bearing={navigationModeActive ? (nav.mapRotationDeg || 0) : 0}
             >
               {plannerTab !== 'planNew' && !selectedCommunityRoute && selectedTrailPath.length > 1 && (

@@ -21,6 +21,13 @@ function getSelectedFilename(selectedTrail) {
   return null
 }
 
+// Resolve public assets against the app's deployed base path so fetches still
+// work when the SPA is served from a nested production route (e.g. /trails).
+function resolvePublicAsset(path) {
+  const base = (import.meta.env.BASE_URL || '/').replace(/\/$/, '')
+  return `${base}/${String(path).replace(/^\//, '')}`
+}
+
 function GpxTrails({ onTracksLoaded, selectedTrail, onStatsUpdate }) {
   const [tracks, setTracks] = useState([])
   const map = useMap()
@@ -33,7 +40,8 @@ function GpxTrails({ onTracksLoaded, selectedTrail, onStatsUpdate }) {
   useEffect(() => {
     let mounted = true
 
-    fetch('/tracks/tracks.json')
+    const tracksUrl = resolvePublicAsset('tracks/tracks.json')
+    fetch(tracksUrl)
       .then((response) => {
         if (!response.ok) {
           throw new Error(`Failed to load tracks.json: ${response.status}`)
@@ -49,7 +57,7 @@ function GpxTrails({ onTracksLoaded, selectedTrail, onStatsUpdate }) {
         }
       })
       .catch((error) => {
-        console.error('Error fetching tracks.json:', error)
+        console.error(`Error fetching tracks.json from ${tracksUrl}:`, error)
       })
 
     return () => {
@@ -83,7 +91,7 @@ function GpxTrails({ onTracksLoaded, selectedTrail, onStatsUpdate }) {
     const loadedLayers = tracksToRender
       .map((track) => {
         const color = difficultyColors[track.difficulty] ?? difficultyColors.easy
-        const gpxUrl = `/tracks/${track.filename}`
+        const gpxUrl = resolvePublicAsset(`tracks/${track.filename}`)
 
         let gpxLayer
         try {
