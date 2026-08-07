@@ -341,6 +341,9 @@ export default function TrailsPage() {
   const [activeNavigationPath, setActiveNavigationPath] = useState(null)
   const [pendingNavTarget, setPendingNavTarget] = useState(null)
   const [collapseRequestToken, setCollapseRequestToken] = useState(null)
+  // Camera auto-follows the rider during navigation until they manually pan/pinch,
+  // at which point it backs off and a Recenter button appears to resume it.
+  const [autoFollowPaused, setAutoFollowPaused] = useState(false)
   const nav = useNavigationMode()
 
   const mapRef = useRef(null)
@@ -413,6 +416,17 @@ export default function TrailsPage() {
   )
 
   const getMapInstance = useCallback(() => mapRef.current?.getMap?.() || null, [])
+
+  // Camera auto-follows the rider's GPS fix during navigation. Paused as soon
+  // as the rider manually pans/pinches (see handleUserMapInteractionStart)
+  // until they tap Recenter, so it never fights a manual gesture.
+  useEffect(() => {
+    if (!navigationModeActive || autoFollowPaused || !nav.userPosition) return
+    const map = getMapInstance()
+    if (!map) return
+    const [lat, lng] = nav.userPosition
+    map.panTo([lng, lat], { duration: 500 })
+  }, [navigationModeActive, autoFollowPaused, nav.userPosition, getMapInstance])
 
   // The MapTiler style we use ships with globe projection + 3D terrain enabled.
   // MapLibre GL fails to paint any tiles under that combination here (data loads
@@ -631,22 +645,6 @@ export default function TrailsPage() {
       cancelled = true
     }
   }, [getMapInstance, plannerTab, selectedCommunityRoute, selectedTrail, trails])
-
-  useEffect(() => {
-    const map = getMapInstance()
-    if (!map) return
-
-    const handlers = ['dragPan', 'scrollZoom', 'doubleClickZoom', 'touchZoomRotate', 'keyboard', 'boxZoom']
-    if (navigationModeActive) {
-      handlers.forEach((name) => {
-        if (map[name]?.disable) map[name].disable()
-      })
-    } else {
-      handlers.forEach((name) => {
-        if (map[name]?.enable) map[name].enable()
-      })
-    }
-  }, [getMapInstance, navigationModeActive])
 
   const handleToggleCategory = (category) => {
     setSelectedCategories(prev => 
@@ -1341,6 +1339,7 @@ export default function TrailsPage() {
     setActiveNavigationPath(pathEntry)
     setCollapseRequestToken((token) => (token == null ? 1 : token + 1))
     setNavigationModeActive(true)
+    setAutoFollowPaused(false)
     nav.start(pathEntry)
     // One-time reset to north on entry — bearing is left uncontrolled for the
     // rest of the session (see the <Map> bearing prop below) so manual
@@ -1353,7 +1352,27 @@ export default function TrailsPage() {
     setNavigationModeActive(false)
     setActiveNavigationPath(null)
     setPendingNavTarget(null)
+    setAutoFollowPaused(false)
   }, [nav])
+
+  // Detects genuine user gestures (drag/pinch) vs our own programmatic camera
+  // moves — MapLibre only sets `originalEvent` for the former — and pauses
+  // camera auto-follow so it doesn't fight the rider's manual pan.
+  const handleUserMapInteractionStart = useCallback((event) => {
+    handleMapPressEnd()
+    if (navigationModeActive && event?.originalEvent) {
+      setAutoFollowPaused(true)
+    }
+  }, [navigationModeActive, handleMapPressEnd])
+
+  const handleRecenter = useCallback(() => {
+    setAutoFollowPaused(false)
+    const map = getMapInstance()
+    if (map && nav.userPosition) {
+      const [lat, lng] = nav.userPosition
+      map.panTo([lng, lat], { duration: 500 })
+    }
+  }, [getMapInstance, nav.userPosition])
 
   const handleNavigateClick = useCallback((payload, source) => {
     if (source === 'gpx') {
@@ -1648,15 +1667,21 @@ export default function TrailsPage() {
               <button
                 onClick={exitNavigationMode}
                 title="Stop Navigation"
-                style={{
-                  ...iconButtonStyle,
-                  background: '#dc2626',
-                  fontSize: '0.7rem',
-                  fontWeight: 'bold',
-                  color: '#ffffff',
-                }}
+                style={iconButtonStyle}
               >
-                STOP
+                <svg width="18" height="18" viewBox="0 0 18 18">
+                  <rect x="0" y="0" width="18" height="18" rx="3" fill="#ffffff" />
+                </svg>
+              </button>
+            )}
+
+            {navigationModeActive && autoFollowPaused && (
+              <button
+                onClick={handleRecenter}
+                title="Recenter"
+                style={iconButtonStyle}
+              >
+                <img src="/locate-me.svg" alt="" style={{ width: '22px', height: '22px' }} />
               </button>
             )}
 
@@ -1847,9 +1872,9 @@ export default function TrailsPage() {
               onMouseUp={handleMapPressEnd}
               onTouchStart={handleMapPressStart}
               onTouchEnd={handleMapPressEnd}
-              onDragStart={handleMapPressEnd}
-              onMoveStart={handleMapPressEnd}
-              onZoomStart={handleMapPressEnd}
+              onDragStart={handleUserMapInteractionStart}
+              onMoveStart={handleUserMapInteractionStart}
+              onZoomStart={handleUserMapInteractionStart}
               onError={(event) => {
                 console.error(`MapTiler failed to load a map resource (style: ${mapStyle}):`, event?.error || event)
               }}

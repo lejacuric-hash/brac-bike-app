@@ -15,8 +15,22 @@ const LOOKAHEAD_METERS = 40
 const HAZARD_CORRIDOR_METERS = 40
 const HAZARD_LOOKAHEAD_KM = 0.3
 const HAZARD_CHECK_THROTTLE_MS = 2000
-const MIN_SPEED_FOR_GPS_HEADING = 0.5 // m/s
-const MIN_FIX_DISTANCE_FOR_DELTA_HEADING_KM = 0.005 // 5m
+const MIN_SPEED_KMH_FOR_GPS_HEADING = 1.5
+const MIN_SPEED_MPS_FOR_GPS_HEADING = MIN_SPEED_KMH_FOR_GPS_HEADING / 3.6
+// Noise gate for raw GPS fixes: consumer GPS jitters several meters even
+// standing still, so fixes closer than this to the last accepted one are
+// dropped entirely rather than twitching the marker/heading.
+const MIN_FIX_DISTANCE_KM = 0.003 // 3m
+const HEADING_SMOOTHING_ALPHA = 0.35
+
+// Circular exponential smoothing — damps sudden heading jumps (GPS noise,
+// momentary bad fixes) instead of snapping the arrow straight to each new
+// reading, which is what caused it to flip back and forth.
+function smoothHeadingDeg(prevHeadingDeg, nextHeadingDeg, alpha = HEADING_SMOOTHING_ALPHA) {
+  if (prevHeadingDeg == null) return nextHeadingDeg
+  const delta = angleDiffDeg(nextHeadingDeg, prevHeadingDeg)
+  return normalizeAngleDeg(prevHeadingDeg + delta * alpha)
+}
 
 export default function useNavigationMode() {
   const [isActive, setIsActive] = useState(false)
@@ -55,9 +69,20 @@ export default function useNavigationMode() {
   const applyPosition = useCallback((position) => {
     const { latitude, longitude, heading, speed } = position.coords
     const point = [latitude, longitude]
+
+    // Noise gate: ignore fixes that haven't moved meaningfully since the last
+    // accepted one. Raw GPS jitters several meters even standing still —
+    // applying every jitter to the marker/heading makes it visibly twitch.
+    if (lastFixRef.current && haversineDistanceKm(lastFixRef.current, point) < MIN_FIX_DISTANCE_KM) {
+      setAccuracy(position.coords.accuracy)
+      setLoading(false)
+      return
+    }
+
     setUserPosition(point)
     setAccuracy(position.coords.accuracy)
 
+    let lookaheadPoint = null
     const path = pathRef.current
     if (path && path.length >= 2) {
       const nearest = nearestPointOnPath(path, point)
@@ -69,9 +94,9 @@ export default function useNavigationMode() {
         setProgressFraction(total > 0 ? Math.min(nearest.distanceAlongKm / total, 1) : 0)
         setRemainingPath(path.slice(nearest.segmentIndex))
 
-        const lookahead = findLookaheadTarget(path, nearest.distanceAlongKm, LOOKAHEAD_METERS)
-        if (lookahead) {
-          setTargetBearingDeg(bearingDeg(point, lookahead))
+        lookaheadPoint = findLookaheadTarget(path, nearest.distanceAlongKm, LOOKAHEAD_METERS)
+        if (lookaheadPoint) {
+          setTargetBearingDeg(bearingDeg(point, lookaheadPoint))
         }
 
         const now = Date.now()
@@ -93,18 +118,32 @@ export default function useNavigationMode() {
     }
 
     // Heading: prefer live compass (handled separately via orientation events).
-    // Fall back to GPS course / delta-fix bearing only when compass isn't driving it.
+    // Fall back to GPS course only above walking/riding speed — below that,
+    // device-reported heading is unreliable noise. Next best is the bearing
+    // between this fix and the last one (now guaranteed >= 3m apart, thanks
+    // to the noise gate above, so it's a meaningful vector). If this is the
+    // very first fix and there's no prior point to measure from yet, aim
+    // toward the next point on the route instead of leaving heading unset.
     const currentHeadingSource = headingSourceRef.current
     if (currentHeadingSource === 'none' || currentHeadingSource === 'gps-course' || currentHeadingSource === 'gps-delta') {
-      if (heading != null && speed != null && speed > MIN_SPEED_FOR_GPS_HEADING) {
-        setUserHeadingDeg(normalizeAngleDeg(heading))
-        setHeadingSourceTracked('gps-course')
+      const speedMps = speed != null ? speed : null
+      let rawHeading = null
+      let source = null
+
+      if (heading != null && speedMps != null && speedMps >= MIN_SPEED_MPS_FOR_GPS_HEADING) {
+        rawHeading = normalizeAngleDeg(heading)
+        source = 'gps-course'
       } else if (lastFixRef.current) {
-        const distanceKm = haversineDistanceKm(lastFixRef.current, point)
-        if (distanceKm > MIN_FIX_DISTANCE_FOR_DELTA_HEADING_KM) {
-          setUserHeadingDeg(bearingDeg(lastFixRef.current, point))
-          setHeadingSourceTracked('gps-delta')
-        }
+        rawHeading = bearingDeg(lastFixRef.current, point)
+        source = 'gps-delta'
+      } else if (lookaheadPoint) {
+        rawHeading = bearingDeg(point, lookaheadPoint)
+        source = 'gps-delta'
+      }
+
+      if (rawHeading != null) {
+        setUserHeadingDeg((prevHeadingDeg) => smoothHeadingDeg(prevHeadingDeg, rawHeading))
+        setHeadingSourceTracked(source)
       }
     }
 
