@@ -1153,17 +1153,25 @@ export default function TrailsPage() {
     return []
   }, [])
 
-  const getBrouterProfile = useCallback(() => {
-    if (roadPreference === 'paved') {
-      return 'trekking'
-    }
+const getBrouterProfile = useCallback(() => {
+  if (roadPreference === 'paved') {
+    return 'trekking'
+  }
 
-    if (roadPreference === 'gravel' && !avoidHikingTrails) {
-      return 'mtb'
-    }
+  if (roadPreference === 'mixed') {
+    return 'cycling-safety'
+  }
 
-    return 'gravel'
-  }, [avoidHikingTrails, roadPreference])
+  if (roadPreference === 'bike_tracks') {
+    return 'cycling'
+  }
+
+  if (roadPreference === 'gravel' && !avoidHikingTrails) {
+    return 'mtb'
+  }
+
+  return 'gravel'
+}, [avoidHikingTrails, roadPreference])
 
   const calculateRouteFromWaypoints = useCallback(async (coords) => {
     if (coords.length < 2) {
@@ -1528,8 +1536,10 @@ export default function TrailsPage() {
           onChange={(e) => setRoadPreference(e.target.value)}
           style={{ flex: 1, padding: '8px', borderRadius: '8px', border: '1px solid #ddd' }}
         >
-          <option value="gravel">Gravel Track Preferred</option>
-          <option value="paved">Asphalt/Paved Only</option>
+      <option value="gravel">Gravel Preferred</option>
+<option value="paved">Asphalt Only</option>
+<option value="mixed">Mixed (Best Route)</option>
+<option value="bike_tracks">Local Bike Tracks</option>
         </select>
 
         <select 
