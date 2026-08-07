@@ -1342,7 +1342,11 @@ export default function TrailsPage() {
     setCollapseRequestToken((token) => (token == null ? 1 : token + 1))
     setNavigationModeActive(true)
     nav.start(pathEntry)
-  }, [nav])
+    // One-time reset to north on entry — bearing is left uncontrolled for the
+    // rest of the session (see the <Map> bearing prop below) so manual
+    // drag/pinch rotation works normally instead of snapping back every frame.
+    getMapInstance()?.easeTo({ bearing: 0, duration: 400 })
+  }, [nav, getMapInstance])
 
   const exitNavigationMode = useCallback(() => {
     nav.stop()
@@ -1628,18 +1632,34 @@ export default function TrailsPage() {
       <div className="main-content">
         <div className="map-wrapper" style={{ position: 'relative', overflow: navigationModeActive ? 'hidden' : 'visible' }}>
 
-          {/* FLOATING CONTROL DECK - PURE ICONS ONLY */}
-          {!navigationModeActive && (
+          {/* FLOATING CONTROL DECK - stays visible during navigation so the rider can
+              still change layers, drop into 3D, or reach Stop Navigation. */}
           <div className="map-floating-actions" style={{
             position: 'absolute',
             top: '75px',
             right: '16px',
-            zIndex: 1000,
+            zIndex: 1600,
             display: 'flex',
             flexDirection: 'column',
             gap: '12px',
             alignItems: 'center'
           }}>
+            {navigationModeActive && (
+              <button
+                onClick={exitNavigationMode}
+                title="Stop Navigation"
+                style={{
+                  ...iconButtonStyle,
+                  background: '#dc2626',
+                  fontSize: '0.7rem',
+                  fontWeight: 'bold',
+                  color: '#ffffff',
+                }}
+              >
+                STOP
+              </button>
+            )}
+
             <button
               onClick={handleToggleLayerMenu}
               title="Change Base Map"
@@ -1697,15 +1717,14 @@ export default function TrailsPage() {
               <img src="/report-problem.svg" alt="" style={{ width: '22px', height: '22px' }} />
             </button>
           </div>
-          )}
 
           {/* BASE MAP SELECTOR - Vector / OpenStreetMap / Satellite */}
-          {!navigationModeActive && showLayerMenu && (
+          {showLayerMenu && (
             <div style={{
               position: 'absolute',
               top: '75px',
               right: '72px',
-              zIndex: 1000,
+              zIndex: 1600,
               backgroundColor: '#370063',
               border: '1px solid rgba(255, 255, 255, 0.2)',
               borderRadius: '12px',
@@ -1742,12 +1761,12 @@ export default function TrailsPage() {
           )}
 
           {/* CATEGORY FILTER PILL CARD - Displayed dynamically over map */}
-          {!navigationModeActive && showPoiMenu && (
+          {showPoiMenu && (
             <div style={{
               position: 'absolute',
               top: '75px',
               right: '72px',
-              zIndex: 1000,
+              zIndex: 1600,
               backgroundColor: '#370063',
               border: '1px solid rgba(255, 255, 255, 0.2)',
               borderRadius: '12px',
@@ -1807,6 +1826,12 @@ export default function TrailsPage() {
             </div>
           )}
 
+          {/* Bearing is only controlled outside navigation (for the 3D tilt angle).
+              During navigation it's left out of props entirely — binding it to the
+              compass caused visible camera wobble from noisy orientation readings,
+              and controlling it to a fixed value would fight/undo manual
+              drag-to-rotate gestures. It's reset to north once on entry, in
+              enterNavigationMode. */}
           <div className="map-container">
             <Map
               ref={mapRef}
@@ -1830,7 +1855,7 @@ export default function TrailsPage() {
               }}
               onLoad={handleMapLoad}
               onStyleData={handleMapLoad}
-              bearing={navigationModeActive ? (nav.mapRotationDeg || 0) : (is3D ? -15 : 0)}
+              {...(navigationModeActive ? {} : { bearing: is3D ? -15 : 0 })}
               pitch={navigationModeActive ? 0 : (is3D ? 60 : 0)}
             >
               {plannerTab !== 'planNew' && !selectedCommunityRoute && selectedTrailPath.length > 1 && (
@@ -1918,7 +1943,9 @@ export default function TrailsPage() {
 
               {navigationModeActive && nav.userPosition && (
                 <Marker longitude={nav.userPosition[1]} latitude={nav.userPosition[0]} anchor="center">
-                  <div style={{ transform: `rotate(${(nav.userHeadingDeg ?? 0) - (nav.mapRotationDeg ?? 0)}deg)` }}>
+                  {/* Map bearing is no longer slaved to the compass (see enterNavigationMode),
+                      so the arrow's rotation is just the rider's absolute heading. */}
+                  <div style={{ transform: `rotate(${nav.userHeadingDeg ?? 0}deg)` }}>
                     <div style={{ width: 0, height: 0, borderLeft: '9px solid transparent', borderRight: '9px solid transparent', borderBottom: '20px solid #0ea5e9', filter: 'drop-shadow(0 2px 3px rgba(2,6,23,0.5))' }} />
                   </div>
                 </Marker>
