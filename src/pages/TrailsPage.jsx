@@ -15,6 +15,7 @@ import finalPlacesData from '../final_places.json'
 import { haversineDistanceKm } from '../utils/geo'
 import useNavigationMode from '../hooks/useNavigationMode'
 import NavigationHud from '../components/NavigationHud'
+import RideSummaryModal from '../components/RideSummaryModal'
 
 // User-friendly labels and icons for POI categories
 const POI_METADATA = {
@@ -230,6 +231,60 @@ function timeAgo(iso) {
   return `${Math.floor(diff / 86400)} days ago`
 }
 
+const MOVING_SPEED_THRESHOLD_KMH = 0.5
+
+// Recorded track points only carry lat/lng/altitude/timestamp (no raw GPS
+// speed), so per-interval speed for the moving-time check is derived from
+// consecutive-point distance/time deltas rather than coords.speed.
+function computeRideStats(trackPoints, startTime) {
+  const elapsedTime = startTime ? Math.round((Date.now() - startTime) / 1000) : 0
+
+  let totalDistance = 0
+  let elevationGain = 0
+  let movingTimeSec = 0
+  let maxElevation = trackPoints.length > 0 && Number.isFinite(trackPoints[0].altitude) ? trackPoints[0].altitude : 0
+  const elevationProfile = []
+
+  trackPoints.forEach((point, index) => {
+    const altitude = Number.isFinite(point.altitude) ? point.altitude : 0
+    maxElevation = Math.max(maxElevation, altitude)
+
+    if (index > 0) {
+      const prev = trackPoints[index - 1]
+      const segmentKm = haversineDistanceKm([prev.lat, prev.lng], [point.lat, point.lng])
+      totalDistance += segmentKm
+
+      const prevAltitude = Number.isFinite(prev.altitude) ? prev.altitude : 0
+      const deltaAltitude = altitude - prevAltitude
+      if (deltaAltitude > 0) elevationGain += deltaAltitude
+
+      const deltaSeconds = (point.timestamp - prev.timestamp) / 1000
+      if (deltaSeconds > 0) {
+        const speedKmh = segmentKm / (deltaSeconds / 3600)
+        if (speedKmh > MOVING_SPEED_THRESHOLD_KMH) {
+          movingTimeSec += deltaSeconds
+        }
+      }
+    }
+
+    elevationProfile.push({
+      distance: Number(totalDistance.toFixed(2)),
+      elevation: Math.round(altitude),
+      lat: point.lat,
+      lng: point.lng,
+    })
+  })
+
+  return {
+    totalDistance,
+    elapsedTime,
+    movingTime: Math.round(movingTimeSec),
+    elevationGain,
+    maxElevation,
+    elevationProfile,
+  }
+}
+
 function RouteElevationChart({ data, chartColor, onHover }) {
   if (!Array.isArray(data) || data.length === 0) return null
 
@@ -357,6 +412,12 @@ export default function TrailsPage() {
   const [selectedPoiId, setSelectedPoiId] = useState(null)
   const [gpsPosition, setGpsPosition] = useState(null)
   const [gpsTrackPoints, setGpsTrackPoints] = useState([])
+
+  // Ride recording / post-ride summary
+  const [rideStartTime, setRideStartTime] = useState(null)
+  const [rideMovingTime, setRideMovingTime] = useState(0)
+  const [showRideSummary, setShowRideSummary] = useState(false)
+  const [completedRideStats, setCompletedRideStats] = useState(null)
 
   const normalizedPois = useMemo(() => {
     const rawItems = Array.isArray(finalPlacesData)
@@ -572,19 +633,30 @@ export default function TrailsPage() {
     }
   }, [])
 
+  // Mirrors gpsPosition into a ref so the recording interval below can read the
+  // latest fix without depending on gpsPosition directly — depending on it
+  // would recreate the interval (and reset its 3s timer) on every GPS update,
+  // which arrive more often than 3s in practice, so the interval would almost
+  // never survive long enough to fire.
+  const gpsPositionRef = useRef(null)
+  useEffect(() => {
+    gpsPositionRef.current = gpsPosition
+  }, [gpsPosition])
+
   useEffect(() => {
     if (!activeRecording) return undefined
 
     const interval = window.setInterval(() => {
       setGpsTrackPoints((prev) => {
-        if (!gpsPosition) return prev
+        const position = gpsPositionRef.current
+        if (!position) return prev
         return [
           ...prev,
           {
-            lat: gpsPosition.lat,
-            lng: gpsPosition.lng,
-            altitude: gpsPosition.altitude,
-            timestamp: gpsPosition.timestamp,
+            lat: position.lat,
+            lng: position.lng,
+            altitude: position.altitude,
+            timestamp: position.timestamp,
           },
         ]
       })
@@ -593,7 +665,7 @@ export default function TrailsPage() {
     return () => {
       clearInterval(interval)
     }
-  }, [activeRecording, gpsPosition])
+  }, [activeRecording])
 
   useEffect(() => {
     if (!selectedTrail) return
@@ -1371,15 +1443,34 @@ const getBrouterProfile = useCallback(() => {
     // rest of the session (see the <Map> bearing prop below) so manual
     // drag/pinch rotation works normally instead of snapping back every frame.
     getMapInstance()?.easeTo({ bearing: 0, duration: 400 })
+
+    // Auto-start ride recording for the duration of the navigation session.
+    setActiveRecording(true)
+    setGpsTrackPoints([])
+    setRideStartTime(Date.now())
   }, [nav, getMapInstance])
 
   const exitNavigationMode = useCallback(() => {
+    setActiveRecording(false)
+
+    if (rideStartTime && gpsTrackPoints.length > 1) {
+      const stats = computeRideStats(gpsTrackPoints, rideStartTime)
+      setCompletedRideStats({
+        ...stats,
+        trackPoints: gpsTrackPoints,
+        navigationSource: activeNavigationPath?.source,
+        navigationName: activeNavigationPath?.name,
+        trailFilename: activeNavigationPath?.source === 'gpx' ? selectedTrail : null,
+      })
+      setShowRideSummary(true)
+    }
+
     nav.stop()
     setNavigationModeActive(false)
     setActiveNavigationPath(null)
     setPendingNavTarget(null)
     setAutoFollowPaused(false)
-  }, [nav])
+  }, [nav, rideStartTime, gpsTrackPoints, activeNavigationPath, selectedTrail])
 
   // Detects genuine user gestures (drag/pinch) vs our own programmatic camera
   // moves — MapLibre only sets `originalEvent` for the former — and pauses
@@ -1399,6 +1490,64 @@ const getBrouterProfile = useCallback(() => {
       map.panTo([lng, lat], { duration: 500 })
     }
   }, [getMapInstance, nav.userPosition])
+
+  const resetCompletedRideState = useCallback(() => {
+    setShowRideSummary(false)
+    setCompletedRideStats(null)
+    setGpsTrackPoints([])
+    setRideStartTime(null)
+  }, [])
+
+  const handleSaveCompletedRide = useCallback(async ({ rating, review, photoUrls }) => {
+    const stats = completedRideStats
+    if (!stats) return
+
+    try {
+      if (stats.trailFilename) {
+        const routeId = selectedTrailCommunityData?.routeId
+
+        if (routeId) {
+          if (rating) {
+            await supabase.from('route_reviews').insert([
+              { route_id: routeId, rating, comment: review || null },
+            ])
+          }
+
+          await supabase.from('completed_rides').insert([
+            {
+              route_id: routeId,
+              distance_km: Number(stats.totalDistance.toFixed(2)),
+              duration_sec: stats.movingTime,
+              elevation_gain: Math.round(stats.elevationGain),
+              track_points: stats.trackPoints,
+            },
+          ])
+
+          if (photoUrls && photoUrls.length > 0) {
+            await supabase.from('ride_photos').insert([
+              { route_id: routeId, photo_urls: photoUrls, created_at: new Date().toISOString() },
+            ])
+          }
+        }
+
+        alert('Experience saved to this trail! 🎉')
+      } else {
+        await supabase.from('user_routes').insert([
+          {
+            name: stats.navigationName || `My Ride ${new Date().toLocaleDateString()}`,
+            coordinates: stats.trackPoints.map((point) => ({ lat: point.lat, lng: point.lng })),
+            distance_km: Number(stats.totalDistance.toFixed(2)),
+          },
+        ])
+
+        alert('Ride saved! 🎉')
+      }
+    } catch (err) {
+      alert('Could not save ride: ' + err.message)
+    }
+
+    resetCompletedRideState()
+  }, [completedRideStats, selectedTrailCommunityData, resetCompletedRideState])
 
   const handleNavigateClick = useCallback((payload, source) => {
     if (source === 'gpx') {
@@ -2186,6 +2335,15 @@ const getBrouterProfile = useCallback(() => {
           planNewContent={planNewContent}
           collapseRequestToken={collapseRequestToken}
         />
+
+        {showRideSummary && completedRideStats && (
+          <RideSummaryModal
+            isOpen={showRideSummary}
+            stats={completedRideStats}
+            onSave={handleSaveCompletedRide}
+            onDiscard={resetCompletedRideState}
+          />
+        )}
       </div>
     </div>
   )
