@@ -1159,11 +1159,11 @@ const getBrouterProfile = useCallback(() => {
   }
 
   if (roadPreference === 'mixed') {
-    return 'cycling-safety'
+    return 'safety'
   }
 
   if (roadPreference === 'bike_tracks') {
-    return 'cycling'
+    return 'fastbike'
   }
 
   if (roadPreference === 'gravel' && !avoidHikingTrails) {
@@ -1206,7 +1206,25 @@ const getBrouterProfile = useCallback(() => {
           throw new Error('No valid route returned')
         }
 
-        geometry = routeGeometryCoords.map((point) => [point[1], point[0]])
+        // Detect straight-line fallback (only 2 points = start and end = no routing happened)
+        if (routeGeometryCoords.length === 2) {
+          console.warn('BRouter returned only 2 points - profile may not be supported, falling back to gravel')
+          const fallbackResponse = await fetch(
+            `https://brouter.de/brouter?lonlats=${encodeURIComponent(coordinatesJoined)}&profile=gravel&alternativeidx=0&format=geojson`
+          )
+          if (fallbackResponse.ok) {
+            const fallbackData = await fallbackResponse.json()
+            const fallbackFeature = Array.isArray(fallbackData?.features) ? fallbackData.features[0] : fallbackData
+            const fallbackCoords = fallbackFeature?.geometry?.coordinates || []
+            if (fallbackCoords.length > 2) {
+              geometry = fallbackCoords.map((point) => [point[1], point[0]])
+            }
+          } else {
+            geometry = routeGeometryCoords.map((point) => [point[1], point[0]])
+          }
+        } else {
+          geometry = routeGeometryCoords.map((point) => [point[1], point[0]])
+        }
 
         const propertyDistanceKm = Number(
           routeProperties.distance_km ??
