@@ -73,6 +73,13 @@ function RideElevationChart({ data }) {
 }
 
 export default function RideSummaryModal({ stats, onSave, onDiscard, isOpen }) {
+  // 'Custom Route' is a placeholder name assigned when a planned/waypoint
+  // route enters navigation — not something worth pre-filling here, since
+  // saving with that literal name is exactly the bug this input exists to fix.
+  const [rideName, setRideName] = useState(() => {
+    if (!stats?.navigationName || stats.navigationName === 'Custom Route') return ''
+    return stats.navigationName
+  })
   const [rating, setRating] = useState(0)
   const [review, setReview] = useState('')
   const [photos, setPhotos] = useState([])
@@ -116,7 +123,7 @@ export default function RideSummaryModal({ stats, onSave, onDiscard, isOpen }) {
         if (data?.publicUrl) photoUrls.push(data.publicUrl)
       }
 
-      await onSave({ rating, review, photoUrls })
+      await onSave({ rating, review, photoUrls, name: rideName })
     } catch (err) {
       setUploadError('Could not save ride: ' + err.message)
       setSaving(false)
@@ -155,6 +162,31 @@ export default function RideSummaryModal({ stats, onSave, onDiscard, isOpen }) {
             {stats.totalDistance.toFixed(1)} km
           </div>
         </div>
+
+        {!stats.trailFilename && (
+          <div style={{ marginBottom: '16px' }}>
+            <span style={{ fontSize: '0.75rem', color: '#b794f4', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+              Ride Name
+            </span>
+            <input
+              type="text"
+              value={rideName}
+              onChange={(e) => setRideName(e.target.value)}
+              placeholder={`My Ride ${new Date().toLocaleDateString()}`}
+              style={{
+                width: '100%',
+                boxSizing: 'border-box',
+                marginTop: '6px',
+                borderRadius: '10px',
+                border: '1px solid rgba(255,255,255,0.15)',
+                background: 'rgba(255,255,255,0.06)',
+                color: '#ffffff',
+                padding: '10px 12px',
+                fontSize: '0.9rem',
+              }}
+            />
+          </div>
+        )}
 
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
           <StatTile label="Elapsed Time" value={formatDuration(stats.elapsedTime)} />

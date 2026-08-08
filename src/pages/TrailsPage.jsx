@@ -736,16 +736,6 @@ export default function TrailsPage() {
     }
   }
 
-  const handleStartRecording = useCallback(() => {
-    setActiveRecording((prev) => {
-      const next = !prev
-      if (next) {
-        setGpsTrackPoints([])
-      }
-      return next
-    })
-  }, [])
-
   const handleLocateMe = useCallback(() => {
     if (!navigator.geolocation) {
       alert('Geolocation is not supported by your browser.')
@@ -1411,7 +1401,17 @@ const getBrouterProfile = useCallback(() => {
       : []
     setSelectedCommunityRoute(route)
     setCommunityRoutePositions(positions)
-  }, [])
+    // This is only reachable from the User Routes tab's "Show on Map"/"Navigate"
+    // actions, so make sure that tab is what's showing (and stays showing) —
+    // and actually move the camera, otherwise "Show on Map" looks like a no-op
+    // unless the route happens to already be in view.
+    setPlannerTab('userRoutes')
+
+    const bounds = computeBoundsFromLatLngs(positions)
+    if (bounds) {
+      getMapInstance()?.fitBounds(bounds, { padding: 50, duration: 1200 })
+    }
+  }, [getMapInstance])
 
   const handleStatsUpdate = useCallback((filename, stats) => {
     setTrailStats((prev) => ({ ...prev, [filename]: stats }))
@@ -1498,7 +1498,7 @@ const getBrouterProfile = useCallback(() => {
     setRideStartTime(null)
   }, [])
 
-  const handleSaveCompletedRide = useCallback(async ({ rating, review, photoUrls }) => {
+  const handleSaveCompletedRide = useCallback(async ({ rating, review, photoUrls, name }) => {
     const stats = completedRideStats
     if (!stats) return
 
@@ -1532,13 +1532,32 @@ const getBrouterProfile = useCallback(() => {
 
         alert('Experience saved to this trail! 🎉')
       } else {
-        await supabase.from('user_routes').insert([
-          {
-            name: stats.navigationName || `My Ride ${new Date().toLocaleDateString()}`,
-            coordinates: stats.trackPoints.map((point) => ({ lat: point.lat, lng: point.lng })),
-            distance_km: Number(stats.totalDistance.toFixed(2)),
-          },
-        ])
+        // "Custom Route" is the placeholder name assigned when a planned route
+        // enters navigation — not worth falling back to; prefer whatever the
+        // rider typed in the modal, then a real navigationName, then a dated default.
+        const trimmedName = name && name.trim()
+        const fallbackName = stats.navigationName && stats.navigationName !== 'Custom Route' ? stats.navigationName : null
+        const routeName = trimmedName || fallbackName || `My Ride ${new Date().toLocaleDateString()}`
+
+        const { data: insertedRoute, error: insertError } = await supabase
+          .from('user_routes')
+          .insert([
+            {
+              name: routeName,
+              coordinates: stats.trackPoints.map((point) => ({ lat: point.lat, lng: point.lng })),
+              distance_km: Number(stats.totalDistance.toFixed(2)),
+            },
+          ])
+          .select('id')
+          .single()
+
+        if (insertError) throw insertError
+
+        if (rating && insertedRoute?.id) {
+          await supabase.from('route_reviews').insert([
+            { route_id: insertedRoute.id, rating, comment: review || null },
+          ])
+        }
 
         alert('Ride saved! 🎉')
       }
@@ -1578,6 +1597,44 @@ const getBrouterProfile = useCallback(() => {
       enterNavigationMode(payload)
     }
   }, [enterNavigationMode, handleCommunityRouteSelect, trailStats])
+
+  // Single entry point for the floating deck's Start Ride button. If a trail
+  // is currently selected (GPX, a shown user route, or a planned/waypoint
+  // route), starts turn-by-turn navigation for it — which auto-starts
+  // recording too (see enterNavigationMode). Otherwise starts a plain GPS
+  // recording with no route/turn-by-turn guidance.
+  const handleStartRide = useCallback(() => {
+    if (selectedTrail) {
+      const trail = trails.find((item) => item.filename === selectedTrail)
+      if (trail) {
+        handleNavigateClick(trail, 'gpx')
+        return
+      }
+    }
+
+    if (plannerTab === 'planNew' && routePlannerStats?.geometry?.length >= 2) {
+      handleNavigateClick({ source: 'planned', name: 'Custom Route', points: routePlannerStats.geometry }, 'planned')
+      return
+    }
+
+    if (selectedCommunityRoute) {
+      handleNavigateClick(selectedCommunityRoute, 'community')
+      return
+    }
+
+    // No route context — just record GPS without turn-by-turn navigation.
+    setActiveRecording(true)
+    setGpsTrackPoints([])
+    setRideStartTime(Date.now())
+  }, [selectedTrail, trails, plannerTab, routePlannerStats, selectedCommunityRoute, handleNavigateClick])
+
+  const handleStartRideButtonClick = useCallback(() => {
+    if (activeRecording) {
+      exitNavigationMode()
+      return
+    }
+    handleStartRide()
+  }, [activeRecording, exitNavigationMode, handleStartRide])
 
   // GPX trails' full-resolution path only becomes available once GpxTrails
   // finishes loading the file. If Navigate was clicked on a trail that
@@ -1829,7 +1886,8 @@ const getBrouterProfile = useCallback(() => {
         <div className="map-wrapper" style={{ position: 'relative', overflow: navigationModeActive ? 'hidden' : 'visible' }}>
 
           {/* FLOATING CONTROL DECK - stays visible during navigation so the rider can
-              still change layers, drop into 3D, or reach Stop Navigation. */}
+              still change layers, drop into 3D, or reach Stop & Save (the unified
+              Start Ride / Stop & Save button doubles as the old Stop Navigation button). */}
           <div className="map-floating-actions" style={{
             position: 'absolute',
             top: '75px',
@@ -1840,18 +1898,6 @@ const getBrouterProfile = useCallback(() => {
             gap: '12px',
             alignItems: 'center'
           }}>
-            {navigationModeActive && (
-              <button
-                onClick={exitNavigationMode}
-                title="Stop Navigation"
-                style={iconButtonStyle}
-              >
-                <svg width="18" height="18" viewBox="0 0 18 18">
-                  <rect x="0" y="0" width="18" height="18" rx="3" fill="#ffffff" />
-                </svg>
-              </button>
-            )}
-
             {navigationModeActive && autoFollowPaused && (
               <button
                 onClick={handleRecenter}
@@ -1893,14 +1939,15 @@ const getBrouterProfile = useCallback(() => {
             </button>
 
             <button
-              onClick={handleStartRecording}
-              title={activeRecording ? 'Stop Recording' : 'Start Recording'}
+              onClick={handleStartRideButtonClick}
+              title={activeRecording ? 'Stop & Save' : 'Start Ride'}
               style={{
                 ...iconButtonStyle,
                 background: activeRecording ? '#ef6c00' : '#370063',
+                fontSize: '1.1rem',
               }}
             >
-              <img src={activeRecording ? '/stop-record.svg' : '/record.svg'} alt="" style={{ width: '22px', height: '22px' }} />
+              {activeRecording ? '⏹' : '▶️'}
             </button>
 
             <button
@@ -2074,7 +2121,7 @@ const getBrouterProfile = useCallback(() => {
                 </Source>
               )}
 
-              {plannerTab === 'routes' && selectedCommunityRoute && communityRoutePositions.length > 0 && (
+              {plannerTab !== 'planNew' && selectedCommunityRoute && communityRoutePositions.length > 0 && (
                 <Source id="community-route" type="geojson" data={toLineFeature(communityRoutePositions)}>
                   <Layer id="community-route-line" {...LINE_LAYER_BASE} paint={{ ...LINE_LAYER_BASE.paint, 'line-color': '#a78bfa' }} />
                 </Source>

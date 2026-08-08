@@ -166,6 +166,15 @@ function BottomSheet({
     setCurrentHeight(snapPositions.HALF)
   }
 
+  // Same clear-selection call as handleBackToList, but stays on the User
+  // Routes tab instead of jumping to the GPX Routes tab.
+  const handleBackToUserRoutesList = () => {
+    onBackToRoutes?.()
+    setActiveTab('userRoutes')
+    setSnapKey('HALF')
+    setCurrentHeight(snapPositions.HALF)
+  }
+
   const handleChartMouseMove = (state) => {
     if (state && state.activeTooltipIndex != null && stats?.elevationData) {
       const index = parseInt(state.activeTooltipIndex, 10)
@@ -435,16 +444,23 @@ function BottomSheet({
     switch (activeTab) {
       case 'routes':
         return selectedTrail && currentTrail ? renderTrailDetails() : renderRoutesList()
-     case 'userRoutes':
-  return (
-    <UserRoutesList
-      activeTab={activeTab}
-      onRouteSelect={onRouteSelect}
-      onNavigateClick={(route) => onNavigateClick?.(route, 'community')}
-      selectedRouteId={selectedRouteId}
-        refreshKey={routeFeedbackRefreshKey}
-    />
-  )
+      case 'userRoutes':
+        return (
+          <div className="bottom-sheet-user-routes">
+            {selectedRouteId && (
+              <button type="button" className="trail-back-button" onClick={handleBackToUserRoutesList}>
+                ← Back to Routes
+              </button>
+            )}
+            <UserRoutesList
+              activeTab={activeTab}
+              onRouteSelect={onRouteSelect}
+              onNavigateClick={(route) => onNavigateClick?.(route, 'community')}
+              selectedRouteId={selectedRouteId}
+              refreshKey={routeFeedbackRefreshKey}
+            />
+          </div>
+        )
       case 'planNew':
         return planNewContent || (
           <div className="bottom-sheet-placeholder">
