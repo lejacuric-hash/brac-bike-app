@@ -1500,6 +1500,8 @@ const getBrouterProfile = useCallback(() => {
 
   const handleSaveCompletedRide = useCallback(async ({ rating, review, photoUrls, name }) => {
     const stats = completedRideStats
+    console.log('handleSaveCompletedRide called with:', { rating, review, photoUrls, name })
+    console.log('stats:', stats)
     if (!stats) return
 
     try {
@@ -1539,6 +1541,8 @@ const getBrouterProfile = useCallback(() => {
         const fallbackName = stats.navigationName && stats.navigationName !== 'Custom Route' ? stats.navigationName : null
         const routeName = trimmedName || fallbackName || `My Ride ${new Date().toLocaleDateString()}`
 
+        console.log('Inserting user route with name:', routeName)
+
         const { data: insertedRoute, error: insertError } = await supabase
           .from('user_routes')
           .insert([
@@ -1551,7 +1555,11 @@ const getBrouterProfile = useCallback(() => {
           .select('id')
           .single()
 
+        console.log('Inserted route result:', insertedRoute, 'error:', insertError)
+
         if (insertError) throw insertError
+
+        console.log('Attempting review insert, rating:', rating, 'insertedRoute?.id:', insertedRoute?.id)
 
         if (rating && insertedRoute?.id) {
           const { error: reviewError } = await supabase
@@ -1560,6 +1568,8 @@ const getBrouterProfile = useCallback(() => {
           if (reviewError) console.error('Review insert failed:', reviewError)
           else console.log('Review saved for route:', insertedRoute.id)
         }
+
+        console.log('Attempting photo insert, photoUrls:', photoUrls, 'insertedRoute?.id:', insertedRoute?.id)
 
         if (photoUrls && photoUrls.length > 0 && insertedRoute?.id) {
           const { error: photoError } = await supabase
