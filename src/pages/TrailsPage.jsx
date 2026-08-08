@@ -1553,13 +1553,19 @@ const getBrouterProfile = useCallback(() => {
 
         if (insertError) throw insertError
 
-        if (rating && insertedRoute?.id) {
-          await supabase.from('route_reviews').insert([
-            { route_id: insertedRoute.id, rating, comment: review || null },
-          ])
-        }
+       if (rating && insertedRoute?.id) {
+  await supabase.from('route_reviews').insert([
+    { route_id: insertedRoute.id, rating, comment: review || null },
+  ])
+}
 
-        alert('Ride saved! 🎉')
+if (photoUrls && photoUrls.length > 0 && insertedRoute?.id) {
+  await supabase.from('ride_photos').insert([
+    { route_id: insertedRoute.id, photo_urls: photoUrls },
+  ])
+}
+
+alert('Ride saved! 🎉')
       }
     } catch (err) {
       alert('Could not save ride: ' + err.message)
