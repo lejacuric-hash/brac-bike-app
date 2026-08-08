@@ -2006,7 +2006,11 @@ const getBrouterProfile = useCallback(() => {
                 cursor: mapDownload.status === 'downloading' ? 'default' : 'pointer',
               }}
             >
-              {mapDownload.status === 'complete' ? '✅' : '⬇️'}
+              <img
+                src="/offline.svg"
+                alt="Offline Map"
+                style={{ width: 26, height: 26, filter: 'brightness(0) invert(1)' }}
+              />
             </button>
 
             <button
@@ -2041,26 +2045,12 @@ const getBrouterProfile = useCallback(() => {
                 onTouchCancel={handleRideButtonTouchEnd}
                 title={activeRecording ? 'Stop & Save' : 'Start Ride'}
                 aria-label={activeRecording ? 'Stop & Save' : 'Start Ride'}
-                style={{
-                  width: '56px',
-                  height: '56px',
-                  borderRadius: '50%',
-                  border: 'none',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  background: activeRecording ? '#f97316' : '#753cae',
-                  boxShadow: '0 4px 20px rgba(117, 60, 174, 0.4)',
-                  position: 'relative',
-                  zIndex: 1200,
-                  transition: 'background-color 0.2s ease',
-                }}
+                style={{ ...iconButtonStyle, backgroundColor: activeRecording ? '#f97316' : '#370063' }}
               >
                 {activeRecording ? (
-                  <img src="/stop-icon.svg" alt="Stop Ride" style={{ width: 28, height: 28, filter: 'brightness(0) invert(1)' }} />
+                  <img src="/stop-icon.svg" alt="Stop Ride" style={{ width: 26, height: 26, filter: 'brightness(0) invert(1)' }} />
                 ) : (
-                  <img src="/start-icon.svg" alt="Start Ride" style={{ width: 28, height: 28, filter: 'brightness(0) invert(1)' }} />
+                  <img src="/start-icon.svg" alt="Start Ride" style={{ width: 26, height: 26, filter: 'brightness(0) invert(1)' }} />
                 )}
               </button>
 
@@ -2096,20 +2086,9 @@ const getBrouterProfile = useCallback(() => {
             <button
               onClick={handleReportProblem}
               title="Report a Problem"
-              style={{
-                width: '56px',
-                height: '56px',
-                borderRadius: '50%',
-                border: 'none',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                background: '#753cae',
-                boxShadow: '0 4px 20px rgba(117, 60, 174, 0.4)',
-              }}
+              style={iconButtonStyle}
             >
-              <img src="/report-problem.svg" alt="" style={{ width: '28px', height: '28px' }} />
+              <img src="/report-problem.svg" alt="" style={{ width: '22px', height: '22px' }} />
             </button>
           </div>
 
