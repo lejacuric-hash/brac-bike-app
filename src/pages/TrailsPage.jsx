@@ -1553,23 +1553,23 @@ const getBrouterProfile = useCallback(() => {
 
         if (insertError) throw insertError
 
-       if (rating && insertedRoute?.id) {
-  const { error: reviewError } = await supabase
-    .from('route_reviews')
-    .insert([{ route_id: insertedRoute.id, rating, comment: review || null }])
-  if (reviewError) console.error('Review insert failed:', reviewError)
-  else console.log('Review saved for route:', insertedRoute.id)
-}
+        if (rating && insertedRoute?.id) {
+          const { error: reviewError } = await supabase
+            .from('route_reviews')
+            .insert([{ route_id: insertedRoute.id, rating, comment: review || null }])
+          if (reviewError) console.error('Review insert failed:', reviewError)
+          else console.log('Review saved for route:', insertedRoute.id)
+        }
 
-if (photoUrls && photoUrls.length > 0 && insertedRoute?.id) {
-  const { error: photoError } = await supabase
-    .from('ride_photos')
-    .insert([{ route_id: insertedRoute.id, photo_urls: photoUrls }])
-  if (photoError) console.error('Photo insert failed:', photoError)
-  else console.log('Photos saved:', photoUrls)
-}
+        if (photoUrls && photoUrls.length > 0 && insertedRoute?.id) {
+          const { error: photoError } = await supabase
+            .from('ride_photos')
+            .insert([{ route_id: insertedRoute.id, photo_urls: photoUrls }])
+          if (photoError) console.error('Photo insert failed:', photoError)
+          else console.log('Photos saved:', photoUrls)
+        }
 
-alert('Ride saved! 🎉')
+        alert('Ride saved! 🎉')
       }
     } catch (err) {
       alert('Could not save ride: ' + err.message)
