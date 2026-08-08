@@ -1,7 +1,11 @@
-import React, { useRef, useState, useCallback, useMemo } from 'react'
+import React, { useRef, useState, useCallback, useMemo, useEffect } from 'react'
 import PropTypes from 'prop-types'
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
 import UserRoutesList from './UserRoutesList'
+import ReviewsSection from './ReviewsSection'
+import PhotoGallery from './PhotoGallery'
+import PhotoFullscreenOverlay from './PhotoFullscreenOverlay'
+import { supabase } from '../supabaseClient'
 import './BottomSheet.css'
 
 const difficultyColors = {
@@ -84,8 +88,42 @@ function BottomSheet({
   const [dragStart, setDragStart] = useState(0)
   const [dragStartHeight, setDragStartHeight] = useState(snapPositions.COLLAPSED)
   const [filter, setFilter] = useState('all')
+  const [communityPhotos, setCommunityPhotos] = useState([])
+  const [fullscreenPhoto, setFullscreenPhoto] = useState(null)
   const sheetRef = useRef(null)
   const dragHandleRef = useRef(null)
+
+  // Reviews for a GPX trail already arrive via trailCommunityData (fetched
+  // once in TrailsPage), but photos don't — fetch those here, scoped to the
+  // same shared_routes id.
+  const communityRouteId = trailCommunityData?.routeId
+  useEffect(() => {
+    if (!communityRouteId) {
+      setCommunityPhotos([])
+      return undefined
+    }
+
+    let cancelled = false
+
+    const fetchPhotos = async () => {
+      const { data, error } = await supabase
+        .from('ride_photos')
+        .select('*')
+        .eq('route_id', communityRouteId)
+
+      if (cancelled) return
+      if (error) {
+        setCommunityPhotos([])
+        return
+      }
+      setCommunityPhotos((data || []).flatMap((row) => (Array.isArray(row.photo_urls) ? row.photo_urls : [])))
+    }
+
+    fetchPhotos()
+    return () => {
+      cancelled = true
+    }
+  }, [communityRouteId])
 
   const filteredTrails = useMemo(() => {
     if (filter === 'all') {
@@ -162,15 +200,6 @@ function BottomSheet({
   const handleBackToList = () => {
     onBackToRoutes?.()
     setActiveTab('routes')
-    setSnapKey('HALF')
-    setCurrentHeight(snapPositions.HALF)
-  }
-
-  // Same clear-selection call as handleBackToList, but stays on the User
-  // Routes tab instead of jumping to the GPX Routes tab.
-  const handleBackToUserRoutesList = () => {
-    onBackToRoutes?.()
-    setActiveTab('userRoutes')
     setSnapKey('HALF')
     setCurrentHeight(snapPositions.HALF)
   }
@@ -395,47 +424,26 @@ function BottomSheet({
         )}
 
         <div className="elevation-chart-container" style={{ marginTop: '10px' }}>
-          <h4>Community Feedback</h4>
           {trailCommunityData?.loading ? (
-            <p className="trail-description">Syncing route and loading reviews...</p>
+            <>
+              <h4>Community Feedback</h4>
+              <p className="trail-description">Syncing route and loading reviews...</p>
+            </>
           ) : (
             <>
               {trailCommunityData?.error && (
                 <p className="trail-description" style={{ color: '#fca5a5' }}>{trailCommunityData.error}</p>
               )}
               <p className="trail-description" style={{ marginBottom: '6px' }}>
-                {trailCommunityData?.averageRating != null
-                  ? `⭐ ${trailCommunityData.averageRating.toFixed(1)} / 5`
-                  : '⭐ No ratings yet'}
-                {' · '}
-                {trailCommunityData?.completionCount || 0} completions
+                {trailCommunityData?.completionCount || 0} completion{trailCommunityData?.completionCount === 1 ? '' : 's'}
               </p>
-              {trailCommunityData?.reviews?.length > 0 ? (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                  {trailCommunityData.reviews.slice(0, 5).map((review) => (
-                    <div
-                      key={review.id}
-                      style={{
-                        backgroundColor: '#11203b',
-                        border: '1px solid #1e3a5f',
-                        borderRadius: '8px',
-                        padding: '8px',
-                        fontSize: '0.82rem',
-                      }}
-                    >
-                      <div style={{ color: '#facc15', marginBottom: '4px' }}>
-                        {'★'.repeat(Math.max(0, Number(review.rating) || 0))}
-                      </div>
-                      <div style={{ color: '#e2e8f0' }}>{review.comment || 'No comment'}</div>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <p className="trail-description">No public reviews yet.</p>
-              )}
+              <ReviewsSection reviews={trailCommunityData?.reviews || []} title="Reviews" />
+              <PhotoGallery photos={communityPhotos} onPhotoClick={setFullscreenPhoto} title="Community Photos" />
             </>
           )}
         </div>
+
+        <PhotoFullscreenOverlay photoUrl={fullscreenPhoto} onClose={() => setFullscreenPhoto(null)} />
       </div>
     )
   }
@@ -446,20 +454,13 @@ function BottomSheet({
         return selectedTrail && currentTrail ? renderTrailDetails() : renderRoutesList()
       case 'userRoutes':
         return (
-          <div className="bottom-sheet-user-routes">
-            {selectedRouteId && (
-              <button type="button" className="trail-back-button" onClick={handleBackToUserRoutesList}>
-                ← Back to Routes
-              </button>
-            )}
-            <UserRoutesList
-              activeTab={activeTab}
-              onRouteSelect={onRouteSelect}
-              onNavigateClick={(route) => onNavigateClick?.(route, 'community')}
-              selectedRouteId={selectedRouteId}
-              refreshKey={routeFeedbackRefreshKey}
-            />
-          </div>
+          <UserRoutesList
+            activeTab={activeTab}
+            onRouteSelect={onRouteSelect}
+            onNavigateClick={(route) => onNavigateClick?.(route, 'community')}
+            selectedRouteId={selectedRouteId}
+            refreshKey={routeFeedbackRefreshKey}
+          />
         )
       case 'planNew':
         return planNewContent || (

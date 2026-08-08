@@ -380,6 +380,7 @@ export default function TrailsPage() {
   const [mapStyle, setMapStyle] = useState('maptiler')
   const [is3D, setIs3D] = useState(false)
   const [showLayerMenu, setShowLayerMenu] = useState(false)
+  const [mapDownload, setMapDownload] = useState({ status: 'idle', downloaded: 0, failed: 0, total: 0 })
 
   // POI & Pill States
   const [showPoiMenu, setShowPoiMenu] = useState(false)
@@ -522,6 +523,53 @@ export default function TrailsPage() {
   const handleToggleLayerMenu = useCallback(() => {
     setShowLayerMenu((prev) => !prev)
     setShowPoiMenu(false)
+  }, [])
+
+  // Listens for progress/completion messages the service worker posts back
+  // while it's pre-fetching offline map tiles (see handleDownloadMap below).
+  useEffect(() => {
+    if (!('serviceWorker' in navigator)) return undefined
+
+    const handleMessage = (event) => {
+      const { type } = event.data || {}
+      if (type === 'DOWNLOAD_PROGRESS') {
+        setMapDownload({ status: 'downloading', downloaded: event.data.downloaded, failed: event.data.failed, total: event.data.total })
+      } else if (type === 'DOWNLOAD_COMPLETE') {
+        setMapDownload({ status: 'complete', downloaded: event.data.downloaded, failed: event.data.failed, total: event.data.total })
+      } else if (type === 'DOWNLOAD_CANCELLED') {
+        setMapDownload({ status: 'idle', downloaded: 0, failed: 0, total: 0 })
+      } else if (type === 'DOWNLOAD_ERROR') {
+        setMapDownload({ status: 'error', downloaded: 0, failed: 0, total: 0, message: event.data.message })
+      }
+    }
+
+    navigator.serviceWorker.addEventListener('message', handleMessage)
+    return () => navigator.serviceWorker.removeEventListener('message', handleMessage)
+  }, [])
+
+  const handleDownloadMap = useCallback(async () => {
+    if (!('serviceWorker' in navigator)) {
+      alert('Offline maps are not supported in this browser.')
+      return
+    }
+
+    setMapDownload({ status: 'downloading', downloaded: 0, failed: 0, total: 0 })
+
+    // clients.claim() in the SW's activate handler means an existing tab can
+    // be taken over without a reload — but only after activation has run at
+    // least once, so the very first visit may still need a moment.
+    const registration = await navigator.serviceWorker.ready
+    const controller = navigator.serviceWorker.controller || registration.active
+    if (!controller) {
+      setMapDownload({ status: 'error', downloaded: 0, failed: 0, total: 0, message: 'Map download isn\'t ready yet — please try again in a moment.' })
+      return
+    }
+
+    controller.postMessage({ type: 'DOWNLOAD_BRAC_TILES', styleUrl: MAPTILER_STREET_STYLE_URL })
+  }, [])
+
+  const handleCancelDownloadMap = useCallback(() => {
+    navigator.serviceWorker?.controller?.postMessage({ type: 'CANCEL_DOWNLOAD' })
   }, [])
 
   const handleSelectBaseMap = useCallback((id) => {
@@ -780,6 +828,12 @@ export default function TrailsPage() {
   }, [])
 
   const handleTrailClick = useCallback((trail) => {
+    // Selecting a GPX trail should replace whatever was previously shown —
+    // otherwise a lingering selectedCommunityRoute (e.g. from viewing a user
+    // route and backing out without clearing it) silently blocks this GPX
+    // trail's stats from loading at all, via the guard in the effect below.
+    setSelectedCommunityRoute(null)
+    setCommunityRoutePositions([])
     setSelectedTrail(trail.filename)
   }, [])
 
@@ -1644,6 +1698,23 @@ const getBrouterProfile = useCallback(() => {
     handleStartRide()
   }, [activeRecording, exitNavigationMode, handleStartRide])
 
+  // Native `title` tooltips don't fire on touch devices, so the Start/Stop
+  // Ride button gets its own hover (desktop) + long-press (mobile) tooltip.
+  const [showRideTooltip, setShowRideTooltip] = useState(false)
+  const rideButtonLongPressTimerRef = useRef(null)
+
+  const handleRideButtonTouchStart = useCallback(() => {
+    rideButtonLongPressTimerRef.current = window.setTimeout(() => setShowRideTooltip(true), 500)
+  }, [])
+
+  const handleRideButtonTouchEnd = useCallback(() => {
+    if (rideButtonLongPressTimerRef.current != null) {
+      clearTimeout(rideButtonLongPressTimerRef.current)
+      rideButtonLongPressTimerRef.current = null
+    }
+    setShowRideTooltip(false)
+  }, [])
+
   // GPX trails' full-resolution path only becomes available once GpxTrails
   // finishes loading the file. If Navigate was clicked on a trail that
   // hasn't been shown/loaded yet, wait here until its rawPath appears.
@@ -1925,6 +1996,20 @@ const getBrouterProfile = useCallback(() => {
             </button>
 
             <button
+              onClick={handleDownloadMap}
+              title="Download Map for Offline Use"
+              disabled={mapDownload.status === 'downloading'}
+              style={{
+                ...iconButtonStyle,
+                backgroundColor: mapDownload.status === 'complete' ? '#16a34a' : '#370063',
+                fontSize: '1.2rem',
+                cursor: mapDownload.status === 'downloading' ? 'default' : 'pointer',
+              }}
+            >
+              {mapDownload.status === 'complete' ? '✅' : '⬇️'}
+            </button>
+
+            <button
               onClick={handleToggle3D}
               title={is3D ? 'Switch to 2D View' : 'Switch to 3D View'}
               style={{
@@ -1946,17 +2031,59 @@ const getBrouterProfile = useCallback(() => {
               <img src="/pin-poi.svg" alt="" style={{ width: '22px', height: '22px' }} />
             </button>
 
-            <button
-              onClick={handleStartRideButtonClick}
-              title={activeRecording ? 'Stop & Save' : 'Start Ride'}
-              style={{
-                ...iconButtonStyle,
-                background: activeRecording ? '#ef6c00' : '#370063',
-                fontSize: '1.1rem',
-              }}
-            >
-              {activeRecording ? '⏹' : '▶️'}
-            </button>
+            <div style={{ position: 'relative' }}>
+              <button
+                onClick={handleStartRideButtonClick}
+                onMouseEnter={() => setShowRideTooltip(true)}
+                onMouseLeave={() => setShowRideTooltip(false)}
+                onTouchStart={handleRideButtonTouchStart}
+                onTouchEnd={handleRideButtonTouchEnd}
+                onTouchCancel={handleRideButtonTouchEnd}
+                title={activeRecording ? 'Stop & Save' : 'Start Ride'}
+                aria-label={activeRecording ? 'Stop & Save' : 'Start Ride'}
+                style={{
+                  width: '56px',
+                  height: '56px',
+                  borderRadius: '50%',
+                  border: 'none',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  background: activeRecording ? '#f97316' : '#753cae',
+                  boxShadow: '0 4px 20px rgba(117, 60, 174, 0.4)',
+                  position: 'relative',
+                  zIndex: 1200,
+                  transition: 'background-color 0.2s ease',
+                }}
+              >
+                {activeRecording ? (
+                  <img src="/stop-icon.svg" alt="Stop Ride" style={{ width: 28, height: 28, filter: 'brightness(0) invert(1)' }} />
+                ) : (
+                  <img src="/start-icon.svg" alt="Start Ride" style={{ width: 28, height: 28, filter: 'brightness(0) invert(1)' }} />
+                )}
+              </button>
+
+              {showRideTooltip && (
+                <div style={{
+                  position: 'absolute',
+                  right: '64px',
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  background: '#1f0931',
+                  color: '#ffffff',
+                  padding: '6px 10px',
+                  borderRadius: '8px',
+                  fontSize: '0.8rem',
+                  fontWeight: 600,
+                  whiteSpace: 'nowrap',
+                  boxShadow: '0 4px 10px rgba(0,0,0,0.3)',
+                  pointerEvents: 'none',
+                }}>
+                  {activeRecording ? 'Stop & Save' : 'Start Ride'}
+                </div>
+              )}
+            </div>
 
             <button
               onClick={handleLocateMe}
@@ -1969,9 +2096,20 @@ const getBrouterProfile = useCallback(() => {
             <button
               onClick={handleReportProblem}
               title="Report a Problem"
-              style={iconButtonStyle}
+              style={{
+                width: '56px',
+                height: '56px',
+                borderRadius: '50%',
+                border: 'none',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                background: '#753cae',
+                boxShadow: '0 4px 20px rgba(117, 60, 174, 0.4)',
+              }}
             >
-              <img src="/report-problem.svg" alt="" style={{ width: '22px', height: '22px' }} />
+              <img src="/report-problem.svg" alt="" style={{ width: '28px', height: '28px' }} />
             </button>
           </div>
 
@@ -2014,6 +2152,91 @@ const getBrouterProfile = useCallback(() => {
                   {option.label}
                 </button>
               ))}
+            </div>
+          )}
+
+          {/* OFFLINE MAP DOWNLOAD PROGRESS */}
+          {mapDownload.status !== 'idle' && (
+            <div style={{
+              position: 'absolute',
+              top: '132px',
+              right: '72px',
+              zIndex: 1600,
+              backgroundColor: '#370063',
+              border: '1px solid rgba(255, 255, 255, 0.2)',
+              borderRadius: '12px',
+              padding: '12px 14px',
+              minWidth: '220px',
+              boxShadow: '0 4px 15px rgba(0,0,0,0.4)',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '8px',
+              color: '#ffffff',
+            }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span style={{ fontSize: '0.75rem', fontWeight: 'bold', color: '#b794f4', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                  Offline Map
+                </span>
+                {mapDownload.status !== 'downloading' && (
+                  <button
+                    type="button"
+                    onClick={() => setMapDownload({ status: 'idle', downloaded: 0, failed: 0, total: 0 })}
+                    style={{ background: 'transparent', border: 'none', color: '#b794f4', cursor: 'pointer', fontSize: '0.9rem', lineHeight: 1 }}
+                  >
+                    ✕
+                  </button>
+                )}
+              </div>
+
+              {mapDownload.status === 'downloading' && (
+                <>
+                  <div style={{ fontSize: '0.85rem' }}>
+                    {mapDownload.total > 0
+                      ? `Downloading ${mapDownload.downloaded + mapDownload.failed} / ${mapDownload.total} tiles...`
+                      : 'Preparing download...'}
+                    {mapDownload.failed > 0 && ` (${mapDownload.failed} failed)`}
+                  </div>
+                  <div style={{ height: '6px', borderRadius: '999px', background: 'rgba(255,255,255,0.15)', overflow: 'hidden' }}>
+                    <div
+                      style={{
+                        height: '100%',
+                        width: mapDownload.total > 0 ? `${((mapDownload.downloaded + mapDownload.failed) / mapDownload.total) * 100}%` : '4%',
+                        background: '#a78bfa',
+                        transition: 'width 0.2s ease',
+                      }}
+                    />
+                  </div>
+                  <button
+                    type="button"
+                    onClick={handleCancelDownloadMap}
+                    style={{
+                      alignSelf: 'flex-start',
+                      background: 'transparent',
+                      border: '1px solid rgba(255,255,255,0.3)',
+                      color: '#ffffff',
+                      borderRadius: '8px',
+                      padding: '4px 10px',
+                      fontSize: '0.8rem',
+                      cursor: 'pointer',
+                    }}
+                  >
+                    Cancel
+                  </button>
+                </>
+              )}
+
+              {mapDownload.status === 'complete' && (
+                <div style={{ fontSize: '0.85rem' }}>
+                  Brač map ready for offline use! {mapDownload.downloaded} tiles cached
+                  {mapDownload.failed > 0 ? `, ${mapDownload.failed} failed.` : '.'}
+                </div>
+              )}
+
+              {mapDownload.status === 'error' && (
+                <div style={{ fontSize: '0.85rem', color: '#fca5a5' }}>
+                  {mapDownload.message || 'Could not download the offline map.'}
+                </div>
+              )}
             </div>
           )}
 

@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { supabase } from '../supabaseClient'
+import UserRouteDetail from './UserRouteDetail'
 
 function timeAgo(dateString) {
   const now = new Date()
@@ -21,6 +22,12 @@ function UserRoutesList({ activeTab, onRouteSelect, onNavigateClick, selectedRou
   const [reviews, setReviews] = useState([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
+  const [selectedRoute, setSelectedRoute] = useState(null)
+
+  const handleShowOnMap = (route) => {
+    onRouteSelect(route)
+    setSelectedRoute(route)
+  }
 
   useEffect(() => {
     if (activeTab !== 'userRoutes') return
@@ -80,6 +87,10 @@ function UserRoutesList({ activeTab, onRouteSelect, onNavigateClick, selectedRou
     }, {})
   }, [reviews])
 
+  if (selectedRoute) {
+    return <UserRouteDetail route={selectedRoute} onBack={() => setSelectedRoute(null)} />
+  }
+
   if (loading) {
     return (
       <div className="user-routes-state">
@@ -138,7 +149,7 @@ function UserRoutesList({ activeTab, onRouteSelect, onNavigateClick, selectedRou
                 <button
                   className="show-button"
                   type="button"
-                  onClick={() => onRouteSelect(route)}
+                  onClick={() => handleShowOnMap(route)}
                 >
                   Show on Map
                 </button>
