@@ -386,6 +386,7 @@ export default function TrailsPage() {
   const [mapStyle, setMapStyle] = useState('maptiler')
   const [is3D, setIs3D] = useState(false)
   const [showLayerMenu, setShowLayerMenu] = useState(false)
+  const [mapBearing, setMapBearing] = useState(0)
   const [isOnline, setIsOnline] = useState(navigator.onLine)
   const [showOfflinePanel, setShowOfflinePanel] = useState(false)
 
@@ -425,6 +426,7 @@ export default function TrailsPage() {
   const nav = useNavigationMode()
 
   const mapRef = useRef(null)
+  const lastAppliedNavBearingRef = useRef(0)
   const reportProblemRef = useRef(null)
   const lastWaypointPlacementIndexRef = useRef(null)
   const longPressTimerRef = useRef(null)
@@ -1485,9 +1487,9 @@ const getBrouterProfile = useCallback(() => {
     setNavigationModeActive(true)
     setAutoFollowPaused(false)
     nav.start(pathEntry)
-    // One-time reset to north on entry — bearing is left uncontrolled for the
-    // rest of the session (see the <Map> bearing prop below) so manual
-    // drag/pinch rotation works normally instead of snapping back every frame.
+    // Reset to north on entry; the heading-follow effect above takes over
+    // from here once GPS/compass fixes start coming in.
+    lastAppliedNavBearingRef.current = 0
     getMapInstance()?.easeTo({ bearing: 0, duration: 400 })
 
     // Auto-start ride recording for the duration of the navigation session.
@@ -1495,6 +1497,24 @@ const getBrouterProfile = useCallback(() => {
     setGpsTrackPoints([])
     setRideStartTime(Date.now())
   }, [nav, getMapInstance])
+
+  // Rotates the camera to face the rider's direction of travel during
+  // navigation (or back to north if nav.isNorthUpLocked is toggled on).
+  // nav.mapRotationDeg is already exponentially smoothed in useNavigationMode,
+  // and rotateTo's own easing keeps each step gradual, which is what a
+  // previous attempt at this (a `bearing` prop bound straight to the raw
+  // compass reading) was missing — that one snapped instantly on every noisy
+  // orientation event and fought manual drag-rotate, so it was pulled back
+  // out. Skipping sub-1-degree deltas avoids queuing redundant animations
+  // when the heading is essentially holding steady.
+  useEffect(() => {
+    if (!navigationModeActive) return
+    const map = getMapInstance()
+    if (!map) return
+    if (Math.abs(nav.mapRotationDeg - lastAppliedNavBearingRef.current) < 1) return
+    lastAppliedNavBearingRef.current = nav.mapRotationDeg
+    map.rotateTo(nav.mapRotationDeg, { duration: 500 })
+  }, [navigationModeActive, nav.mapRotationDeg, getMapInstance])
 
   const exitNavigationMode = useCallback(() => {
     setActiveRecording(false)
@@ -1980,6 +2000,28 @@ const getBrouterProfile = useCallback(() => {
             gap: '12px',
             alignItems: 'center'
           }}>
+            {Math.abs(mapBearing) > 5 && (
+              <button
+                onClick={() => getMapInstance()?.rotateTo(0, { duration: 500 })}
+                title="Reset North"
+                style={iconButtonStyle}
+              >
+                <div
+                  style={{
+                    width: '22px',
+                    height: '22px',
+                    transform: `rotate(${-mapBearing}deg)`,
+                    transition: 'transform 0.2s ease',
+                    fontSize: '20px',
+                    lineHeight: '22px',
+                    color: '#ffffff',
+                  }}
+                >
+                  ↑
+                </div>
+              </button>
+            )}
+
             {navigationModeActive && autoFollowPaused && (
               <button
                 onClick={handleRecenter}
@@ -2281,20 +2323,25 @@ const getBrouterProfile = useCallback(() => {
             </div>
           )}
 
-          {/* Bearing is only controlled outside navigation (for the 3D tilt angle).
-              During navigation it's left out of props entirely — binding it to the
-              compass caused visible camera wobble from noisy orientation readings,
-              and controlling it to a fixed value would fight/undo manual
-              drag-to-rotate gestures. It's reset to north once on entry, in
-              enterNavigationMode. */}
+          {/* bearing is intentionally NOT a controlled prop: react-map-gl/MapLibre
+              re-applies a controlled bearing on every render, which was fighting
+              and undoing the user's own drag/pinch-rotate gestures (the map
+              looked "locked to north"). initialViewState seeds it once; after
+              that MapLibre owns it and gestures work normally. The 3D toggle and
+              nav-mode heading-follow (see the effect after enterNavigationMode)
+              both drive it imperatively via easeTo/rotateTo instead. */}
           <div className="map-container">
             <Map
               ref={mapRef}
               mapLib={maplibregl}
-              initialViewState={{ longitude: BRAC_CENTER.longitude, latitude: BRAC_CENTER.latitude, zoom: 11 }}
+              initialViewState={{ longitude: BRAC_CENTER.longitude, latitude: BRAC_CENTER.latitude, zoom: 11, bearing: 0 }}
               maxBounds={BRAC_BOUNDS}
               minZoom={BRAC_MIN_ZOOM}
               maxZoom={BRAC_MAX_ZOOM}
+              dragRotate={true}
+              touchZoomRotate={true}
+              touchPitch={true}
+              keyboard={true}
               style={{ width: '100%', height: '100%' }}
               mapStyle={resolvedMapStyle}
               onClick={handleMapClick}
@@ -2305,12 +2352,12 @@ const getBrouterProfile = useCallback(() => {
               onDragStart={handleUserMapInteractionStart}
               onMoveStart={handleUserMapInteractionStart}
               onZoomStart={handleUserMapInteractionStart}
+              onRotate={(event) => setMapBearing(event.viewState.bearing)}
               onError={(event) => {
                 console.error(`MapTiler failed to load a map resource (style: ${mapStyle}):`, event?.error || event)
               }}
               onLoad={handleMapLoad}
               onStyleData={handleMapLoad}
-              {...(navigationModeActive ? {} : { bearing: is3D ? -15 : 0 })}
               pitch={navigationModeActive ? 0 : (is3D ? 60 : 0)}
             >
               {plannerTab !== 'planNew' && !selectedCommunityRoute && selectedTrailPath.length > 1 && (
