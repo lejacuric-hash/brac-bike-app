@@ -204,6 +204,18 @@ function BottomSheet({
     setCurrentHeight(snapPositions.HALF)
   }
 
+  // GPX trail files already exist as static assets under /tracks/, so this
+  // just downloads the real file directly — no need to regenerate one from
+  // parsed track data the way the recorded/planned-route buttons do.
+  const handleDownloadTrailGpx = (trail) => {
+    const link = document.createElement('a')
+    link.href = `/tracks/${trail.filename}`
+    link.download = `${trail.name.replace(/[^a-z0-9]/gi, '_')}.gpx`
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+  }
+
   const handleChartMouseMove = (state) => {
     if (state && state.activeTooltipIndex != null && stats?.elevationData) {
       const index = parseInt(state.activeTooltipIndex, 10)
@@ -367,6 +379,15 @@ function BottomSheet({
             <span className="stat-value">{estimatedTime}</span>
           </div>
         </div>
+
+        <button
+          className="download-gpx-btn"
+          type="button"
+          onClick={() => handleDownloadTrailGpx(currentTrail)}
+          title="Download GPX file"
+        >
+          📥 Download GPX
+        </button>
 
         {currentTrail.roadType && currentTrail.roadType.length > 0 && (
           <div className="road-types">

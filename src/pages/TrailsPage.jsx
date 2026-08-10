@@ -13,6 +13,7 @@ import { supabase } from '../supabaseClient.js'
 // Import dynamic POIs
 import finalPlacesData from '../final_places.json'
 import { haversineDistanceKm } from '../utils/geo'
+import { generateGpx, downloadGpxFile } from '../utils/gpx'
 import useNavigationMode from '../hooks/useNavigationMode'
 import NavigationHud from '../components/NavigationHud'
 import RideSummaryModal from '../components/RideSummaryModal'
@@ -50,6 +51,11 @@ if (!import.meta.env.VITE_MAPTILER_API_KEY && !import.meta.env.VITE_MAPTILER_KEY
 const MAPTILER_STYLE_ID = '019fd2b1-1969-70ee-bdd2-bceb14957863'
 const MAPTILER_STREET_STYLE_URL = `https://api.maptiler.com/maps/${MAPTILER_STYLE_ID}/style.json?key=${MAPTILER_API_KEY}`
 const MAPTILER_SATELLITE_STYLE_URL = `https://api.maptiler.com/maps/hybrid/style.json?key=${MAPTILER_API_KEY}`
+
+// Must stay in sync with TILE_CACHE_NAME in public/sw.js — the Cache Storage
+// API is available directly on window, not just inside the service worker,
+// so clearing it doesn't need a round trip through the SW at all.
+const TILE_CACHE_NAME = 'brac-bike-tiles-v1'
 
 // Plain OpenStreetMap raster tiles as a minimal MapLibre style spec — no vector
 // sources/terrain available on this layer, so the 3D toggle falls back to a
@@ -380,7 +386,23 @@ export default function TrailsPage() {
   const [mapStyle, setMapStyle] = useState('maptiler')
   const [is3D, setIs3D] = useState(false)
   const [showLayerMenu, setShowLayerMenu] = useState(false)
-  const [mapDownload, setMapDownload] = useState({ status: 'idle', downloaded: 0, failed: 0, total: 0 })
+  const [isOnline, setIsOnline] = useState(navigator.onLine)
+  const [showOfflinePanel, setShowOfflinePanel] = useState(false)
+
+  // Falls back to the cached OpenStreetMap raster layer while offline,
+  // regardless of which base map the rider had selected — MapTiler's vector
+  // tiles/sprites/glyphs aren't bulk-cached (see sw.js), so they'd otherwise
+  // just fail to load. Reverts to the rider's selected style once back online.
+  useEffect(() => {
+    const handleOnline = () => setIsOnline(true)
+    const handleOffline = () => setIsOnline(false)
+    window.addEventListener('online', handleOnline)
+    window.addEventListener('offline', handleOffline)
+    return () => {
+      window.removeEventListener('online', handleOnline)
+      window.removeEventListener('offline', handleOffline)
+    }
+  }, [])
 
   // POI & Pill States
   const [showPoiMenu, setShowPoiMenu] = useState(false)
@@ -525,51 +547,14 @@ export default function TrailsPage() {
     setShowPoiMenu(false)
   }, [])
 
-  // Listens for progress/completion messages the service worker posts back
-  // while it's pre-fetching offline map tiles (see handleDownloadMap below).
-  useEffect(() => {
-    if (!('serviceWorker' in navigator)) return undefined
-
-    const handleMessage = (event) => {
-      const { type } = event.data || {}
-      if (type === 'DOWNLOAD_PROGRESS') {
-        setMapDownload({ status: 'downloading', downloaded: event.data.downloaded, failed: event.data.failed, total: event.data.total })
-      } else if (type === 'DOWNLOAD_COMPLETE') {
-        setMapDownload({ status: 'complete', downloaded: event.data.downloaded, failed: event.data.failed, total: event.data.total })
-      } else if (type === 'DOWNLOAD_CANCELLED') {
-        setMapDownload({ status: 'idle', downloaded: 0, failed: 0, total: 0 })
-      } else if (type === 'DOWNLOAD_ERROR') {
-        setMapDownload({ status: 'error', downloaded: 0, failed: 0, total: 0, message: event.data.message })
-      }
-    }
-
-    navigator.serviceWorker.addEventListener('message', handleMessage)
-    return () => navigator.serviceWorker.removeEventListener('message', handleMessage)
-  }, [])
-
-  const handleDownloadMap = useCallback(async () => {
-    if (!('serviceWorker' in navigator)) {
-      alert('Offline maps are not supported in this browser.')
-      return
-    }
-
-    setMapDownload({ status: 'downloading', downloaded: 0, failed: 0, total: 0 })
-
-    // clients.claim() in the SW's activate handler means an existing tab can
-    // be taken over without a reload — but only after activation has run at
-    // least once, so the very first visit may still need a moment.
-    const registration = await navigator.serviceWorker.ready
-    const controller = navigator.serviceWorker.controller || registration.active
-    if (!controller) {
-      setMapDownload({ status: 'error', downloaded: 0, failed: 0, total: 0, message: 'Map download isn\'t ready yet — please try again in a moment.' })
-      return
-    }
-
-    controller.postMessage({ type: 'DOWNLOAD_BRAC_TILES', styleUrl: MAPTILER_STREET_STYLE_URL })
-  }, [])
-
-  const handleCancelDownloadMap = useCallback(() => {
-    navigator.serviceWorker?.controller?.postMessage({ type: 'CANCEL_DOWNLOAD' })
+  // Tiles are only ever cached opportunistically as the rider browses (see
+  // sw.js's fetch handler) — there's no bulk pre-download, which OSM's tile
+  // usage policy discourages. This just empties that cache on request, e.g.
+  // to free up storage or force a fresh set of tiles next time they're online.
+  const handleClearCache = useCallback(async () => {
+    if (!('caches' in window)) return
+    await caches.delete(TILE_CACHE_NAME)
+    alert('Cached map tiles cleared.')
   }, [])
 
   const handleSelectBaseMap = useCallback((id) => {
@@ -1420,6 +1405,13 @@ const getBrouterProfile = useCallback(() => {
     calculateRouteFromWaypoints(waypointCoordinates)
   }, [calculateRouteFromWaypoints, waypointCoordinates])
 
+  const handleDownloadPlannedGpx = useCallback(() => {
+    if (!routePlannerStats?.geometry) return
+    const points = routePlannerStats.geometry.map(([lat, lng]) => ({ lat, lng, altitude: 0 }))
+    const gpxContent = generateGpx({ name: 'Planned Route' }, points)
+    downloadGpxFile(gpxContent, 'planned_route.gpx')
+  }, [routePlannerStats])
+
   const handleSaveRoute = useCallback(async () => {
     if (!routePlannerStats) {
       alert('Please provide at least two valid waypoint coordinates first.')
@@ -1919,6 +1911,11 @@ const getBrouterProfile = useCallback(() => {
             </div>
           </div>
           <RouteElevationChart data={routePlannerStats.elevationData} chartColor="#a78bfa" onHover={handleChartHover} />
+          {routePlannerStats && (
+            <button className="download-gpx-btn" type="button" onClick={handleDownloadPlannedGpx}>
+              📥 Download GPX
+            </button>
+          )}
           <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
             <button
               onClick={handleSaveRoute}
@@ -1959,6 +1956,12 @@ const getBrouterProfile = useCallback(() => {
     </div>
   )
 
+  // Named separately from the `mapStyle` state (the rider's manual base-map
+  // choice) so offline status can override it without the two colliding.
+  const resolvedMapStyle = !isOnline
+    ? OSM_RASTER_STYLE
+    : (BASE_MAP_STYLES[mapStyle] || BASE_MAP_STYLES.maptiler)
+
   return (
     <div className="app-container">
       <div className="main-content">
@@ -1993,24 +1996,6 @@ const getBrouterProfile = useCallback(() => {
               style={{ ...iconButtonStyle, backgroundColor: showLayerMenu ? '#b794f4' : '#370063' }}
             >
               <img src="/layers.svg" alt="" style={{ width: '22px', height: '22px' }} />
-            </button>
-
-            <button
-              onClick={handleDownloadMap}
-              title="Download Map for Offline Use"
-              disabled={mapDownload.status === 'downloading'}
-              style={{
-                ...iconButtonStyle,
-                backgroundColor: mapDownload.status === 'complete' ? '#16a34a' : '#370063',
-                fontSize: '1.2rem',
-                cursor: mapDownload.status === 'downloading' ? 'default' : 'pointer',
-              }}
-            >
-              <img
-                src="/offline.svg"
-                alt="Offline Map"
-                style={{ width: 26, height: 26, filter: 'brightness(0) invert(1)' }}
-              />
             </button>
 
             <button
@@ -2134,88 +2119,78 @@ const getBrouterProfile = useCallback(() => {
             </div>
           )}
 
-          {/* OFFLINE MAP DOWNLOAD PROGRESS */}
-          {mapDownload.status !== 'idle' && (
+          {/* ONLINE/OFFLINE STATUS INDICATOR - click to see how offline caching works.
+              Left-aligned deliberately, so it (and its panel) never overlaps the
+              right-side floating action deck below it. */}
+          <button
+            type="button"
+            onClick={() => setShowOfflinePanel((prev) => !prev)}
+            style={{
+              position: 'absolute',
+              top: '20px',
+              left: '16px',
+              zIndex: 1600,
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              backgroundColor: '#370063',
+              border: '1px solid rgba(255, 255, 255, 0.15)',
+              borderRadius: '999px',
+              padding: '6px 12px',
+              boxShadow: '0 4px 10px rgba(0,0,0,0.3)',
+              cursor: 'pointer',
+              color: '#ffffff',
+              fontSize: '0.8rem',
+              fontWeight: 600,
+            }}
+          >
+            <span style={{
+              width: '8px',
+              height: '8px',
+              borderRadius: '50%',
+              backgroundColor: isOnline ? '#4ade80' : '#f87171',
+              flexShrink: 0,
+            }} />
+            {isOnline ? 'Online' : 'Offline'}
+          </button>
+
+          {showOfflinePanel && (
             <div style={{
               position: 'absolute',
-              top: '132px',
-              right: '72px',
+              top: '58px',
+              left: '16px',
               zIndex: 1600,
               backgroundColor: '#370063',
               border: '1px solid rgba(255, 255, 255, 0.2)',
               borderRadius: '12px',
               padding: '12px 14px',
-              minWidth: '220px',
+              minWidth: '240px',
+              maxWidth: '280px',
               boxShadow: '0 4px 15px rgba(0,0,0,0.4)',
               display: 'flex',
               flexDirection: 'column',
-              gap: '8px',
+              gap: '10px',
               color: '#ffffff',
             }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ fontSize: '0.75rem', fontWeight: 'bold', color: '#b794f4', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                  Offline Map
-                </span>
-                {mapDownload.status !== 'downloading' && (
-                  <button
-                    type="button"
-                    onClick={() => setMapDownload({ status: 'idle', downloaded: 0, failed: 0, total: 0 })}
-                    style={{ background: 'transparent', border: 'none', color: '#b794f4', cursor: 'pointer', fontSize: '0.9rem', lineHeight: 1 }}
-                  >
-                    ✕
-                  </button>
-                )}
-              </div>
-
-              {mapDownload.status === 'downloading' && (
-                <>
-                  <div style={{ fontSize: '0.85rem' }}>
-                    {mapDownload.total > 0
-                      ? `Downloading ${mapDownload.downloaded + mapDownload.failed} / ${mapDownload.total} tiles...`
-                      : 'Preparing download...'}
-                    {mapDownload.failed > 0 && ` (${mapDownload.failed} failed)`}
-                  </div>
-                  <div style={{ height: '6px', borderRadius: '999px', background: 'rgba(255,255,255,0.15)', overflow: 'hidden' }}>
-                    <div
-                      style={{
-                        height: '100%',
-                        width: mapDownload.total > 0 ? `${((mapDownload.downloaded + mapDownload.failed) / mapDownload.total) * 100}%` : '4%',
-                        background: '#a78bfa',
-                        transition: 'width 0.2s ease',
-                      }}
-                    />
-                  </div>
-                  <button
-                    type="button"
-                    onClick={handleCancelDownloadMap}
-                    style={{
-                      alignSelf: 'flex-start',
-                      background: 'transparent',
-                      border: '1px solid rgba(255,255,255,0.3)',
-                      color: '#ffffff',
-                      borderRadius: '8px',
-                      padding: '4px 10px',
-                      fontSize: '0.8rem',
-                      cursor: 'pointer',
-                    }}
-                  >
-                    Cancel
-                  </button>
-                </>
-              )}
-
-              {mapDownload.status === 'complete' && (
-                <div style={{ fontSize: '0.85rem' }}>
-                  Brač map ready for offline use! {mapDownload.downloaded} tiles cached
-                  {mapDownload.failed > 0 ? `, ${mapDownload.failed} failed.` : '.'}
-                </div>
-              )}
-
-              {mapDownload.status === 'error' && (
-                <div style={{ fontSize: '0.85rem', color: '#fca5a5' }}>
-                  {mapDownload.message || 'Could not download the offline map.'}
-                </div>
-              )}
+              <p style={{ margin: 0, fontSize: '0.85rem', lineHeight: 1.4 }}>
+                Map tiles are automatically saved as you browse. Explore the island online first and the map will work offline in areas you've already viewed. 🗺️
+              </p>
+              <button
+                type="button"
+                onClick={handleClearCache}
+                style={{
+                  alignSelf: 'flex-start',
+                  background: 'transparent',
+                  border: '1px solid rgba(255,255,255,0.3)',
+                  color: '#ffffff',
+                  borderRadius: '8px',
+                  padding: '6px 10px',
+                  fontSize: '0.8rem',
+                  cursor: 'pointer',
+                }}
+              >
+                🗑️ Clear cached tiles
+              </button>
             </div>
           )}
 
@@ -2267,6 +2242,27 @@ const getBrouterProfile = useCallback(() => {
             </div>
           )}
 
+          {!isOnline && (
+            <div style={{
+              position: 'absolute',
+              top: '16px',
+              left: '50%',
+              transform: 'translateX(-50%)',
+              zIndex: 1700,
+              backgroundColor: '#370063',
+              color: '#ffffff',
+              padding: '8px 14px',
+              borderRadius: '999px',
+              border: '1px solid rgba(255,255,255,0.2)',
+              boxShadow: '0 4px 15px rgba(0,0,0,0.4)',
+              fontSize: '0.8rem',
+              fontWeight: 600,
+              whiteSpace: 'nowrap',
+            }}>
+              📶 Offline — showing cached map
+            </div>
+          )}
+
           {isDropPinMode && (
             <div style={{
               position: 'absolute',
@@ -2300,7 +2296,7 @@ const getBrouterProfile = useCallback(() => {
               minZoom={BRAC_MIN_ZOOM}
               maxZoom={BRAC_MAX_ZOOM}
               style={{ width: '100%', height: '100%' }}
-              mapStyle={BASE_MAP_STYLES[mapStyle] || BASE_MAP_STYLES.maptiler}
+              mapStyle={resolvedMapStyle}
               onClick={handleMapClick}
               onMouseDown={handleMapPressStart}
               onMouseUp={handleMapPressEnd}

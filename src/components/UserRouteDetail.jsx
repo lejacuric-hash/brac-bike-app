@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
 import { supabase } from '../supabaseClient'
 import { haversineDistanceKm } from '../utils/geo'
+import { generateGpx, downloadGpxFile } from '../utils/gpx'
 import ReviewsSection from './ReviewsSection'
 import PhotoGallery from './PhotoGallery'
 import PhotoFullscreenOverlay from './PhotoFullscreenOverlay'
@@ -88,6 +89,14 @@ export default function UserRouteDetail({ route, onBack }) {
     ? Math.max(...elevationProfile.map((point) => point.elevation))
     : null
 
+  // Prefer completed_rides.track_points (has real timestamps + altitude);
+  // fall back to route.coordinates (lat/lng only) for older saved routes.
+  const handleDownloadGpx = () => {
+    const points = completedRide?.track_points || route.coordinates || []
+    const gpxContent = generateGpx(route, points)
+    downloadGpxFile(gpxContent, `${(route.name || 'route').replace(/[^a-z0-9]/gi, '_')}.gpx`)
+  }
+
   if (!route) return null
 
   return (
@@ -129,6 +138,15 @@ export default function UserRouteDetail({ route, onBack }) {
               <span className="stat-value">{maxElevation != null ? `${Math.round(maxElevation)} m` : '—'}</span>
             </div>
           </div>
+
+          <button
+            className="download-gpx-btn"
+            type="button"
+            onClick={handleDownloadGpx}
+            title="Download GPX"
+          >
+            📥 Download GPX
+          </button>
 
           {elevationProfile.length > 0 && (
             <div className="elevation-chart-container">
