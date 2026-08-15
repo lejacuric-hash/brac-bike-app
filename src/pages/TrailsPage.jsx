@@ -15,9 +15,7 @@ import finalPlacesData from '../final_places.json'
 import { haversineDistanceKm } from '../utils/geo'
 import { generateGpx, downloadGpxFile } from '../utils/gpx'
 import useNavigationMode from '../hooks/useNavigationMode'
-import { useBackgroundGps } from '../hooks/useBackgroundGps'
-import { useRideNotification } from '../hooks/useRideNotification'
-import { useWakeLock } from '../hooks/useWakeLock'
+import { useRide } from '../contexts/RideContext'
 import NavigationHud from '../components/NavigationHud'
 import RideSummaryModal from '../components/RideSummaryModal'
 
@@ -411,15 +409,33 @@ export default function TrailsPage() {
   // POI & Pill States
   const [showPoiMenu, setShowPoiMenu] = useState(false)
   const [selectedCategories, setSelectedCategories] = useState([])
-  
-  const [activeRecording, setActiveRecording] = useState(false)
+
+  // Recording/navigation-active flags, GPS track, and current position now
+  // live in RideContext (App-level) instead of local state, so an active
+  // ride keeps recording — and background GPS keeps running — even after
+  // this page unmounts because the rider switched tabs. Destructuring with
+  // these same names means the rest of this file's existing references to
+  // them (rendering, gating, etc.) don't need to change.
+  const {
+    activeRecording,
+    navigationModeActive,
+    gpsTrackPoints,
+    currentPosition: ridePosition,
+    rideStartTime,
+    permissionDenied: gpsPermissionDenied,
+    startRecording,
+    stopRecording,
+    startNavigation,
+    stopNavigation,
+    resetRide,
+  } = useRide()
+
   const [isDropPinMode, setIsDropPinMode] = useState(false)
   const [reportCoordinates, setReportCoordinates] = useState(null)
   const [routeFeedbackRefreshKey, setRouteFeedbackRefreshKey] = useState(0)
   const [selectedTrailCommunityData, setSelectedTrailCommunityData] = useState(null)
 
   // Navigate mode
-  const [navigationModeActive, setNavigationModeActive] = useState(false)
   const [activeNavigationPath, setActiveNavigationPath] = useState(null)
   const [pendingNavTarget, setPendingNavTarget] = useState(null)
   const [collapseRequestToken, setCollapseRequestToken] = useState(null)
@@ -438,11 +454,12 @@ export default function TrailsPage() {
   const [reports, setReports] = useState([])
   const [selectedReportId, setSelectedReportId] = useState(null)
   const [selectedPoiId, setSelectedPoiId] = useState(null)
-  const [gpsPosition, setGpsPosition] = useState(null)
-  const [gpsTrackPoints, setGpsTrackPoints] = useState([])
+  // Foreground-only position for the blue dot while just browsing (not
+  // recording/navigating) — see the watch effect below and the merged
+  // `gpsPosition` const near it for how this hands off to ridePosition.
+  const [idleGpsPosition, setIdleGpsPosition] = useState(null)
 
   // Ride recording / post-ride summary
-  const [rideStartTime, setRideStartTime] = useState(null)
   const [rideMovingTime, setRideMovingTime] = useState(0)
   const [showRideSummary, setShowRideSummary] = useState(false)
   const [completedRideStats, setCompletedRideStats] = useState(null)
@@ -651,17 +668,15 @@ export default function TrailsPage() {
 
   // Plain foreground position watch for the always-visible blue dot while
   // just browsing the map. It stands down during an active ride/navigation
-  // session — at that point useBackgroundGps (below) takes over as the sole
-  // position source, since it also works with the screen off or the app
-  // backgrounded (on native Android, via the foreground location service),
-  // which this browser API does not.
+  // session — at that point RideContext's own background-GPS watch (which
+  // survives this page unmounting) is the position source, via ridePosition.
   useEffect(() => {
     if (!navigator.geolocation) return undefined
     if (activeRecording || navigationModeActive) return undefined
 
     const watchId = navigator.geolocation.watchPosition(
       (position) => {
-        setGpsPosition({
+        setIdleGpsPosition({
           lat: position.coords.latitude,
           lng: position.coords.longitude,
           accuracy: position.coords.accuracy,
@@ -678,54 +693,9 @@ export default function TrailsPage() {
     }
   }, [activeRecording, navigationModeActive])
 
-  // Each fix here already comes throttled (5m distanceFilter natively, or
-  // GPS's own update rate on web) so track points are appended directly
-  // rather than re-sampled on a fixed timer the way the old interval did.
-  const handleBackgroundPosition = useCallback((position) => {
-    setGpsPosition(position)
-    if (activeRecording) {
-      setGpsTrackPoints((prev) => [
-        ...prev,
-        {
-          lat: position.lat,
-          lng: position.lng,
-          altitude: position.altitude,
-          timestamp: position.timestamp,
-        },
-      ])
-    }
-  }, [activeRecording])
-
-  const handleBackgroundGpsError = useCallback((err) => {
-    console.warn('GPS error:', err)
-  }, [])
-
-  const liveRideStats = useMemo(() => {
-    if (!activeRecording || !rideStartTime) return null
-    return computeRideStats(gpsTrackPoints, rideStartTime)
-  }, [activeRecording, gpsTrackPoints, rideStartTime])
-
-  // The background-geolocation plugin has no API to update a running
-  // watcher's notification text in place (see useBackgroundGps/
-  // useRideNotification) — the text can only change by restarting the
-  // watcher, so useRideNotification throttles it to once per 30s rather
-  // than on every GPS fix, and that throttled text feeds straight into
-  // useBackgroundGps's own notificationTitle/notificationText below.
-  const { notificationTitle: rideNotificationTitle, notificationText: rideNotificationText } = useRideNotification({
-    active: activeRecording,
-    distance: liveRideStats?.totalDistance || 0,
-    elapsedTime: liveRideStats?.elapsedTime || 0,
-  })
-
-  const { permissionDenied: gpsPermissionDenied } = useBackgroundGps({
-    active: activeRecording || navigationModeActive,
-    onPosition: handleBackgroundPosition,
-    onError: handleBackgroundGpsError,
-    notificationTitle: activeRecording ? rideNotificationTitle : 'Brač Bike — Navigation active',
-    notificationText: activeRecording ? rideNotificationText : 'Tracking your ride...',
-  })
-
-  useWakeLock(activeRecording || navigationModeActive)
+  // Merges the two position sources so the rest of this file (the blue-dot
+  // marker below) can keep referencing a single `gpsPosition` like before.
+  const gpsPosition = (activeRecording || navigationModeActive) ? ridePosition : idleGpsPosition
 
   useEffect(() => {
     if (!selectedTrail) return
@@ -1509,19 +1479,18 @@ const getBrouterProfile = useCallback(() => {
   const enterNavigationMode = useCallback((pathEntry) => {
     setActiveNavigationPath(pathEntry)
     setCollapseRequestToken((token) => (token == null ? 1 : token + 1))
-    setNavigationModeActive(true)
+    // Also auto-starts ride recording for the duration of the navigation
+    // session (RideContext's startNavigation calls startRecording if it's
+    // not already running) — recording now survives navigating away from
+    // this page, since it lives in RideContext rather than local state.
+    startNavigation()
     setAutoFollowPaused(false)
     nav.start(pathEntry)
     // Reset to north on entry; the heading-follow effect above takes over
     // from here once GPS/compass fixes start coming in.
     lastAppliedNavBearingRef.current = 0
     getMapInstance()?.easeTo({ bearing: 0, duration: 400 })
-
-    // Auto-start ride recording for the duration of the navigation session.
-    setActiveRecording(true)
-    setGpsTrackPoints([])
-    setRideStartTime(Date.now())
-  }, [nav, getMapInstance])
+  }, [nav, getMapInstance, startNavigation])
 
   // Rotates the camera to face the rider's direction of travel during
   // navigation (or back to north if nav.isNorthUpLocked is toggled on).
@@ -1542,8 +1511,6 @@ const getBrouterProfile = useCallback(() => {
   }, [navigationModeActive, nav.mapRotationDeg, getMapInstance])
 
   const exitNavigationMode = useCallback(() => {
-    setActiveRecording(false)
-
     if (rideStartTime && gpsTrackPoints.length > 1) {
       const stats = computeRideStats(gpsTrackPoints, rideStartTime)
       setCompletedRideStats({
@@ -1556,12 +1523,16 @@ const getBrouterProfile = useCallback(() => {
       setShowRideSummary(true)
     }
 
+    // stopRecording (unlike resetRide) leaves gpsTrackPoints/rideStartTime in
+    // place, which is why they're still readable above — resetCompletedRideState
+    // clears them for good once the summary is dismissed/saved.
+    stopRecording()
     nav.stop()
-    setNavigationModeActive(false)
+    stopNavigation()
     setActiveNavigationPath(null)
     setPendingNavTarget(null)
     setAutoFollowPaused(false)
-  }, [nav, rideStartTime, gpsTrackPoints, activeNavigationPath, selectedTrail])
+  }, [nav, rideStartTime, gpsTrackPoints, activeNavigationPath, selectedTrail, stopRecording, stopNavigation])
 
   // Detects genuine user gestures (drag/pinch) vs our own programmatic camera
   // moves — MapLibre only sets `originalEvent` for the former — and pauses
@@ -1585,9 +1556,8 @@ const getBrouterProfile = useCallback(() => {
   const resetCompletedRideState = useCallback(() => {
     setShowRideSummary(false)
     setCompletedRideStats(null)
-    setGpsTrackPoints([])
-    setRideStartTime(null)
-  }, [])
+    resetRide()
+  }, [resetRide])
 
   const handleSaveCompletedRide = useCallback(async ({ rating, review, photoUrls, name }) => {
     const stats = completedRideStats
@@ -1722,10 +1692,8 @@ const getBrouterProfile = useCallback(() => {
     }
 
     // No route context — just record GPS without turn-by-turn navigation.
-    setActiveRecording(true)
-    setGpsTrackPoints([])
-    setRideStartTime(Date.now())
-  }, [selectedTrail, trails, plannerTab, routePlannerStats, selectedCommunityRoute, handleNavigateClick])
+    startRecording()
+  }, [selectedTrail, trails, plannerTab, routePlannerStats, selectedCommunityRoute, handleNavigateClick, startRecording])
 
   const handleStartRideButtonClick = useCallback(() => {
     if (activeRecording) {
