@@ -1,5 +1,8 @@
 {
   "appId": "com.bracbybike.app",
   "appName": "Brač by bike",
-  "webDir": "dist"
+  "webDir": "dist",
+  "android": {
+    "useLegacyBridge": true
+  }
 }
