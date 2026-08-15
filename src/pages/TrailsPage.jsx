@@ -15,6 +15,9 @@ import finalPlacesData from '../final_places.json'
 import { haversineDistanceKm } from '../utils/geo'
 import { generateGpx, downloadGpxFile } from '../utils/gpx'
 import useNavigationMode from '../hooks/useNavigationMode'
+import { useBackgroundGps } from '../hooks/useBackgroundGps'
+import { useRideNotification } from '../hooks/useRideNotification'
+import { useWakeLock } from '../hooks/useWakeLock'
 import NavigationHud from '../components/NavigationHud'
 import RideSummaryModal from '../components/RideSummaryModal'
 
@@ -646,8 +649,15 @@ export default function TrailsPage() {
     loadReports()
   }, [reportsRefreshKey])
 
+  // Plain foreground position watch for the always-visible blue dot while
+  // just browsing the map. It stands down during an active ride/navigation
+  // session — at that point useBackgroundGps (below) takes over as the sole
+  // position source, since it also works with the screen off or the app
+  // backgrounded (on native Android, via the foreground location service),
+  // which this browser API does not.
   useEffect(() => {
     if (!navigator.geolocation) return undefined
+    if (activeRecording || navigationModeActive) return undefined
 
     const watchId = navigator.geolocation.watchPosition(
       (position) => {
@@ -666,41 +676,56 @@ export default function TrailsPage() {
     return () => {
       navigator.geolocation.clearWatch(watchId)
     }
-  }, [])
+  }, [activeRecording, navigationModeActive])
 
-  // Mirrors gpsPosition into a ref so the recording interval below can read the
-  // latest fix without depending on gpsPosition directly — depending on it
-  // would recreate the interval (and reset its 3s timer) on every GPS update,
-  // which arrive more often than 3s in practice, so the interval would almost
-  // never survive long enough to fire.
-  const gpsPositionRef = useRef(null)
-  useEffect(() => {
-    gpsPositionRef.current = gpsPosition
-  }, [gpsPosition])
-
-  useEffect(() => {
-    if (!activeRecording) return undefined
-
-    const interval = window.setInterval(() => {
-      setGpsTrackPoints((prev) => {
-        const position = gpsPositionRef.current
-        if (!position) return prev
-        return [
-          ...prev,
-          {
-            lat: position.lat,
-            lng: position.lng,
-            altitude: position.altitude,
-            timestamp: position.timestamp,
-          },
-        ]
-      })
-    }, 3000)
-
-    return () => {
-      clearInterval(interval)
+  // Each fix here already comes throttled (5m distanceFilter natively, or
+  // GPS's own update rate on web) so track points are appended directly
+  // rather than re-sampled on a fixed timer the way the old interval did.
+  const handleBackgroundPosition = useCallback((position) => {
+    setGpsPosition(position)
+    if (activeRecording) {
+      setGpsTrackPoints((prev) => [
+        ...prev,
+        {
+          lat: position.lat,
+          lng: position.lng,
+          altitude: position.altitude,
+          timestamp: position.timestamp,
+        },
+      ])
     }
   }, [activeRecording])
+
+  const handleBackgroundGpsError = useCallback((err) => {
+    console.warn('GPS error:', err)
+  }, [])
+
+  const liveRideStats = useMemo(() => {
+    if (!activeRecording || !rideStartTime) return null
+    return computeRideStats(gpsTrackPoints, rideStartTime)
+  }, [activeRecording, gpsTrackPoints, rideStartTime])
+
+  // The background-geolocation plugin has no API to update a running
+  // watcher's notification text in place (see useBackgroundGps/
+  // useRideNotification) — the text can only change by restarting the
+  // watcher, so useRideNotification throttles it to once per 30s rather
+  // than on every GPS fix, and that throttled text feeds straight into
+  // useBackgroundGps's own notificationTitle/notificationText below.
+  const { notificationTitle: rideNotificationTitle, notificationText: rideNotificationText } = useRideNotification({
+    active: activeRecording,
+    distance: liveRideStats?.totalDistance || 0,
+    elapsedTime: liveRideStats?.elapsedTime || 0,
+  })
+
+  const { permissionDenied: gpsPermissionDenied } = useBackgroundGps({
+    active: activeRecording || navigationModeActive,
+    onPosition: handleBackgroundPosition,
+    onError: handleBackgroundGpsError,
+    notificationTitle: activeRecording ? rideNotificationTitle : 'Brač Bike — Navigation active',
+    notificationText: activeRecording ? rideNotificationText : 'Tracking your ride...',
+  })
+
+  useWakeLock(activeRecording || navigationModeActive)
 
   useEffect(() => {
     if (!selectedTrail) return
@@ -2302,6 +2327,12 @@ const getBrouterProfile = useCallback(() => {
               whiteSpace: 'nowrap',
             }}>
               📶 Offline — showing cached map
+            </div>
+          )}
+
+          {(activeRecording || navigationModeActive) && (gpsPermissionDenied || nav.gpsPermissionDenied) && (
+            <div className="gps-permission-denied">
+              📍 Location permission denied. Please enable location in your phone settings.
             </div>
           )}
 

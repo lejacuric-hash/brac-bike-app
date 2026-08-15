@@ -211,6 +211,24 @@ html, body, #root {
   align-items: flex-end;
 }
 
+.gps-permission-denied {
+  position: absolute;
+  top: 60px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1700;
+  background-color: #b91c1c;
+  color: #ffffff;
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+  font-size: 0.8rem;
+  font-weight: 600;
+  max-width: calc(100% - 32px);
+  text-align: center;
+}
+
 .report-problem-button {
   position: static;
   z-index: auto;

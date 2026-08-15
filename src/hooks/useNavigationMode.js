@@ -1,5 +1,6 @@
 import { useCallback, useRef, useState } from 'react'
 import { supabase } from '../supabaseClient'
+import { useBackgroundGps } from './useBackgroundGps'
 import {
   angleDiffDeg,
   bearingDeg,
@@ -49,7 +50,6 @@ export default function useNavigationMode() {
   const [compassPermissionState, setCompassPermissionState] = useState('unknown')
 
   const pathRef = useRef(null)
-  const watchIdRef = useRef(null)
   const orientationHandlerRef = useRef(null)
   const orientationEventNameRef = useRef(null)
   const lastFixRef = useRef(null)
@@ -151,6 +151,40 @@ export default function useNavigationMode() {
     setLoading(false)
   }, [setHeadingSourceTracked])
 
+  // useBackgroundGps's onPosition payload is flattened ({lat, lng, ...})
+  // rather than the nested GeolocationPosition shape applyPosition expects
+  // (it was originally wired straight to navigator.geolocation.watchPosition),
+  // so this just re-nests it rather than reworking applyPosition itself.
+  const handleBackgroundPosition = useCallback((position) => {
+    applyPosition({
+      coords: {
+        latitude: position.lat,
+        longitude: position.lng,
+        altitude: position.altitude,
+        accuracy: position.accuracy,
+        speed: position.speed,
+        heading: position.heading,
+      },
+      timestamp: position.timestamp,
+    })
+  }, [applyPosition])
+
+  const handleBackgroundGpsError = useCallback(() => {
+    setLoading(false)
+  }, [])
+
+  // Runs the same background-capable location source used for ride recording,
+  // so navigation keeps receiving fixes (and, on native Android, the rider
+  // keeps getting turn-by-turn hazard warnings) with the screen off or the
+  // app backgrounded — not just while the app is in the foreground.
+  const { permissionDenied: gpsPermissionDenied } = useBackgroundGps({
+    active: isActive,
+    onPosition: handleBackgroundPosition,
+    onError: handleBackgroundGpsError,
+    notificationTitle: 'Brač Bike — Navigation active',
+    notificationText: 'Tracking your ride...',
+  })
+
   const attachOrientationListener = useCallback(() => {
     const handleOrientation = (event) => {
       let heading = null
@@ -230,23 +264,13 @@ export default function useNavigationMode() {
 
     fetchHazardReports()
     setupCompass()
-
-    if (navigator.geolocation) {
-      watchIdRef.current = navigator.geolocation.watchPosition(
-        applyPosition,
-        () => setLoading(false),
-        { enableHighAccuracy: true, maximumAge: 1000, timeout: 10000 }
-      )
-    } else {
-      setLoading(false)
-    }
-  }, [applyPosition, fetchHazardReports, setupCompass, setHeadingSourceTracked])
+    // Position fixes now arrive via useBackgroundGps, above — it starts
+    // watching as soon as isActive flips true (set just above).
+  }, [fetchHazardReports, setupCompass, setHeadingSourceTracked])
 
   const stop = useCallback(() => {
-    if (watchIdRef.current != null) {
-      navigator.geolocation.clearWatch(watchIdRef.current)
-      watchIdRef.current = null
-    }
+    // Position watch teardown is handled by useBackgroundGps, above — it
+    // stops as soon as isActive flips false (set below).
     if (orientationHandlerRef.current && orientationEventNameRef.current) {
       window.removeEventListener(orientationEventNameRef.current, orientationHandlerRef.current)
       orientationHandlerRef.current = null
@@ -294,6 +318,7 @@ export default function useNavigationMode() {
     loading,
     userPosition,
     accuracy,
+    gpsPermissionDenied,
     userHeadingDeg,
     headingSource,
     mapRotationDeg,
