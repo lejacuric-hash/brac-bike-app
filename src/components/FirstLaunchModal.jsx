@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react'
 import './FirstLaunchModal.css'
 
-const STORAGE_KEY = 'brac_has_seen_onboarding'
+const STORAGE_KEY = 'brac_onboarding_last_seen'
+
+const todayString = () => new Date().toISOString().split('T')[0]
 
 const RULES = [
   {
@@ -30,13 +32,13 @@ export default function FirstLaunchModal() {
   const [open, setOpen] = useState(false)
 
   useEffect(() => {
-    if (localStorage.getItem(STORAGE_KEY) !== 'true') {
+    if (localStorage.getItem(STORAGE_KEY) !== todayString()) {
       setOpen(true)
     }
   }, [])
 
   const handleDismiss = () => {
-    localStorage.setItem(STORAGE_KEY, 'true')
+    localStorage.setItem(STORAGE_KEY, todayString())
     setOpen(false)
   }
 

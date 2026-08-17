@@ -15,7 +15,6 @@ import finalPlacesData from '../final_places.json'
 import { haversineDistanceKm } from '../utils/geo'
 import { extractReportPhoto } from '../utils/reportPhoto'
 import { generateGpx, downloadGpxFile } from '../utils/gpx'
-import useNavigationMode from '../hooks/useNavigationMode'
 import { useRide } from '../contexts/RideContext'
 import NavigationHud from '../components/NavigationHud'
 import RideSummaryModal from '../components/RideSummaryModal'
@@ -439,6 +438,9 @@ export default function TrailsPage() {
     startNavigation,
     stopNavigation,
     resetRide,
+    nav,
+    activeNavigationPath,
+    setActiveNavigationPath,
   } = useRide()
 
   const [isDropPinMode, setIsDropPinMode] = useState(false)
@@ -447,13 +449,11 @@ export default function TrailsPage() {
   const [selectedTrailCommunityData, setSelectedTrailCommunityData] = useState(null)
 
   // Navigate mode
-  const [activeNavigationPath, setActiveNavigationPath] = useState(null)
   const [pendingNavTarget, setPendingNavTarget] = useState(null)
   const [collapseRequestToken, setCollapseRequestToken] = useState(null)
   // Camera auto-follows the rider during navigation until they manually pan/pinch,
   // at which point it backs off and a Recenter button appears to resume it.
   const [autoFollowPaused, setAutoFollowPaused] = useState(false)
-  const nav = useNavigationMode()
 
   const mapRef = useRef(null)
   const lastAppliedNavBearingRef = useRef(0)
@@ -1501,7 +1501,7 @@ const getBrouterProfile = useCallback(() => {
     // from here once GPS/compass fixes start coming in.
     lastAppliedNavBearingRef.current = 0
     getMapInstance()?.easeTo({ bearing: 0, duration: 400 })
-  }, [nav, getMapInstance, startNavigation])
+  }, [nav, getMapInstance, startNavigation, setActiveNavigationPath])
 
   // Rotates the camera to face the rider's direction of travel during
   // navigation (or back to north if nav.isNorthUpLocked is toggled on).
@@ -1543,7 +1543,7 @@ const getBrouterProfile = useCallback(() => {
     setActiveNavigationPath(null)
     setPendingNavTarget(null)
     setAutoFollowPaused(false)
-  }, [nav, rideStartTime, gpsTrackPoints, activeNavigationPath, selectedTrail, stopRecording, stopNavigation])
+  }, [nav, rideStartTime, gpsTrackPoints, activeNavigationPath, selectedTrail, stopRecording, stopNavigation, setActiveNavigationPath])
 
   // Detects genuine user gestures (drag/pinch) vs our own programmatic camera
   // moves — MapLibre only sets `originalEvent` for the former — and pauses

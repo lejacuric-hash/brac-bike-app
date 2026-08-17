@@ -2,6 +2,7 @@ import { createContext, useContext, useState, useCallback, useRef } from 'react'
 import { useWakeLock } from '../hooks/useWakeLock'
 import { useBackgroundGps } from '../hooks/useBackgroundGps'
 import { useRideNotification } from '../hooks/useRideNotification'
+import useNavigationMode from '../hooks/useNavigationMode'
 import { haversineDistanceKm, speedKmh } from '../utils/geo'
 
 const RideContext = createContext(null)
@@ -9,6 +10,15 @@ const RideContext = createContext(null)
 export function RideProvider({ children }) {
   const [activeRecording, setActiveRecording] = useState(false)
   const [navigationModeActive, setNavigationModeActive] = useState(false)
+  // The active route (GPX/community path) being followed, plus the whole
+  // turn-by-turn hook (position, remaining path, heading, hazards — and its
+  // own background GPS watch). Both live here rather than in TrailsPage so a
+  // navigation session survives switching tabs and back — TrailsPage's map
+  // is a fresh instance each remount, but its declarative Source/Marker JSX
+  // re-renders correctly as soon as this (never-reset) state is available
+  // again, with no separate re-hydration step needed.
+  const [activeNavigationPath, setActiveNavigationPath] = useState(null)
+  const nav = useNavigationMode()
   const [gpsTrackPoints, setGpsTrackPoints] = useState([])
   const [currentPosition, setCurrentPosition] = useState(null)
   const [rideStartTime, setRideStartTime] = useState(null)
@@ -114,6 +124,9 @@ export function RideProvider({ children }) {
       currentSpeed,
       hasPermission,
       permissionDenied,
+      nav,
+      activeNavigationPath,
+      setActiveNavigationPath,
       startRecording,
       stopRecording,
       startNavigation,
