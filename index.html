@@ -2,8 +2,15 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#370063">
   <title>Brač by Bike</title>
+  <style>
+    /* Paints the app's purple immediately on first load, before index.css
+       finishes loading, so there's never a flash of the browser's default
+       background at the edges/safe areas on mobile. */
+    html, body { background-color: #370063; }
+  </style>
 </head>
 <body>
   <div id="root"></div>

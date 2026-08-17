@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { RideProvider } from './contexts/RideContext'
 import Navigation from './components/Navigation'
+import FirstLaunchModal from './components/FirstLaunchModal'
 import HomePage from './pages/HomePage'
 import TrailsPage from './pages/TrailsPage'
 import PlanRoutePage from './pages/PlanRoutePage'
@@ -11,6 +12,7 @@ function App() {
   return (
     <RideProvider>
       <BrowserRouter>
+        <FirstLaunchModal />
         <Navigation />
         <main className="app-main" style={{ paddingBottom: '72px' }}>
           <Routes>
