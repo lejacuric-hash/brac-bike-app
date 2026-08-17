@@ -6,6 +6,7 @@ import ReviewsSection from './ReviewsSection'
 import PhotoGallery from './PhotoGallery'
 import PhotoFullscreenOverlay from './PhotoFullscreenOverlay'
 import { supabase } from '../supabaseClient'
+import { useRide } from '../contexts/RideContext'
 import './BottomSheet.css'
 
 const difficultyColors = {
@@ -20,6 +21,15 @@ const difficultyOptions = [
   { id: 'medium', label: 'Medium' },
   { id: 'hard', label: 'Hard' },
 ]
+
+function formatRideTime(seconds) {
+  const h = Math.floor(seconds / 3600)
+  const m = Math.floor((seconds % 3600) / 60)
+  const s = Math.floor(seconds % 60)
+  if (h > 0) return `${h}h ${m}m ${s}s`
+  if (m > 0) return `${m}m ${s}s`
+  return `${s}s`
+}
 
 function findNearestSnap(height, snapPositions) {
   return Object.entries(snapPositions).reduce((prev, curr) =>
@@ -45,6 +55,8 @@ function BottomSheet({
   collapseRequestToken,
 
 }) {
+  const { activeRecording, navigationModeActive, elapsedSeconds, totalDistance, currentPosition, currentSpeed } = useRide()
+
   const [internalActiveTab, setInternalActiveTab] = useState('routes')
   const activeTab = activeTabProp || internalActiveTab
   const setActiveTab = (tab) => {
@@ -514,6 +526,28 @@ function BottomSheet({
       >
         <div className="bottom-sheet-handle" ref={dragHandleRef} />
       </div>
+
+      {(activeRecording || navigationModeActive) && (
+        <div className="ride-stats-bar">
+          <span className="recording-pulse" />
+          <div className="stat">
+            <span className="stat-value">🕐 {formatRideTime(elapsedSeconds)}</span>
+            <span className="stat-label">Time</span>
+          </div>
+          <div className="stat">
+            <span className="stat-value">📍 {totalDistance.toFixed(1)} km</span>
+            <span className="stat-label">Distance</span>
+          </div>
+          <div className="stat">
+            <span className="stat-value">⚡ {currentSpeed.toFixed(1)} km/h</span>
+            <span className="stat-label">Speed</span>
+          </div>
+          <div className="stat">
+            <span className="stat-value">⬆️ {Math.round(currentPosition?.altitude || 0)} m</span>
+            <span className="stat-label">Elevation</span>
+          </div>
+        </div>
+      )}
 
       <div className="bottom-sheet-tabs">
         <button

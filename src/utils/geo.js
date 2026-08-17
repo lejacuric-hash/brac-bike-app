@@ -17,6 +17,15 @@ export function angleDiffDeg(a, b) {
   return normalizeAngleDeg(a - b + 180) - 180
 }
 
+// Instantaneous speed between two timestamped track points, in km/h.
+export function speedKmh(prevPoint, nextPoint) {
+  if (!prevPoint?.timestamp || !nextPoint?.timestamp) return 0
+  const timeDiffSec = (nextPoint.timestamp - prevPoint.timestamp) / 1000
+  if (timeDiffSec <= 0) return 0
+  const distKm = haversineDistanceKm([prevPoint.lat, prevPoint.lng], [nextPoint.lat, nextPoint.lng])
+  return (distKm / timeDiffSec) * 3600
+}
+
 export function haversineDistanceKm([lat1, lng1], [lat2, lng2]) {
   const dLat = toRadians(lat2 - lat1)
   const dLng = toRadians(lng2 - lng1)

@@ -13,6 +13,7 @@ import { supabase } from '../supabaseClient.js'
 // Import dynamic POIs
 import finalPlacesData from '../final_places.json'
 import { haversineDistanceKm } from '../utils/geo'
+import { extractReportPhoto } from '../utils/reportPhoto'
 import { generateGpx, downloadGpxFile } from '../utils/gpx'
 import useNavigationMode from '../hooks/useNavigationMode'
 import { useRide } from '../contexts/RideContext'
@@ -2470,6 +2471,7 @@ const getBrouterProfile = useCallback(() => {
               {selectedReportId != null && (() => {
                 const report = reports.find((item) => item.id === selectedReportId)
                 if (!report) return null
+                const { photoUrl, text } = extractReportPhoto(report)
                 return (
                   <Popup
                     longitude={report.lng}
@@ -2477,11 +2479,38 @@ const getBrouterProfile = useCallback(() => {
                     anchor="top"
                     closeOnClick={false}
                     onClose={() => setSelectedReportId(null)}
+                    className="report-popup"
                   >
-                    <div style={{ minWidth: 160 }}>
-                      <strong>{report.type}</strong>
-                      {report.description ? <div style={{ marginTop: 6 }}>{report.description}</div> : null}
-                      <div style={{ marginTop: 8, color: '#94a3b8' }}>{timeAgo(report.created_at)}</div>
+                    <div
+                      style={{
+                        background: '#370063',
+                        color: '#ffffff',
+                        borderRadius: '12px',
+                        padding: '12px',
+                        minWidth: '200px',
+                        fontFamily: 'system-ui, sans-serif',
+                      }}
+                    >
+                      <strong style={{ fontSize: 14 }}>{report.type}</strong>
+                      {text ? (
+                        <div style={{ color: 'rgba(255,255,255,0.7)', fontSize: 12, marginTop: 4 }}>{text}</div>
+                      ) : null}
+                      <div style={{ color: 'rgba(255,255,255,0.5)', fontSize: 11, marginTop: 4 }}>
+                        {timeAgo(report.created_at)}
+                      </div>
+                      {photoUrl ? (
+                        <img
+                          src={photoUrl}
+                          alt="Report photo"
+                          style={{
+                            width: '100%',
+                            borderRadius: '8px',
+                            marginTop: '8px',
+                            maxHeight: '150px',
+                            objectFit: 'cover',
+                          }}
+                        />
+                      ) : null}
                     </div>
                   </Popup>
                 )

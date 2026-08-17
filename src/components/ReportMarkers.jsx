@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Marker, Popup } from 'react-leaflet'
 import L from 'leaflet'
 import { supabase } from '../supabaseClient'
+import { extractReportPhoto } from '../utils/reportPhoto'
 
 function timeAgo(iso) {
   const then = new Date(iso).getTime()
@@ -44,17 +45,46 @@ function ReportMarkers({ refreshKey = 0 }) {
 
   return (
     <>
-      {reports.map((r) => (
-        <Marker key={r.id} position={[r.lat, r.lng]} icon={warningIcon}>
-          <Popup>
-            <div style={{ minWidth: 160 }}>
-              <strong>{r.type}</strong>
-              {r.description ? <div style={{ marginTop: 6 }}>{r.description}</div> : null}
-              <div style={{ marginTop: 8, color: '#94a3b8' }}>{timeAgo(r.created_at)}</div>
-            </div>
-          </Popup>
-        </Marker>
-      ))}
+      {reports.map((r) => {
+        const { photoUrl, text } = extractReportPhoto(r)
+        return (
+          <Marker key={r.id} position={[r.lat, r.lng]} icon={warningIcon}>
+            <Popup>
+              <div
+                style={{
+                  background: '#370063',
+                  color: '#ffffff',
+                  borderRadius: '12px',
+                  padding: '12px',
+                  minWidth: '200px',
+                  fontFamily: 'system-ui, sans-serif',
+                }}
+              >
+                <strong style={{ fontSize: 14 }}>{r.type}</strong>
+                {text ? (
+                  <div style={{ color: 'rgba(255,255,255,0.7)', fontSize: 12, marginTop: 4 }}>{text}</div>
+                ) : null}
+                <div style={{ color: 'rgba(255,255,255,0.5)', fontSize: 11, marginTop: 4 }}>
+                  {timeAgo(r.created_at)}
+                </div>
+                {photoUrl ? (
+                  <img
+                    src={photoUrl}
+                    alt="Report photo"
+                    style={{
+                      width: '100%',
+                      borderRadius: '8px',
+                      marginTop: '8px',
+                      maxHeight: '150px',
+                      objectFit: 'cover',
+                    }}
+                  />
+                ) : null}
+              </div>
+            </Popup>
+          </Marker>
+        )
+      })}
     </>
   )
 }

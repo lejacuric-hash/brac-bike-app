@@ -2,7 +2,7 @@ import { createContext, useContext, useState, useCallback, useRef } from 'react'
 import { useWakeLock } from '../hooks/useWakeLock'
 import { useBackgroundGps } from '../hooks/useBackgroundGps'
 import { useRideNotification } from '../hooks/useRideNotification'
-import { haversineDistanceKm } from '../utils/geo'
+import { haversineDistanceKm, speedKmh } from '../utils/geo'
 
 const RideContext = createContext(null)
 
@@ -14,6 +14,7 @@ export function RideProvider({ children }) {
   const [rideStartTime, setRideStartTime] = useState(null)
   const [elapsedSeconds, setElapsedSeconds] = useState(0)
   const [totalDistance, setTotalDistance] = useState(0)
+  const [currentSpeed, setCurrentSpeed] = useState(0)
   const timerRef = useRef(null)
 
   // Wake lock keeps screen on during rides (web/PWA only — native Android's
@@ -29,19 +30,21 @@ export function RideProvider({ children }) {
           const last = prev[prev.length - 1]
           const dist = haversineDistanceKm([last.lat, last.lng], [position.lat, position.lng])
           setTotalDistance((d) => d + dist)
+          setCurrentSpeed(speedKmh(last, position))
         }
         return [...prev, position]
       })
     }
   }, [activeRecording])
 
-  // Throttled to once/30s — see useRideNotification and useBackgroundGps for
+  // Throttled to once/10s — see useRideNotification and useBackgroundGps for
   // why (the background-geolocation plugin has no in-place notification
   // update, only remove-and-recreate).
   const { notificationTitle: rideNotificationTitle, notificationText: rideNotificationText } = useRideNotification({
     active: activeRecording,
     distance: totalDistance,
     elapsedTime: elapsedSeconds,
+    speed: currentSpeed,
   })
 
   const { hasPermission, permissionDenied } = useBackgroundGps({
@@ -67,6 +70,7 @@ export function RideProvider({ children }) {
 
   const stopRecording = useCallback(() => {
     setActiveRecording(false)
+    setCurrentSpeed(0)
     if (timerRef.current) {
       clearInterval(timerRef.current)
       timerRef.current = null
@@ -88,6 +92,7 @@ export function RideProvider({ children }) {
     setGpsTrackPoints([])
     setTotalDistance(0)
     setElapsedSeconds(0)
+    setCurrentSpeed(0)
     setRideStartTime(null)
     setActiveRecording(false)
     setNavigationModeActive(false)
@@ -106,6 +111,7 @@ export function RideProvider({ children }) {
       rideStartTime,
       elapsedSeconds,
       totalDistance,
+      currentSpeed,
       hasPermission,
       permissionDenied,
       startRecording,

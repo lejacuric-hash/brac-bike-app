@@ -16,14 +16,16 @@ function formatTime(seconds) {
 // this throttles to once per UPDATE_INTERVAL_MS and returns the formatted
 // text for the caller to feed into useBackgroundGps's own
 // notificationTitle/notificationText, which only restarts the watcher when
-// those actually change.
-const UPDATE_INTERVAL_MS = 30000
+// those actually change. 10s keeps the notification's live stats fresh
+// while still keeping watcher restarts infrequent enough not to affect
+// tracking reliability.
+const UPDATE_INTERVAL_MS = 10000
 
-export function useRideNotification({ active, distance, elapsedTime }) {
-  const latestRef = useRef({ distance, elapsedTime })
-  latestRef.current = { distance, elapsedTime }
+export function useRideNotification({ active, distance, elapsedTime, speed = 0 }) {
+  const latestRef = useRef({ distance, elapsedTime, speed })
+  latestRef.current = { distance, elapsedTime, speed }
 
-  const [stats, setStats] = useState({ distance, elapsedTime })
+  const [stats, setStats] = useState({ distance, elapsedTime, speed })
 
   useEffect(() => {
     if (!active) return undefined
@@ -38,6 +40,6 @@ export function useRideNotification({ active, distance, elapsedTime }) {
 
   return {
     notificationTitle: 'Brač Bike — Ride in progress',
-    notificationText: `📍 ${stats.distance.toFixed(2)} km · ⏱ ${formatTime(stats.elapsedTime)}`,
+    notificationText: `📍 ${stats.distance.toFixed(2)} km · ⏱ ${formatTime(stats.elapsedTime)} · ⚡ ${stats.speed.toFixed(1)} km/h`,
   }
 }

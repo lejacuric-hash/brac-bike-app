@@ -3,6 +3,21 @@
   position: relative;
 }
 
+/* The road-report popup supplies its own purple background via inline
+   styles on its content div — strip maplibre's default white content box
+   (padding/shadow) around it so that background isn't framed by a white
+   ring, and recolor the pointer tip to match. */
+.report-popup .maplibregl-popup-content {
+  background: transparent;
+  padding: 0;
+  box-shadow: none;
+}
+
+.report-popup .maplibregl-popup-tip {
+  border-top-color: #370063;
+  border-bottom-color: #370063;
+}
+
 .map-container {
   height: 100%;
   width: 100%;
