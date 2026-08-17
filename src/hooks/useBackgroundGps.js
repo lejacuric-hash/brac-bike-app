@@ -3,8 +3,11 @@ import { registerPlugin } from '@capacitor/core'
 
 // Detect if running as Capacitor native app
 const isNative = () => {
-  return typeof window !== 'undefined' &&
-    window.Capacitor?.isNativePlatform?.() === true
+  try {
+    return !!(window.Capacitor && window.Capacitor.isNativePlatform())
+  } catch {
+    return false
+  }
 }
 
 // @capacitor-community/background-geolocation ships no JS module of its own
@@ -68,6 +71,9 @@ export function useBackgroundGps({
 
     // Start tracking
     const startTracking = async () => {
+      console.log('isNative:', isNative())
+      console.log('Capacitor:', window.Capacitor)
+
       await requestPermissions()
       if (cancelled) return
 
