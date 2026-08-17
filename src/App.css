@@ -32,7 +32,8 @@ html, body, #root {
   font-weight: 600;
   cursor: pointer;
   position: fixed;
-  bottom: calc(66px + env(safe-area-inset-bottom, 0px)); /* above bottom nav, incl. safe area */
+  /* above bottom nav, incl. safe area — var() covers Android (Capacitor SystemBars), env() covers iOS */
+  bottom: calc(66px + var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px)));
   left: 0;
   right: 0;
   z-index: 1500;
@@ -254,7 +255,8 @@ html, body, #root {
 
 .gps-permission-denied {
   position: absolute;
-  top: 60px;
+  /* var() covers Android (Capacitor SystemBars), env() covers iOS */
+  top: calc(60px + var(--safe-area-inset-top, env(safe-area-inset-top, 0px)));
   left: 50%;
   transform: translateX(-50%);
   z-index: 1700;

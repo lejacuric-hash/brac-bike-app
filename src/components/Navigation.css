@@ -44,7 +44,11 @@
     border-top: 1px solid #753cae;
     justify-content: space-around;
     align-items: center;
-    padding: 0 8px max(12px, env(safe-area-inset-bottom));
+    /* var() first: on Android, Capacitor's SystemBars plugin injects the
+       real system-nav-bar inset as --safe-area-inset-bottom on <html>
+       (Chromium WebView doesn't reliably resolve env() itself); env() is
+       the fallback for iOS, where it works natively. */
+    padding: 0 8px max(12px, var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px)));
     z-index: 6000;
     box-sizing: border-box;
   }

@@ -30,6 +30,16 @@ const POI_METADATA = {
   water: { label: 'Water Reservoirs', color: '#2196F3' },
 }
 
+// Capacitor's Android SystemBars plugin injects the real status-bar/camera-
+// cutout inset as --safe-area-inset-top on <html> (Android's Chromium
+// WebView doesn't reliably resolve env() on its own); env() is the iOS
+// fallback, where it works natively without that bridge. Added directly to
+// each map overlay's own `top` below rather than as padding on their shared
+// ancestor (.map-wrapper), because the containing block for a
+// position:absolute child is its ancestor's padding box — padding on that
+// ancestor doesn't shift where the child's `top` offset is measured from.
+const TOP_SAFE_AREA = 'var(--safe-area-inset-top, env(safe-area-inset-top, 0px))'
+
 const iconButtonStyle = {
   background: '#370063',
   border: '1px solid rgba(255, 255, 255, 0.15)',
@@ -1986,7 +1996,7 @@ const getBrouterProfile = useCallback(() => {
               Start Ride / Stop & Save button doubles as the old Stop Navigation button). */}
           <div className="map-floating-actions" style={{
             position: 'absolute',
-            top: '75px',
+            top: `calc(75px + ${TOP_SAFE_AREA})`,
             right: '16px',
             zIndex: 1600,
             display: 'flex',
@@ -2117,7 +2127,7 @@ const getBrouterProfile = useCallback(() => {
           {showLayerMenu && (
             <div style={{
               position: 'absolute',
-              top: '75px',
+              top: `calc(75px + ${TOP_SAFE_AREA})`,
               right: '72px',
               zIndex: 1600,
               backgroundColor: '#370063',
@@ -2163,7 +2173,7 @@ const getBrouterProfile = useCallback(() => {
             onClick={() => setShowOfflinePanel((prev) => !prev)}
             style={{
               position: 'absolute',
-              top: '20px',
+              top: `calc(20px + ${TOP_SAFE_AREA})`,
               left: '16px',
               zIndex: 1600,
               display: 'flex',
@@ -2193,7 +2203,7 @@ const getBrouterProfile = useCallback(() => {
           {showOfflinePanel && (
             <div style={{
               position: 'absolute',
-              top: '58px',
+              top: `calc(58px + ${TOP_SAFE_AREA})`,
               left: '16px',
               zIndex: 1600,
               backgroundColor: '#370063',
@@ -2234,7 +2244,7 @@ const getBrouterProfile = useCallback(() => {
           {showPoiMenu && (
             <div style={{
               position: 'absolute',
-              top: '75px',
+              top: `calc(75px + ${TOP_SAFE_AREA})`,
               right: '72px',
               zIndex: 1600,
               backgroundColor: '#370063',
@@ -2281,7 +2291,7 @@ const getBrouterProfile = useCallback(() => {
           {!isOnline && (
             <div style={{
               position: 'absolute',
-              top: '16px',
+              top: `calc(16px + ${TOP_SAFE_AREA})`,
               left: '50%',
               transform: 'translateX(-50%)',
               zIndex: 1700,
@@ -2308,7 +2318,7 @@ const getBrouterProfile = useCallback(() => {
           {isDropPinMode && (
             <div style={{
               position: 'absolute',
-              top: '130px',
+              top: `calc(130px + ${TOP_SAFE_AREA})`,
               right: '16px',
               zIndex: 1001,
               backgroundColor: '#370063',
