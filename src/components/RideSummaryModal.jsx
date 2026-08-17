@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer } from 'recharts'
 import { supabase } from '../supabaseClient'
+import { sanitizeFileName } from '../utils/fileName'
 
 const CHART_COLOR = '#3b82f6'
 const STAR_COUNT = 5
@@ -116,7 +117,7 @@ export default function RideSummaryModal({ stats, onSave, onDiscard, isOpen }) {
     try {
       const photoUrls = []
       for (const file of photos) {
-        const path = `rides/${Date.now()}_${file.name}`
+        const path = `rides/${Date.now()}_${sanitizeFileName(file.name || 'photo.jpg')}`
         const { error: uploadError } = await supabase.storage.from('ride-photos').upload(path, file)
         if (uploadError) throw uploadError
         const { data } = supabase.storage.from('ride-photos').getPublicUrl(path)
