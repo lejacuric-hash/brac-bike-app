@@ -32,7 +32,7 @@ html, body, #root {
   font-weight: 600;
   cursor: pointer;
   position: fixed;
-  bottom: 72px; /* above bottom nav */
+  bottom: calc(66px + env(safe-area-inset-bottom, 0px)); /* above bottom nav, incl. safe area */
   left: 0;
   right: 0;
   z-index: 1500;

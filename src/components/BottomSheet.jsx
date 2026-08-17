@@ -85,7 +85,24 @@ function BottomSheet({
     return () => window.removeEventListener('resize', handleResize)
   }, [])
 
-  const navBarHeight = viewportSize.width <= 767 ? 64 : 0
+  // Measured live from the real .bottom-tabbar element rather than assumed as
+  // a constant — its rendered height already varies with the device's safe
+  // area (see Navigation.css's env(safe-area-inset-bottom) padding) and is 0
+  // when the tab bar is display:none on wider/desktop layouts, so this one
+  // observation covers both without duplicating either number here.
+  const [navBarHeight, setNavBarHeight] = useState(0)
+  React.useEffect(() => {
+    const tabbar = document.querySelector('.bottom-tabbar')
+    if (!tabbar) return undefined
+
+    const measure = () => setNavBarHeight(tabbar.getBoundingClientRect().height)
+    measure()
+
+    const observer = new ResizeObserver(measure)
+    observer.observe(tabbar)
+    return () => observer.disconnect()
+  }, [])
+
   const availableHeight = Math.max(viewportSize.height - navBarHeight, 0)
 
   const snapPositions = useMemo(() => ({
