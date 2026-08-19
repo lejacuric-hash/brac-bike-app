@@ -154,7 +154,10 @@ export default function RideSummaryModal({ stats, onSave, onDiscard, isOpen }) {
           maxWidth: '480px',
           maxHeight: '90vh',
           overflowY: 'auto',
-          padding: '24px',
+          // No padding-bottom here — the sticky action bar below supplies its
+          // own (including the safe-area inset), so this container's padding
+          // box doesn't leave a gap underneath it once it sticks.
+          padding: '24px 24px 0',
         }}
       >
         <div style={{ textAlign: 'center', marginBottom: '20px' }}>
@@ -313,7 +316,26 @@ export default function RideSummaryModal({ stats, onSave, onDiscard, isOpen }) {
           <div style={{ marginTop: '12px', color: '#fca5a5', fontSize: '0.85rem' }}>{uploadError}</div>
         )}
 
-        <div style={{ display: 'flex', gap: '10px', marginTop: '22px' }}>
+        {/* Sticky rather than a normal flow element so Save/Discard stay reachable
+            without scrolling all the way down, and clear of the device's own
+            bottom nav bar / home indicator (var(--safe-area-inset-bottom) — see
+            TrailsPage's TOP_SAFE_AREA for why var() is needed over bare env() on
+            Android). position: sticky works here because this div's parent is
+            the scrollable modal container itself (overflowY: auto above). */}
+        <div
+          style={{
+            position: 'sticky',
+            bottom: 0,
+            display: 'flex',
+            gap: '10px',
+            marginTop: '22px',
+            padding: '16px 0',
+            paddingBottom: 'calc(16px + var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px)))',
+            background: '#1f0931',
+            borderTop: '1px solid rgba(255,255,255,0.1)',
+            zIndex: 10,
+          }}
+        >
           <button
             type="button"
             onClick={handleSave}

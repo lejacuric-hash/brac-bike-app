@@ -102,13 +102,25 @@ const BASE_MAP_OPTIONS = [
   { id: 'satellite', label: 'Satellite' },
 ]
 
-// Keep the map locked to Brač Island — no panning to the mainland/other
-// islands, no zooming out to a world view.
-const BRAC_BOUNDS = [
-  [16.20, 43.20], // SW [lng, lat]
-  [16.90, 43.45], // NE [lng, lat]
+// Loosely keep the map around Brač — wide enough to pan to neighboring
+// islands (Hvar, Šolta) and the Split coast, but still capped short of a
+// world view.
+const BRAC_BOUNDS = {
+  minLng: 15.80,
+  maxLng: 17.50,
+  minLat: 42.90,
+  maxLat: 43.65,
+}
+// MapLibre's maxBounds prop wants [[sw.lng, sw.lat], [ne.lng, ne.lat]], not
+// the {minLng, maxLng, minLat, maxLat} shape above — derived here so
+// BRAC_BOUNDS stays the single source of truth for the app's map extent.
+const BRAC_MAX_BOUNDS = [
+  [BRAC_BOUNDS.minLng, BRAC_BOUNDS.minLat],
+  [BRAC_BOUNDS.maxLng, BRAC_BOUNDS.maxLat],
 ]
-const BRAC_CENTER = { longitude: 16.55, latitude: 43.32 }
+// Shifted north of Brač's true center so the island's southern coast still
+// clears the collapsed bottom sheet, which covers the lower portion of the map.
+const BRAC_CENTER = { longitude: 16.635, latitude: 43.370 }
 const BRAC_MIN_ZOOM = 10
 const BRAC_MAX_ZOOM = 18
 
@@ -2344,8 +2356,8 @@ const getBrouterProfile = useCallback(() => {
             <Map
               ref={mapRef}
               mapLib={maplibregl}
-              initialViewState={{ longitude: BRAC_CENTER.longitude, latitude: BRAC_CENTER.latitude, zoom: 11, bearing: 0 }}
-              maxBounds={BRAC_BOUNDS}
+              initialViewState={{ longitude: BRAC_CENTER.longitude, latitude: BRAC_CENTER.latitude, zoom: 10.5, bearing: 0 }}
+              maxBounds={BRAC_MAX_BOUNDS}
               minZoom={BRAC_MIN_ZOOM}
               maxZoom={BRAC_MAX_ZOOM}
               dragRotate={true}
