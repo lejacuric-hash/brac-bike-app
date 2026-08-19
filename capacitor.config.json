@@ -3,6 +3,10 @@
   "appName": "Brač by bike",
   "webDir": "dist",
   "android": {
-    "useLegacyBridge": true
+    "useLegacyBridge": true,
+    "backgroundColor": "#370063",
+    "allowMixedContent": true,
+    "captureInput": true,
+    "webContentsDebuggingEnabled": false
   }
 }
