@@ -101,8 +101,8 @@ export function useBackgroundGps({
               lat: location.latitude,
               lng: location.longitude,
               altitude: location.altitude || 0,
-              accuracy: location.accuracy,
-              speed: location.speed || 0,
+              accuracy: location.accuracy ?? 999,
+              speed: location.speed ?? null,
               heading: location.bearing || 0,
               timestamp: location.time,
             })
@@ -122,8 +122,8 @@ export function useBackgroundGps({
               lat: position.coords.latitude,
               lng: position.coords.longitude,
               altitude: position.coords.altitude || 0,
-              accuracy: position.coords.accuracy,
-              speed: position.coords.speed || 0,
+              accuracy: position.coords.accuracy ?? 999,
+              speed: position.coords.speed ?? null,
               heading: position.coords.heading || 0,
               timestamp: position.timestamp,
             })

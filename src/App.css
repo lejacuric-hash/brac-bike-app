@@ -13,12 +13,9 @@ html, body, #root {
 }
 
 .app-main {
-  height: calc(100vh - 72px);
-  height: calc(100dvh - 72px);
-  width: 100%;
-  overflow-y: auto;
-  overflow-x: hidden;
-  background-color: #370063;
+  flex: 1;
+  overflow: hidden;
+  height: 100dvh;
 }
 
 .recording-status-bar {

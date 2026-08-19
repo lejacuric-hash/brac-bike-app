@@ -1,12 +1,24 @@
 .tips-page {
-  min-height: 100vh;
+  height: 100dvh;
   width: 100%;
   background: #370063;
   color: #ffffff;
-  padding: 48px 24px 36px;
+  padding: 48px 24px calc(36px + max(80px, env(safe-area-inset-bottom)));
   overflow-y: auto;
+  box-sizing: border-box;
   display: flex;
   justify-content: center;
+}
+
+/* Main menu is locked to the viewport (see the inline-styled container in
+   TipsPage.jsx) — drop this wrapper's own padding/scroll so it doesn't add
+   extra height around that fixed-height container. Sub-pages don't get this
+   class and keep the default scrollable behavior above. */
+.tips-page--locked {
+  height: 100dvh;
+  min-height: 0;
+  padding: 0;
+  overflow: hidden;
 }
 
 .tips-page-shell {

@@ -14,10 +14,7 @@ function App() {
       <BrowserRouter>
         <FirstLaunchModal />
         <Navigation />
-        <main
-          className="app-main"
-          style={{ paddingBottom: 'calc(66px + var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px)))' }}
-        >
+        <main className="app-main">
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/trails" element={<TrailsPage />} />

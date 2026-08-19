@@ -1,8 +1,9 @@
 .book-page {
-  min-height: 100vh;
+  height: 100dvh;
+  overflow-y: auto;
   background-color: #370063;
   color: #ffffff;
-  padding: 24px 20px 100px;
+  padding: 24px 20px calc(100px + env(safe-area-inset-bottom));
   box-sizing: border-box;
   max-width: 600px;
   margin: 0 auto;

@@ -782,10 +782,24 @@ export default function TipsPage() {
   }
 
   return (
-    <div className="tips-page">
+    <div className={`tips-page${currentView === 'menu' ? ' tips-page--locked' : ''}`}>
       <div className="tips-page-shell">
         {currentView === 'menu' ? (
-          <>
+          <div
+            style={{
+              height: '100dvh',
+              overflow: 'hidden',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '16px',
+              padding: '24px',
+              paddingBottom: 'max(80px, env(safe-area-inset-bottom))',
+              boxSizing: 'border-box',
+              backgroundColor: '#370063',
+            }}
+          >
             <img
               src="/brač by bike4.svg"
               alt="Brač by Bike logo"
@@ -804,7 +818,7 @@ export default function TipsPage() {
                 </button>
               ))}
             </div>
-          </>
+          </div>
         ) : currentView === 'Plan by Weather Forecast' ? (
           <div className="tips-subview">
             <button type="button" className="tips-back-button" onClick={() => setCurrentView('menu')}>

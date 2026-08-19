@@ -15,6 +15,10 @@ const ACTIVE_RIDE_MAX_RESUME_AGE_MS = 5 * 60 * 1000
 // jittery GPS fix can swing it to 0 or spike it for a frame. Averaging over
 // the last few intervals (rather than just the latest two points) smooths
 // that out without lagging the display too far behind reality.
+// Below this, consecutive fixes are indistinguishable from stationary GPS
+// drift, so treat the movement as noise rather than real distance.
+const MIN_MOVEMENT_DISTANCE_KM = 0.003 // 3 meters
+
 function calculateRollingSpeed(points) {
   if (points.length < 3) return 0
 
@@ -30,6 +34,8 @@ function calculateRollingSpeed(points) {
     if (timeDiffSec <= 0 || timeDiffSec > 30) continue // skip gaps > 30s
 
     const distKm = haversineDistanceKm([prev.lat, prev.lng], [curr.lat, curr.lng])
+    if (distKm < MIN_MOVEMENT_DISTANCE_KM) continue // too small to be real movement
+
     const speed = (distKm / timeDiffSec) * 3600
 
     // Filter out GPS noise (ignore speeds > 120 km/h on a bike)
@@ -41,6 +47,10 @@ function calculateRollingSpeed(points) {
   if (speeds.length === 0) return 0
   return speeds.reduce((a, b) => a + b, 0) / speeds.length
 }
+
+// GPS fixes this imprecise are too noisy to trust for speed, though still
+// fine to show as a rough position marker.
+const MAX_USABLE_ACCURACY_M = 25
 
 export function RideProvider({ children }) {
   const [activeRecording, setActiveRecording] = useState(false)
@@ -72,6 +82,14 @@ export function RideProvider({ children }) {
   useWakeLock(activeRecording || navigationModeActive)
 
   const handlePosition = useCallback((position) => {
+    // Still show the position marker even on a poor fix, but don't let it
+    // feed the speed calculation — that's where bad accuracy shows up as
+    // phantom movement.
+    if (position.accuracy && position.accuracy > MAX_USABLE_ACCURACY_M) {
+      setCurrentPosition(position)
+      return
+    }
+
     setCurrentPosition(position)
 
     if (activeRecording) {
@@ -84,7 +102,12 @@ export function RideProvider({ children }) {
           setTotalDistance((d) => d + dist)
         }
 
-        const newSpeed = calculateRollingSpeed(updated)
+        // Native GPS speed (Doppler-derived) is more accurate than deriving
+        // it from consecutive coordinates — prefer it when the platform
+        // provides it, falling back to the rolling average otherwise.
+        const hasNativeSpeed = position.speed !== null && position.speed !== undefined && position.speed >= 0
+        const newSpeed = hasNativeSpeed ? position.speed * 3.6 : calculateRollingSpeed(updated)
+
         const now = Date.now()
         if (Math.abs(newSpeed - lastSpeedValue.current) > 0.5 || now - lastSpeedUpdate.current > 3000) {
           setCurrentSpeed(newSpeed)

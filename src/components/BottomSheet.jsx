@@ -556,7 +556,7 @@ function BottomSheet({
             <span className="stat-label">Distance</span>
           </div>
           <div className="stat">
-            <span className="stat-value">⚡ {currentSpeed < 0.3 ? '--' : currentSpeed.toFixed(1)} km/h</span>
+            <span className="stat-value">⚡ {currentSpeed < 1.5 ? '--' : currentSpeed.toFixed(1)} km/h</span>
             <span className="stat-label">Speed</span>
           </div>
           <div className="stat">
