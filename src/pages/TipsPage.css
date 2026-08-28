@@ -3,7 +3,7 @@
   width: 100%;
   background: #370063;
   color: #ffffff;
-  padding: 48px 24px calc(36px + max(80px, env(safe-area-inset-bottom)));
+  padding: 48px 24px max(80px, calc(72px + var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px))));
   overflow-y: auto;
   box-sizing: border-box;
   display: flex;
