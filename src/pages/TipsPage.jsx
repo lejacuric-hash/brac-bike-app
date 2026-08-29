@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { explorerPois } from '../data/poiData'
 import finalPlaces from '../final_places.json'
 import gastroData from "../data/gastroData.json"
+import { usePlaceRatings } from '../hooks/usePlaceRatings'
 import './TipsPage.css'
 
 const menuItems = [
@@ -579,6 +580,10 @@ export default function TipsPage() {
   const [farmSearch, setFarmSearch] = useState('')
   const [farmCategory, setFarmCategory] = useState('all')
 
+  // Explicit state for Gastro Corner restaurant place filter
+  const [selectedPlace, setSelectedPlace] = useState('All')
+  const { ratings: restaurantRatings } = usePlaceRatings(gastroData.restaurants)
+
   // Reset helper when changing main views
   useEffect(() => {
     setPoiSearch('')
@@ -587,6 +592,7 @@ export default function TipsPage() {
     setExpandedPoiId(null)
     setFarmSearch('')
     setFarmCategory('all')
+    setSelectedPlace('All')
   }, [currentView])
 
   useEffect(() => {
@@ -780,6 +786,14 @@ export default function TipsPage() {
       items: farmsData,
     },
   }
+
+  const restaurantPlaces = ['All', ...new Set(
+    gastroData.restaurants.map((r) => r.place).filter(Boolean).sort()
+  )]
+
+  const filteredRestaurants = selectedPlace === 'All'
+    ? gastroData.restaurants
+    : gastroData.restaurants.filter((r) => r.place === selectedPlace)
 
   return (
     <div className={`tips-page${currentView === 'menu' ? ' tips-page--locked' : ''}`}>
@@ -977,15 +991,97 @@ export default function TipsPage() {
 
             {/* 2. Partner Restaurants Section */}
             <h3 style={{ fontSize: '1.2rem', color: '#b794f4', marginBottom: '15px', marginTop: '30px', fontWeight: 'bold' }}>📍 Recommended Bicycle-Friendly Stops</h3>
+
+            <div
+              style={{
+                display: 'flex',
+                gap: '8px',
+                overflowX: 'auto',
+                padding: '8px 0',
+                scrollbarWidth: 'none',
+                msOverflowStyle: 'none',
+              }}
+            >
+              {restaurantPlaces.map((place) => (
+                <button
+                  key={place}
+                  type="button"
+                  onClick={() => setSelectedPlace(place)}
+                  style={{
+                    flexShrink: 0,
+                    padding: '6px 16px',
+                    borderRadius: '999px',
+                    border: '2px solid',
+                    borderColor: selectedPlace === place ? '#753cae' : 'rgba(255,255,255,0.2)',
+                    background: selectedPlace === place ? '#753cae' : 'transparent',
+                    color: '#ffffff',
+                    fontSize: '13px',
+                    fontWeight: 600,
+                    cursor: 'pointer',
+                    whiteSpace: 'nowrap',
+                  }}
+                >
+                  {place}
+                </button>
+              ))}
+            </div>
+
+            <p style={{ fontSize: '0.85rem', color: '#d6bcfa', margin: '4px 0 15px 0' }}>
+              {filteredRestaurants.length > 0
+                ? `${filteredRestaurants.length} restaurant${filteredRestaurants.length === 1 ? '' : 's'}`
+                : `No restaurants in ${selectedPlace}`}
+            </p>
+
             <div className="card-list">
-              {gastroData.restaurants.map((rest) => (
+              {filteredRestaurants.map((rest) => (
                 <article key={rest.id} className="tips-card" style={{ display: 'block', padding: '16px' }}>
                   <span style={{ fontSize: '0.75rem', fontWeight: 'bold', color: '#d6bcfa', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                     Konoba / Restoran • {rest.place}
                   </span>
                   <h3 style={{ margin: '4px 0 8px 0', fontSize: '1.2rem', color: '#ffffff' }}>{rest.name}</h3>
                   <p style={{ marginBottom: '12px', color: '#f7fafc' }}>{rest.description}</p>
-                  
+
+                  {restaurantRatings[rest.id] && (
+                    <div
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '8px',
+                        marginTop: '8px',
+                      }}
+                    >
+                      <div style={{ color: '#facc15', fontSize: '16px' }}>
+                        {'★'.repeat(Math.round(restaurantRatings[rest.id].rating))}
+                        {'☆'.repeat(5 - Math.round(restaurantRatings[rest.id].rating))}
+                      </div>
+                      <span style={{ color: 'rgba(255,255,255,0.8)', fontSize: '13px', fontWeight: 600 }}>
+                        {restaurantRatings[rest.id].rating?.toFixed(1)}
+                      </span>
+                      <span style={{ color: 'rgba(255,255,255,0.5)', fontSize: '12px' }}>
+                        ({restaurantRatings[rest.id].reviewCount} reviews)
+                      </span>
+                      {restaurantRatings[rest.id].googleMapsUrl && (
+                        <a
+                          href={restaurantRatings[rest.id].googleMapsUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          style={{
+                            marginLeft: 'auto',
+                            color: '#753cae',
+                            fontSize: '12px',
+                            fontWeight: 600,
+                            textDecoration: 'none',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '4px',
+                          }}
+                        >
+                          Google Reviews →
+                        </a>
+                      )}
+                    </div>
+                  )}
+
                   {/* Contact Block */}
                   <div style={{ fontSize: '0.8rem', color: '#edf2f7', borderTop: '1px dashed rgba(255, 255, 255, 0.2)', paddingTop: '8px', marginTop: '10px' }}>
                     <div style={{ marginBottom: '4px' }}><span style={{ color: '#d6bcfa' }}>🕒 Hours:</span> {rest.workingHours}</div>
