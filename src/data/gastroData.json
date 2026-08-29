@@ -29,7 +29,7 @@
     {
       "id": "konoba-kala-supetar",
       "name": "Konoba Kala",
-      "placeId": "",
+      "placeId": "Supetar",
       "description": "Small family-run fine-dining tavern tucked in a narrow stone alley in the heart of Supetar. Chef-driven tasting menus built around seasonal Brač lamb, Adriatic fish, and wood-fire cooking. Michelin-recognized.",
       "place": "Supetar",
       "workingHours": "12:00 - 22:30 (closed Mondays)",
@@ -49,7 +49,7 @@
     {
       "id": "restoran-palute-supetar",
       "name": "Restoran Palute",
-      "placeId": "",
+      "placeId": "Supetar",
       "description": "Harborside restaurant right on the Supetar riva, serving classic Dalmatian grilled fish and meat platters with a view of the marina.",
       "place": "Supetar",
       "workingHours": "8:00-23:00",
@@ -68,8 +68,8 @@
     {
       "id": "konoba-ziza-supetar",
       "name": "Konoba Žiža",
-      "placeId": "",
-      "description": "Rustic konoba near Donji Humac known for hearty homemade Brač specialties and a large, shaded outdoor terrace.",
+      "placeId": "Donji Humac",
+      "description": "Rustic tavern near Donji Humac known for hearty homemade Brač specialties and a large, shaded outdoor terrace.",
       "place": "Donji Humac",
       "workingHours": "12:00 - 24:00",
       "phone": "+385 91 151 7128",
@@ -87,7 +87,7 @@
     {
       "id": "konoba-oliva-supetar",
       "name": "Konoba Oliva",
-      "placeId": "",
+      "placeId": "Supetar",
       "description": "Neighborhood tavern in Supetar serving home-style Dalmatian dishes, olive oil tastings, and daily specials.",
       "place": "Supetar",
       "workingHours": "13:00-23:00",
@@ -105,8 +105,8 @@
     {
       "id": "konoba-storija-supetar",
       "name": "Konoba Štorija",
-      "placeId": "",
-      "description": "Local konoba away from the main strip, favored by residents for straightforward home cooking and generous portions.",
+      "placeId": "Supetar",
+      "description": "Local tavern away from the main strip, favored by residents for straightforward home cooking and generous portions.",
       "place": "Supetar",
       "workingHours": "17:00-24:00",
       "phone": "+385 98 191 3210",
@@ -123,7 +123,7 @@
     {
       "id": "restoran-otok-hotel-osam-supetar",
       "name": "Restoran Otok (Hotel Osam)",
-      "placeId": "",
+      "placeId": "Supetar",
       "description": "Hotel restaurant and bar in Supetar offering a refined take on Mediterranean and Dalmatian cuisine.",
       "place": "Supetar",
       "workingHours": "7:30-22:00",
@@ -142,7 +142,7 @@
     {
       "id": "restaurant-nona-roka-supetar",
       "name": "Restaurant Nona Roka",
-      "placeId": "",
+      "placeId": "Supetar",
       "description": "Family-style Supetar restaurant with grandmother-recipe home cooking and a relaxed neighborhood feel.",
       "place": "Supetar",
       "workingHours": "N/A - one directory listing (Restaurant Guru) currently flags it as 'temporarily closed'; worth verifying before visiting",
@@ -160,8 +160,8 @@
     {
       "id": "konoba-vinotoka-supetar",
       "name": "Konoba Vinotoka",
-      "placeId": "",
-      "description": "Small open-front konoba on a Supetar backstreet, well regarded for fresh fish cooked simply on the grill.",
+      "placeId": "Supetar",
+      "description": "Small open-front tavern on a Supetar backstreet, well regarded for fresh fish cooked simply on the grill.",
       "place": "Supetar",
       "workingHours": "12:00 - 22:00 (daily)",
       "phone": "+385 95 355 4815",
@@ -179,7 +179,7 @@
     {
       "id": "restoran-punta-supetar",
       "name": "Restoran Punta",
-      "placeId": "",
+      "placeId": "Supetar",
       "description": "Popular Supetar restaurant with a broad menu spanning schnitzels, fish specialties, pasta, and soups.",
       "place": "Supetar",
       "workingHours": "Open daily (listed as 24h availability; kitchen effectively serves roughly 8:00-23:00)",
@@ -198,7 +198,7 @@
     {
       "id": "agroturizam-ranjak-supetar",
       "name": "Agroturizam Ranjak",
-      "placeId": "",
+      "placeId": "Supetar",
       "description": "Countryside agrotourism estate above Supetar, offering home-grown produce and traditional slow-cooked dishes.",
       "place": "Supetar (Gornji Ranjak)",
       "workingHours": "N/A - no published hours found; located on the Supetar-Nerežišća road",
@@ -217,7 +217,7 @@
     {
       "id": "opg-kuzmanic-skrip",
       "name": "OPG Kuzmanić",
-      "placeId": "",
+      "placeId": "Škrip",
       "description": "Family farm near Škrip offering tastings and sales of home-produced olive oil, wine, and local delicacies.",
       "place": "Škrip",
       "workingHours": "N/A",
@@ -236,7 +236,7 @@
     {
       "id": "muzej-uja-skrip",
       "name": "Muzej Uja (Olive Oil Museum) - Kušaonica",
-      "placeId": "",
+      "placeId": "Škrip",
       "description": "Olive oil museum and tasting room in the historic village of Škrip, showcasing traditional Brač oil production.",
       "place": "Škrip",
       "workingHours": "09:00 - 20:00 (daily)",
@@ -255,8 +255,8 @@
     {
       "id": "konoba-kod-tonca-splitska",
       "name": "Konoba Kod Tonča",
-      "placeId": "",
-      "description": "Waterfront konoba on Splitska's riva serving fresh fish and traditional Dalmatian dishes with harbor views.",
+      "placeId": "Splitska",
+      "description": "Waterfront tavern on Splitska's riva serving fresh fish and traditional Dalmatian dishes with harbor views.",
       "place": "Splitska",
       "workingHours": "N/A - no published hours found",
       "phone": "+385 21 717 716",
@@ -274,8 +274,8 @@
     {
       "id": "konoba-vala-splitska",
       "name": "Konoba Vala",
-      "placeId": "",
-      "description": "Small seaside konoba on the Splitska waterfront, popular for grilled fish and a laid-back harbor atmosphere.",
+      "placeId": "Splitska",
+      "description": "Small seaside tavern on the Splitska waterfront, popular for grilled fish and a laid-back harbor atmosphere.",
       "place": "Splitska",
       "workingHours": "N/A - no published hours found",
       "phone": "N/A - no published number found",
@@ -293,7 +293,7 @@
     {
       "id": "bistro-vila-marija-splitska",
       "name": "Bistro Vila Marija",
-      "placeId": "",
+      "placeId": "Splitska",
       "description": "Cozy bistro in Splitska offering home-style meals and casual dining right by the water.",
       "place": "Splitska",
       "workingHours": "N/A - no published hours found",
@@ -311,7 +311,7 @@
     {
       "id": "konoba-kopacina-donji-humac",
       "name": "Konoba Kopačina",
-      "placeId": "",
+      "placeId": "Donji Humac",
       "description": "One of Brač's most famous taverns, run by the Jugović family since 2000 in the stone village of Donji Humac. Renowned for spit-roasted and peka-cooked lamb, homemade prosciutto, and a large terrace with quarry views.",
       "place": "Donji Humac",
       "workingHours": "10:00 - 23:30",
@@ -330,7 +330,7 @@
     {
       "id": "konoba-turanj-nerezisca",
       "name": "Konoba Turanj",
-      "placeId": "",
+      "placeId": "Nerežišća",
       "description": "Family-run Jakšić-estate tavern near Donji Humac, decorated with antiques, set among vineyards and olive groves with two bowling lanes and a century-old stone shed.",
       "place": "Nerežišća",
       "workingHours": "17:00 - 23:00 (summer season); as of a recent notice it operates by pre-arranged reservation only outside peak season — call ahead",
@@ -349,7 +349,7 @@
     {
       "id": "senjkovic-wine-bar-nerezisca",
       "name": "Senjković Wine Bar",
-      "placeId": "",
+      "placeId": "Nerežišća",
       "description": "Small chef-and-winemaker-run wine bar in Nerežišća serving slow-food tasting menus and small tapas-style plates paired with estate wine. Note: this moved from its original Dračevica location to Nerežišća's main square; it's now sometimes listed as \"Vina Senjković\" / \"Senjković Winery\".",
       "place": "Nerežišća",
       "workingHours": "N/A",
@@ -368,7 +368,7 @@
     {
       "id": "domacinstvo-gazul",
       "name": "Seosko domaćinstvo Gažul",
-      "placeId": "",
+      "placeId": "Gažul",
       "description": "Former shepherd's settlement turned rural estate near Vidova Gora, serving excellent homemade food in a completely natural, off-grid setting.",
       "place": "Gažul (near Dol/Nerežišća)",
       "workingHours": "N/A",
@@ -388,7 +388,7 @@
     {
       "id": "konoba-toni-dol",
       "name": "Konoba Toni",
-      "placeId": "",
+      "placeId": "Dol",
       "description": "Beloved family tavern in the eco-ethno village of Dol, run for generations by the Matulić family. Famous for octopus, grilled sardines, and the local Hrapoćuša walnut cake.",
       "place": "Dol",
       "workingHours": "Seasonal (closed Nov-Mar)",
@@ -408,7 +408,7 @@
     {
       "id": "kastil-gospodnetic-dol",
       "name": "Kaštil Gospodnetić (Agroturizam)",
-      "placeId": "",
+      "placeId": "Dol",
       "description": "16th-century noble house and family estate, 12 generations in the Gospodnetić family, serving traditional lamb and octopus peka on a Renaissance-tavern or baroque-terrace setting overlooking the valley and sea.",
       "place": "Dol",
       "workingHours": "Reservation required, pre-order dishes 1 day ahead",
@@ -428,7 +428,7 @@
     {
       "id": "agroturizam-hrapocusa-dol",
       "name": "Agroturizam Hrapoćuša (OPG Lazaneo)",
-      "placeId": "",
+      "placeId": "Dol",
       "description": "Family farm estate between Postira and Dol, set in an olive-and-vineyard valley, serving lamb specialties and the iconic Hrapoćuša cake made with a century-old family recipe.",
       "place": "Dol / Postira",
       "workingHours": "18:00 - 23:00 (daily); dishes cooked under the bell require advance reservation",
@@ -448,7 +448,7 @@
     {
       "id": "konoba-gustirna-postira",
       "name": "Konoba Gustirna",
-      "placeId": "",
+      "placeId": "Postira",
       "description": "Family restaurant in the center of Postira, set in a former stone cistern (gustirna), offering traditional peka, fresh seafood, and harbor-view terrace seating.",
       "place": "Postira",
       "workingHours": "N/A",
@@ -468,7 +468,7 @@
     {
       "id": "agroturizam-rotunda-postira",
       "name": "Agroturizam Rotunda",
-      "placeId": "",
+      "placeId": "Postira",
       "description": "Hilltop family farm estate east of Postira with sea and mountain views, offering homemade olive oil tastings, almond and fig orchards, and traditional island hospitality.",
       "place": "Postira",
       "workingHours": "N/A",
@@ -487,7 +487,7 @@
     {
       "id": "restaurant-dvor-postira",
       "name": "Restaurant Dvor",
-      "placeId": "",
+      "placeId": "Postira",
       "description": "Local Postira restaurant serving traditional Dalmatian dishes in a relaxed, family setting.",
       "place": "Postira",
       "workingHours": "N/A",
@@ -505,8 +505,8 @@
     {
       "id": "konoba-nono-deslav-podhume",
       "name": "Konoba Nono Deslav",
-      "placeId": "",
-      "description": "Rural konoba in the small inland hamlet of Podhume, serving simple, home-cooked island fare.",
+      "placeId": "Podhume",
+      "description": "Rural tavern in the small inland hamlet of Podhume, serving simple, home-cooked island fare.",
       "place": "Podhume",
       "workingHours": "N/A",
       "phone": "+385 95 797 0510",
@@ -523,8 +523,8 @@
     {
       "id": "konoba-kogula-bobovisca",
       "name": "Konoba Kogula",
-      "placeId": "",
-      "description": "Waterfront konoba on the square in Bobovišća na moru, serving fresh fish and traditional grilled dishes.",
+      "placeId": "Bobovišća na moru",
+      "description": "Waterfront tavern on the square in Bobovišća na moru, serving fresh fish and traditional grilled dishes.",
       "place": "Bobovišća na moru",
       "workingHours": "N/A",
       "phone": "+385 21 240 014",
@@ -542,8 +542,8 @@
     {
       "id": "konoba-vala-bobovisca",
       "name": "Konoba Vala",
-      "placeId": "",
-      "description": "Small harborside konoba in Bobovišća na moru offering fresh catch and a relaxed bay-side setting.",
+      "placeId": "Bobovišća na moru",
+      "description": "Small harborside tavern in Bobovišća na moru offering fresh catch and a relaxed bay-side setting.",
       "place": "Bobovišća na moru",
       "workingHours": "14:00 - 00:00 (daily)",
       "phone": "N/A",
@@ -561,7 +561,7 @@
     {
       "id": "kapetanovo-lozje-milna",
       "name": "Kapetanovo Lozje",
-      "placeId": "",
+      "placeId": "Milna",
       "description": "Rustic tavern set in a vineyard above Osibova bay near Milna, known for homemade wine and traditional grilled specialties.",
       "place": "Milna (Osibova)",
       "workingHours": "N/A",
@@ -580,7 +580,7 @@
     {
       "id": "restoran-lucice-bay-milna",
       "name": "Restoran Lučice Bay",
-      "placeId": "",
+      "placeId": "Milna",
       "description": "Bay-side restaurant near Milna popular with sailors, offering fresh fish and a relaxed pine-forest setting on a sheltered cove.",
       "place": "Milna",
       "workingHours": "N/A",
@@ -599,8 +599,8 @@
     {
       "id": "konoba-pizzeria-slika-milna",
       "name": "Konoba & Pizzeria Slika",
-      "placeId": "",
-      "description": "Waterfront konoba and pizzeria right on Milna's riva, combining traditional Dalmatian dishes with wood-fired pizza.",
+      "placeId": "Milna",
+      "description": "Waterfront tavern and pizzeria right on Milna's riva, combining traditional Dalmatian dishes with wood-fired pizza.",
       "place": "Milna",
       "workingHours": "N/A",
       "phone": "+385 21 636 220",
@@ -617,8 +617,8 @@
     {
       "id": "restaurant-sedma-peka-milna",
       "name": "Restaurant Sedma Peka",
-      "placeId": "",
-      "description": "Konoba specializing in traditional peka-style slow-cooked meat and seafood, set on the hillside above Milna's harbor.",
+      "placeId": "Milna",
+      "description": "Tavern specializing in traditional peka-style slow-cooked meat and seafood, set on the hillside above Milna's harbor.",
       "place": "Milna",
       "workingHours": "N/A",
       "phone": "+385 91 154 3066",
@@ -637,7 +637,7 @@
     {
       "id": "restaurant-palma-milna",
       "name": "Restaurant Palma",
-      "placeId": "",
+      "placeId": "Milna",
       "description": "Milna harborfront restaurant offering classic Dalmatian and Mediterranean dishes.",
       "place": "Milna",
       "workingHours": "N/A",
@@ -655,8 +655,8 @@
     {
       "id": "konoba-dupini-milna",
       "name": "Konoba Dupini",
-      "placeId": "",
-      "description": "Family-style konoba in Milna serving traditional Brač specialties in a friendly, casual setting.",
+      "placeId": "Milna",
+      "description": "Family-style tavern in Milna serving traditional Brač specialties in a friendly, casual setting.",
       "place": "Milna",
       "workingHours": "N/A",
       "phone": "+385 21 636 295",
@@ -673,8 +673,8 @@
     {
       "id": "konoba-gajeta-milna",
       "name": "Konoba Gajeta",
-      "placeId": "",
-      "description": "Traditional konoba on Milna's waterfront, named after the classic Dalmatian fishing boat, serving fresh fish and grilled meat.",
+      "placeId": "Milna",
+      "description": "Traditional tavern on Milna's waterfront, named after the classic Dalmatian fishing boat, serving fresh fish and grilled meat.",
       "place": "Milna",
       "workingHours": "N/A",
       "phone": "+385 21 636 174",
@@ -692,8 +692,8 @@
     {
       "id": "bonito-konoba-bar-milna",
       "name": "Bonito Konoba Bar",
-      "placeId": "",
-      "description": "Modern-meets-traditional konoba bar in Milna, blending local ingredients with a contemporary presentation.",
+      "placeId": "Milna",
+      "description": "Modern-meets-traditional tavern bar in Milna, blending local ingredients with a contemporary presentation.",
       "place": "Milna",
       "workingHours": "N/A",
       "phone": "+385 91 620 1640",
@@ -711,7 +711,7 @@
     {
       "id": "restaurant-illyrian-milna",
       "name": "Restaurant Illyrian",
-      "placeId": "",
+      "placeId": "Milna",
       "description": "Milna restaurant offering traditional Dalmatian cuisine with a nod to the island's ancient Illyrian heritage.",
       "place": "Milna",
       "workingHours": "08:00 - 23:00 (daily)",
@@ -729,7 +729,7 @@
     {
       "id": "restaurant-bago-milna",
       "name": "Restaurant BAGO",
-      "placeId": "",
+      "placeId": "Milna",
       "description": "Small local restaurant near Mala Bijaka bay outside Milna, serving traditional home-style cooking.",
       "place": "Milna",
       "workingHours": "N/A",
@@ -747,7 +747,7 @@
     {
       "id": "restaurant-omo-milna",
       "name": "Restaurant OMO",
-      "placeId": "",
+      "placeId": "Milna",
       "description": "Family restaurant in Milna serving fresh seafood, grilled fish and meat, soups, and vegetarian dishes on a relaxed terrace.",
       "place": "Milna",
       "workingHours": "N/A",
@@ -767,7 +767,7 @@
     {
       "id": "konoba-familja-milna",
       "name": "Konoba Familja",
-      "placeId": "",
+      "placeId": "Milna",
       "description": "Family-run restaurant in the stunning Lučice Bay near Milna, serving modern Dalmatian cuisine (tuna tartare, octopus carpaccio, beef tartare) since 1998, with mooring buoys for sailors and space for around 150 guests.",
       "place": "Milna",
       "workingHours": "12:00 - 23:00",
@@ -787,8 +787,8 @@
     {
       "id": "konoba-bokuncin-sutivan",
       "name": "Konoba Bokuncin",
-      "placeId": "",
-      "description": "Modern-traditional konoba run by two sisters right on Sutivan's harbor, with a menu based on local, seasonal ingredients spanning meat, seafood, and vegetarian dishes.",
+      "placeId": "Sutivan",
+      "description": "Tavern run by two sisters right on Sutivan's harbor, with a menu based on local, seasonal ingredients spanning meat, seafood, and vegetarian dishes.",
       "place": "Sutivan",
       "workingHours": "N/A",
       "phone": "+385 21 638 338",
@@ -807,7 +807,7 @@
     {
       "id": "restaurant-lemongarden-sutivan",
       "name": "Restaurant Lemongarden",
-      "placeId": "",
+      "placeId": "Sutivan",
       "description": "Elegant restaurant within a 300-year-old heritage building on Sutivan's waterfront, blending Venetian-influenced Mediterranean cuisine with fine dining service. JRE-listed.",
       "place": "Sutivan",
       "workingHours": "N/A",
@@ -826,8 +826,8 @@
     {
       "id": "restaurant-miki-sutivan",
       "name": "Restaurant Miki",
-      "placeId": "",
-      "description": "Local konoba-style restaurant in Sutivan offering an authentic taste of island cuisine.",
+      "placeId": "Sutivan",
+      "description": "Local tavern-style restaurant in Sutivan offering an authentic taste of island cuisine.",
       "place": "Sutivan",
       "workingHours": "N/A - no published hours found",
       "phone": "+385 21 638 299",
@@ -844,7 +844,7 @@
     {
       "id": "grill-garden-sutivan",
       "name": "Grill Garden Restaurant",
-      "placeId": "",
+      "placeId": "Sutivan",
       "description": "Restaurant surrounded by nature with sea views, offering Mediterranean cuisine and quality wine selections.",
       "place": "Sutivan",
       "workingHours": "12:00 - 23:00 (daily)",
@@ -863,7 +863,7 @@
     {
       "id": "konoba-dalmatino-bol",
       "name": "Konoba Dalmatino",
-      "placeId": "",
+      "placeId": "Bol",
       "description": "Long-running tavern tucked in a quiet Bol alleyway since 1997, serving homemade Croatian and Mediterranean dishes in a romantic, rustic setting.",
       "place": "Bol",
       "workingHours": "09:00 - 24:00 (daily)",
@@ -883,7 +883,7 @@
     {
       "id": "konoba-mali-raj-bol",
       "name": "Konoba Mali Raj",
-      "placeId": "",
+      "placeId": "Bol",
       "description": "Restaurant built from Brač marble near Zlatni Rat beach, surrounded by olive trees and vines, offering traditional Dalmatian dishes upgraded for international tastes.",
       "place": "Bol",
       "workingHours": "N/A",
@@ -903,7 +903,7 @@
     {
       "id": "konoba-toni-dinko-bol",
       "name": "Konoba (Apartmani Dinko)",
-      "placeId": "",
+      "placeId": "Bol",
       "description": "Family-run konoba by the Cvitanić family in Bol, specializing in oak-grilled roast lamb and spit-roasted chicken.",
       "place": "Bol",
       "workingHours": "N/A",
@@ -922,7 +922,7 @@
     {
       "id": "konoba-vrsalovici-dvori-bol",
       "name": "Konoba Vrsalovići Dvori",
-      "placeId": "",
+      "placeId": "Bol",
       "description": "Traditional Bol konoba serving Dalmatian home cooking in a historic courtyard setting.",
       "place": "Bol",
       "workingHours": "N/A",
@@ -940,8 +940,8 @@
     {
       "id": "konoba-bretanide-bol",
       "name": "Konoba Bretanide",
-      "placeId": "",
-      "description": "Traditional konoba in Bol named after the ancient river said to have once run through the island, serving classic island dishes.",
+      "placeId": "Bol",
+      "description": "Traditional tavern in Bol named after the ancient river said to have once run through the island, serving classic island dishes.",
       "place": "Bol",
       "workingHours": "N/A",
       "phone": "N/A",
@@ -958,7 +958,7 @@
     {
       "id": "restoran-kastil-bol",
       "name": "Restoran Kaštil",
-      "placeId": "",
+      "placeId": "Bol",
       "description": "Restaurant within the historic Kaštil Gothic house/hotel on Bol's harbor, serving traditional and Mediterranean cuisine.",
       "place": "Bol",
       "workingHours": "N/A",
@@ -977,7 +977,7 @@
     {
       "id": "taverna-riva-bol",
       "name": "Restoran Taverna Riva",
-      "placeId": "",
+      "placeId": "Bol",
       "description": "Waterfront restaurant blending traditional Dalmatian cuisine with modern culinary touches in the heart of Bol.",
       "place": "Bol",
       "workingHours": "11:00 - 23:45 (daily)",
@@ -996,7 +996,7 @@
     {
       "id": "ribarska-kucica-bol",
       "name": "Restoran Ribarska Kućica",
-      "placeId": "",
+      "placeId": "Bol",
       "description": "\"Fisherman's house\" restaurant in Bol specializing in fresh, simply prepared seafood.",
       "place": "Bol",
       "workingHours": "N/A",
@@ -1015,7 +1015,7 @@
     {
       "id": "restoran-mendula-bol",
       "name": "Restoran Mendula",
-      "placeId": "",
+      "placeId": "Bol",
       "description": "Cozy Bol restaurant named after the almond tree, serving traditional island fare in a relaxed atmosphere.",
       "place": "Bol",
       "workingHours": "Approx. 13:00 - 23:00 (some sources cite 18:00-23:00)",
@@ -1033,7 +1033,7 @@
     {
       "id": "ranc-restaurant-bol",
       "name": "Ranč Restaurant",
-      "placeId": "",
+      "placeId": "Bol",
       "description": "Rustic ranch-style restaurant in Bol focused on grilled meats and traditional Dalmatian sides.",
       "place": "Bol",
       "workingHours": "N/A",
@@ -1052,7 +1052,7 @@
     {
       "id": "konoba-tomic-gornji-humac",
       "name": "Pansion Tavern Tomić",
-      "placeId": "",
+      "placeId": "Gornji Humac",
       "description": "Family-run tavern in the interior village of Gornji Humac, offering peka-cooked lamb sourced directly from the family's own land, alongside homemade cheese, prosciutto, honey, wine, and olive oil.",
       "place": "Gornji Humac",
       "workingHours": "N/A",
@@ -1072,8 +1072,8 @@
     {
       "id": "konoba-rojen-pucisca",
       "name": "Konoba Rojen",
-      "placeId": "",
-      "description": "Family konoba in Uvala Luke near Pučišća, offering daily fresh fish and meat specialties with anchorage available for boaters.",
+      "placeId": "Pučišća",
+      "description": "Family tavern in Uvala Luke near Pučišća, offering daily fresh fish and meat specialties with anchorage available for boaters.",
       "place": "Pučišća",
       "workingHours": "Closed Nov 1 - Mar 1",
       "phone": "+385 21 633 051",
@@ -1092,7 +1092,7 @@
     {
       "id": "restoran-lucica-pucisca",
       "name": "Restoran Lučica",
-      "placeId": "",
+      "placeId": "Pučišća",
       "description": "Seaside restaurant along Pučišća's promenade, offering traditional Dalmatian dishes with harbor views.",
       "place": "Pučišća",
       "workingHours": "N/A",
@@ -1111,7 +1111,7 @@
     {
       "id": "agroturizam-pipo-pucisca",
       "name": "Agroturizam Božidar Eterović \"Pipo\"",
-      "placeId": "",
+      "placeId": "Pučišća",
       "description": "Family agrotourism estate in Uvala Luke near Pučišća, offering home-grown produce and traditional island hospitality.",
       "place": "Pučišća",
       "workingHours": "N/A",
@@ -1130,7 +1130,7 @@
     {
       "id": "konoba-lado-pucisca",
       "name": "Konoba Lado",
-      "placeId": "",
+      "placeId": "Pučišća",
       "description": "Local konoba in Pučišća serving traditional home-cooked Dalmatian dishes.",
       "place": "Pučišća",
       "workingHours": "Jun-Oct: 11:00-15:00, 18:00-24:00",
@@ -1148,7 +1148,7 @@
     {
       "id": "country-house-hacienda-selca",
       "name": "Country House Hacienda",
-      "placeId": "",
+      "placeId": "Selca",
       "description": "Rural estate near Selca offering a countryside dining experience with home-produced ingredients.",
       "place": "Selca",
       "workingHours": "N/A",
@@ -1167,7 +1167,7 @@
     {
       "id": "restoran-bilin-selca",
       "name": "Restoran Bilin",
-      "placeId": "",
+      "placeId": "Selca",
       "description": "Long-running family restaurant in Puntinak near Selca, serving authentic Dalmatian cuisine including black risotto, peka, and octopus salad.",
       "place": "Selca (Puntinak)",
       "workingHours": "Seasonal (approx. 10 June - 15 Oct)",
@@ -1186,8 +1186,8 @@
     {
       "id": "konoba-bernardo-sumartin",
       "name": "Konoba Bernardo",
-      "placeId": "",
-      "description": "Family-run konoba in the harbor village of Sumartin, offering fresh fish and traditional grilled specialties.",
+      "placeId": "Sumartin",
+      "description": "Family-run tavern in the harbor village of Sumartin, offering fresh fish and traditional grilled specialties.",
       "place": "Sumartin",
       "workingHours": "Seasonal: June 1 - September 25",
       "phone": "+385 91 784 2648",
@@ -1205,7 +1205,7 @@
     {
       "id": "konoba-top-sumartin",
       "name": "Konoba TOP",
-      "placeId": "",
+      "placeId": "Sumartin",
       "description": "Sumartin restaurant offering a wide range of gastronomic delicacies using fresh meat and fish sourced daily from local Brač fishermen.",
       "place": "Sumartin",
       "workingHours": "Approx. 09:00 - 22:00 (daily)",
@@ -1225,7 +1225,7 @@
     {
       "id": "konoba-kala-povlja",
       "name": "Konoba Kala",
-      "placeId": "",
+      "placeId": "Povlja",
       "description": "Family tavern right on Povlja's romantic harbor promenade, cooking fresh daily catch (mussels, calamari, scampi) the traditional way, with home-pressed olive oil.",
       "place": "Povlja",
       "workingHours": "12:00 - 23:00 (daily)",
@@ -1244,7 +1244,7 @@
     {
       "id": "restoran-maslina-povlja",
       "name": "Restoran Maslina",
-      "placeId": "",
+      "placeId": "Povlja",
       "description": "Small seafront restaurant in Povlja, popular for fresh fish and a relaxed harbor setting.",
       "place": "Povlja",
       "workingHours": "N/A - no published hours found",
@@ -1263,7 +1263,7 @@
     {
       "id": "konoba-jurova-makina-povlja",
       "name": "Konoba Jurova Makina",
-      "placeId": "",
+      "placeId": "Povlja",
       "description": "Casual konoba and pizza-drinks bar on Povlja's riva, serving simple traditional fare alongside pizza.",
       "place": "Povlja",
       "workingHours": "N/A",
@@ -1281,8 +1281,8 @@
     {
       "id": "konoba-stara-uljara-povlja",
       "name": "Konoba Stara Uljara",
-      "placeId": "",
-      "description": "Konoba set in a former olive-oil mill (\"stara uljara\") in Povlja, serving traditional seafood specialties.",
+      "placeId": "Povlja",
+      "description": "Tavern set in a former olive-oil mill (\"stara uljara\") in Povlja, serving traditional seafood specialties.",
       "place": "Povlja",
       "workingHours": "N/A",
       "phone": "+385 91 730 4214",
