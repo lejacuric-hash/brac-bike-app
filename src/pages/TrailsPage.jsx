@@ -6,6 +6,8 @@ import './TrailsPage.css'
 import '../App.css'
 import BottomSheet from '../components/BottomSheet'
 import ReportProblem from '../components/ReportProblem'
+import MapSearch from '../components/MapSearch'
+import PlaceSearchInput from '../components/PlaceSearchInput'
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer } from 'recharts'
 
 // Ensure your Supabase client is imported correctly
@@ -395,7 +397,6 @@ export default function TrailsPage() {
   const [routeDifficulty, setRouteDifficulty] = useState('moderate')
   const [avoidHikingTrails, setAvoidHikingTrails] = useState(true)
   const [activePinningIndex, setActivePinningIndex] = useState(null)
-  const [waypointSearchLoadingIndex, setWaypointSearchLoadingIndex] = useState(null)
   const [routeGeometry, setRouteGeometry] = useState([])
   const [routePlannerStats, setRoutePlannerStats] = useState(null)
   const [routeError, setRouteError] = useState(null)
@@ -813,6 +814,12 @@ export default function TrailsPage() {
     )
   }, [])
 
+  const handleSearchSelect = useCallback(({ lat, lng }) => {
+    if (mapRef.current) {
+      mapRef.current.flyTo({ center: [lng, lat], zoom: 14, duration: 1200 })
+    }
+  }, [])
+
   const handleReportProblem = useCallback(() => {
     setIsDropPinMode(false)
     if (reportProblemRef.current?.openModal) {
@@ -1041,54 +1048,25 @@ export default function TrailsPage() {
     )))
   }, [])
 
-  const geocodeWaypointAddress = useCallback(async (index, address) => {
-    const query = address.trim()
-    if (!query) return
-
-    setWaypointSearchLoadingIndex(index)
-    setRouteError(null)
-
+  // Same provider as the waypoint search suggestions and the map search bar, so a
+  // pin dropped on the map resolves to an address in the same geocoding index.
+  const reverseGeocodeAddress = useCallback(async (lat, lng) => {
+    const fallback = `${lat.toFixed(4)}, ${lng.toFixed(4)}`
     try {
-      const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`)
+      const response = await fetch(
+        `https://api.maptiler.com/geocoding/${lng},${lat}.json?key=${MAPTILER_API_KEY}&language=en,hr&limit=1`
+      )
       const data = await response.json()
-
-      if (data && data.length > 0) {
-        const { lat, lon, display_name } = data[0]
-        updateWaypointCoordsAndAddress(index, parseFloat(lat), parseFloat(lon), display_name)
-      } else {
-        setRouteError('Could not find that address. Please try a more specific search.')
-      }
+      return data.features?.[0]?.place_name || fallback
     } catch {
-      setRouteError('Address lookup failed. Please try again.')
-    } finally {
-      setWaypointSearchLoadingIndex(null)
+      return fallback
     }
-  }, [updateWaypointCoordsAndAddress])
+  }, [])
 
   const reverseGeocodeWaypoint = useCallback(async (index, lat, lng) => {
-    try {
-      const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`)
-      const data = await response.json()
-      if (data?.display_name) {
-        updateWaypointCoordsAndAddress(index, lat, lng, data.display_name)
-      } else {
-        updateWaypointCoordsAndAddress(index, lat, lng)
-      }
-    } catch {
-      updateWaypointCoordsAndAddress(index, lat, lng)
-    }
-  }, [updateWaypointCoordsAndAddress])
-
-  const handleWaypointSearchKeyDown = useCallback((index, event) => {
-    if (event.key === 'Enter') {
-      event.preventDefault()
-      geocodeWaypointAddress(index, waypoints[index]?.address || '')
-    }
-  }, [geocodeWaypointAddress, waypoints])
-
-  const handleWaypointSearchClick = useCallback((index) => {
-    geocodeWaypointAddress(index, waypoints[index]?.address || '')
-  }, [geocodeWaypointAddress, waypoints])
+    const address = await reverseGeocodeAddress(lat, lng)
+    updateWaypointCoordsAndAddress(index, lat, lng, address)
+  }, [reverseGeocodeAddress, updateWaypointCoordsAndAddress])
 
   const handleWaypointPinClick = useCallback((index) => {
     setActivePinningIndex((current) => (current === index ? null : index))
@@ -1142,20 +1120,13 @@ export default function TrailsPage() {
       navigator.vibrate([100])
     }
 
-    try {
-      const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latlng.lat}&lon=${latlng.lng}`)
-      const data = await response.json()
-      if (data?.display_name) {
-        if (resolvedTargetIndex != null) {
-          setWaypoints((prev) => prev.map((waypoint, idx) => (
-            idx === resolvedTargetIndex ? { ...waypoint, address: data.display_name } : waypoint
-          )))
-        }
-      }
-    } catch {
-      // Reverse geocoding is optional; silently ignore failures.
+    if (resolvedTargetIndex != null) {
+      const address = await reverseGeocodeAddress(latlng.lat, latlng.lng)
+      setWaypoints((prev) => prev.map((waypoint, idx) => (
+        idx === resolvedTargetIndex ? { ...waypoint, address } : waypoint
+      )))
     }
-  }, [activePinningIndex, placeWaypointAtCoords])
+  }, [activePinningIndex, placeWaypointAtCoords, reverseGeocodeAddress])
 
   const handleMapWaypointPin = useCallback(async (index, coords) => {
     setActivePinningIndex(null)
@@ -1776,40 +1747,12 @@ const getBrouterProfile = useCallback(() => {
               background: isPinning ? 'rgba(88, 28, 135, 0.14)' : 'rgba(15, 23, 42, 0.4)',
             }}
           >
-            <input
-              type="text"
-              placeholder={`Waypoint ${idx + 1} address`}
+            <PlaceSearchInput
+              placeholder={`Search waypoint ${idx + 1} address...`}
               value={waypoint.address}
-              onChange={(e) => handleWaypointAddressChange(idx, e.target.value)}
-              onKeyDown={(e) => handleWaypointSearchKeyDown(idx, e)}
-              style={{
-                flex: 1,
-                minWidth: 0,
-                height: '40px',
-                padding: '0 12px',
-                borderRadius: '10px',
-                border: '1px solid rgba(148, 163, 184, 0.25)',
-                fontSize: '0.9rem',
-              }}
+              onChange={(text) => handleWaypointAddressChange(idx, text)}
+              onSelect={(place) => updateWaypointCoordsAndAddress(idx, place.lat, place.lng, place.name)}
             />
-            <button
-              type="button"
-              onClick={() => handleWaypointSearchClick(idx)}
-              disabled={waypointSearchLoadingIndex === idx}
-              title="Search address"
-              style={{
-                width: '40px',
-                height: '40px',
-                borderRadius: '10px',
-                border: 'none',
-                background: '#4c1d95',
-                color: '#f8fafc',
-                cursor: 'pointer',
-                boxShadow: '0 4px 10px rgba(0,0,0,0.18)',
-              }}
-            >
-              {waypointSearchLoadingIndex === idx ? '…' : '⌕'}
-            </button>
             <button
               type="button"
               onClick={() => handleWaypointPinClick(idx)}
@@ -2002,6 +1945,12 @@ const getBrouterProfile = useCallback(() => {
     <div className="app-container">
       <div className="main-content">
         <div className="map-wrapper" style={{ position: 'relative', overflow: navigationModeActive ? 'hidden' : 'visible' }}>
+
+          {/* MAP SEARCH - geocoding needs network, so it's hidden while offline (that
+              also keeps it clear of the centered "Offline" banner in the same row). */}
+          {isOnline && !navigationModeActive && (
+            <MapSearch onResultSelect={handleSearchSelect} />
+          )}
 
           {/* FLOATING CONTROL DECK - stays visible during navigation so the rider can
               still change layers, drop into 3D, or reach Stop & Save (the unified

@@ -3,6 +3,7 @@ import { explorerPois } from '../data/poiData'
 import finalPlaces from '../final_places.json'
 import gastroData from "../data/gastroData.json"
 import { usePlaceRatings } from '../hooks/usePlaceRatings'
+import BusinessSubmitModal from '../components/BusinessSubmitModal'
 import './TipsPage.css'
 
 const menuItems = [
@@ -584,6 +585,10 @@ export default function TipsPage() {
   const [selectedPlace, setSelectedPlace] = useState('All')
   const { ratings: restaurantRatings } = usePlaceRatings(gastroData.restaurants)
 
+  // "Submit Your Business" modal state, shared component but one flag per section
+  const [showBusinessModal, setShowBusinessModal] = useState(false)
+  const [showFarmModal, setShowFarmModal] = useState(false)
+
   // Reset helper when changing main views
   useEffect(() => {
     setPoiSearch('')
@@ -1091,6 +1096,38 @@ export default function TipsPage() {
                 </article>
               ))}
             </div>
+
+            <button
+              type="button"
+              onClick={() => setShowBusinessModal(true)}
+              title="Add your restaurant"
+              style={{
+                position: 'fixed',
+                bottom: 'max(90px, calc(80px + env(safe-area-inset-bottom)))',
+                right: 20,
+                width: 52,
+                height: 52,
+                borderRadius: '50%',
+                background: '#753cae',
+                border: 'none',
+                color: '#ffffff',
+                fontSize: 24,
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                boxShadow: '0 4px 16px rgba(117,60,174,0.5)',
+                zIndex: 1000,
+              }}
+            >
+              +
+            </button>
+
+            <BusinessSubmitModal
+              isOpen={showBusinessModal}
+              onClose={() => setShowBusinessModal(false)}
+              type="restaurant"
+            />
           </div>
         ) : currentView === 'Connect with Local Family Farms' ? (
           <div className="tips-subview">
@@ -1182,6 +1219,38 @@ export default function TipsPage() {
                 ))
               )}
             </div>
+
+            <button
+              type="button"
+              onClick={() => setShowFarmModal(true)}
+              title="Add your farm"
+              style={{
+                position: 'fixed',
+                bottom: 'max(90px, calc(80px + env(safe-area-inset-bottom)))',
+                right: 20,
+                width: 52,
+                height: 52,
+                borderRadius: '50%',
+                background: '#753cae',
+                border: 'none',
+                color: '#ffffff',
+                fontSize: 24,
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                boxShadow: '0 4px 16px rgba(117,60,174,0.5)',
+                zIndex: 1000,
+              }}
+            >
+              +
+            </button>
+
+            <BusinessSubmitModal
+              isOpen={showFarmModal}
+              onClose={() => setShowFarmModal(false)}
+              type="farm"
+            />
           </div>
         ) : (
           <SectionView
