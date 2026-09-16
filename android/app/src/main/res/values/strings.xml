@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">Brač by bike</string>
-    <string name="title_activity_main">Brač by bike</string>
+    <string name="app_name">Brač By Bike</string>
+    <string name="title_activity_main">Brač By Bike</string>
     <string name="package_name">com.bracbybike.app</string>
     <string name="custom_url_scheme">com.bracbybike.app</string>
 </resources>
