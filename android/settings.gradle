@@ -1,3 +1,9 @@
+// @capacitor/camera compiles with jvmToolchain(21); this lets Gradle download
+// a JDK 21 automatically when the machine only has a newer JDK installed.
+plugins {
+    id 'org.gradle.toolchains.foojay-resolver-convention' version '1.0.0'
+}
+
 include ':app'
 include ':capacitor-cordova-android-plugins'
 project(':capacitor-cordova-android-plugins').projectDir = new File('./capacitor-cordova-android-plugins/')

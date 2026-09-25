@@ -13,6 +13,8 @@ function NavigationHud({
   onToggleNorthUpLock,
   onExit,
   routeName,
+  onReturn,
+  returnLabel,
 }) {
   const arrowRotation = relativeBearingDeg ?? 0
   const compassRotation = -(mapRotationDeg ?? 0)
@@ -22,6 +24,12 @@ function NavigationHud({
       <button type="button" className="nav-hud-exit" onClick={onExit} aria-label="Exit navigation">
         ✕
       </button>
+
+      {onReturn && (
+        <button type="button" className="nav-hud-return" onClick={onReturn}>
+          ← {returnLabel}
+        </button>
+      )}
 
       <button
         type="button"
@@ -95,6 +103,9 @@ NavigationHud.propTypes = {
   onToggleNorthUpLock: PropTypes.func,
   onExit: PropTypes.func,
   routeName: PropTypes.string,
+  // Optional "back to where navigation was started" (e.g. a game stop)
+  onReturn: PropTypes.func,
+  returnLabel: PropTypes.string,
 }
 
 export default NavigationHud

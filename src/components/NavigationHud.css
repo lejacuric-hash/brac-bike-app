@@ -21,6 +21,22 @@
   pointer-events: auto;
 }
 
+.nav-hud-return {
+  position: absolute;
+  top: 66px;
+  left: 16px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: #753cae;
+  color: #f8fafc;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  pointer-events: auto;
+}
+
 .nav-hud-compass {
   position: absolute;
   top: 16px;

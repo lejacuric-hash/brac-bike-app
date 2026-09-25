@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import Map, { Layer, Marker, Popup, Source } from 'react-map-gl/maplibre'
+import { useNavigate } from 'react-router-dom'
+import Map,{ Layer, Marker, Popup, Source } from 'react-map-gl/maplibre'
 import * as maplibregl from 'maplibre-gl'
 import 'maplibre-gl/dist/maplibre-gl.css'
 import './TrailsPage.css'
@@ -18,6 +19,7 @@ import { haversineDistanceKm } from '../utils/geo'
 import { extractReportPhoto } from '../utils/reportPhoto'
 import { generateGpx, downloadGpxFile } from '../utils/gpx'
 import { useRide } from '../contexts/RideContext'
+import { MAPTILER_API_KEY, MAPTILER_SATELLITE_STYLE_URL, MAPTILER_STREET_STYLE_URL } from '../utils/mapStyle'
 import NavigationHud from '../components/NavigationHud'
 import RideSummaryModal from '../components/RideSummaryModal'
 
@@ -55,15 +57,6 @@ const iconButtonStyle = {
   transition: 'background-color 0.2s ease',
 }
 
-// Fallback keeps the map working in production if the env var isn't configured on the host.
-const MAPTILER_FALLBACK_KEY = 'TjtNydvQmJJGJOelz7ji'
-const MAPTILER_API_KEY = import.meta.env.VITE_MAPTILER_API_KEY || import.meta.env.VITE_MAPTILER_KEY || MAPTILER_FALLBACK_KEY
-if (!import.meta.env.VITE_MAPTILER_API_KEY && !import.meta.env.VITE_MAPTILER_KEY) {
-  console.error('VITE_MAPTILER_API_KEY is not set; falling back to the built-in MapTiler key.')
-}
-const MAPTILER_STYLE_ID = '019fd2b1-1969-70ee-bdd2-bceb14957863'
-const MAPTILER_STREET_STYLE_URL = `https://api.maptiler.com/maps/${MAPTILER_STYLE_ID}/style.json?key=${MAPTILER_API_KEY}`
-const MAPTILER_SATELLITE_STYLE_URL = `https://api.maptiler.com/maps/hybrid/style.json?key=${MAPTILER_API_KEY}`
 
 // Must stay in sync with TILE_CACHE_NAME in public/sw.js — the Cache Storage
 // API is available directly on window, not just inside the service worker,
@@ -384,6 +377,7 @@ function createWaypoint(seed) {
 }
 
 export default function TrailsPage() {
+  const navigate = useNavigate()
   const [trails, setTrails] = useState([])
   const [selectedTrail, setSelectedTrail] = useState(null)
   const [trailStats, setTrailStats] = useState({})
@@ -2612,6 +2606,10 @@ const getBrouterProfile = useCallback(() => {
               onToggleNorthUpLock={nav.toggleNorthUpLock}
               onExit={exitNavigationMode}
               routeName={activeNavigationPath?.name}
+              // Set when navigation was started from a game stop's map;
+              // navigation keeps running while the team is back in the game.
+              onReturn={activeNavigationPath?.returnTo ? () => navigate(activeNavigationPath.returnTo) : undefined}
+              returnLabel={activeNavigationPath?.returnLabel}
             />
           )}
         </div>

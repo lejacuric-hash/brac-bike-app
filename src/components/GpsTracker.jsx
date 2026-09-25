@@ -161,7 +161,9 @@ const GpsTracker = forwardRef(function GpsTracker({ onRideSaved, activeRouteId =
       error: authError,
     } = await supabase.auth.getUser()
 
-    if (authError || !user?.id) {
+    // The treasure-hunt game signs players in anonymously; that must not
+    // count as "signed in" for saving rides.
+    if (authError || !user?.id || user.is_anonymous) {
       setSavingRide(false)
       setSaveError('You must be signed in to save rides and reviews.')
       return

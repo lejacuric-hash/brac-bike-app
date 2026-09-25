@@ -7,6 +7,7 @@ const links = [
   { to: '/trails', label: 'Trails', icon: '/trails.svg' },
   { to: '/tips', label: 'Tips', icon: '/tips.svg' },
   { to: '/book', label: 'Book', icon: '/book-a-bike.svg' },
+  { to: '/game', label: 'Game', icon: '/game.svg' },
 ]
 
 function formatElapsed(totalSeconds) {

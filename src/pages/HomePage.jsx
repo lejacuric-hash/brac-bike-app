@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import HomeGameCard from '../game/HomeGameCard'
 import './HomePage.css'
 
 export default function HomePage() {
@@ -22,6 +23,7 @@ export default function HomePage() {
         <Link to="/book" className="home-button">
           Book a Bike
         </Link>
+        <HomeGameCard />
       </div>
 
       <div className="home-powered-by">
